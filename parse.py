@@ -48,4 +48,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    print list(get_mds_track(args.mds_folder))
+    print len(list(get_mds_track(args.mds_folder, subsets=['Test'])))
