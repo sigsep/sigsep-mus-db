@@ -3,7 +3,7 @@ from os import path as op
 import os
 
 
-def get_mds_track(root_dir=None, subsets=['Dev', 'Test']):
+def get_sds_track(root_dir=None, subsets=['Dev', 'Test']):
 
     mixtures_folder = op.join(root_dir, "Mixtures")
     sources_folder = op.join(root_dir, "Sources")
@@ -44,8 +44,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Parse SISEC dataset')
 
-    parser.add_argument('mds_folder', type=str, help='MDS 100 Folder')
+    parser.add_argument('sds_folder', type=str, help='SDS 100 Folder')
 
     args = parser.parse_args()
 
-    print len(list(get_mds_track(args.mds_folder, subsets=['Test'])))
+    print len(list(get_sds_track(args.sds_folder, subsets=['Test'])))
