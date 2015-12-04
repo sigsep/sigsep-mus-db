@@ -15,5 +15,5 @@ sds.run(my_function)
 sds.run(my_training, subset="train")  # this takes 0.3 days to finish
 sds.run(my_test, subset="test")  # this takes 0.3 days to finish
 
-# calling matlab_wrapper from python evaluate with bss_eval
+# calling matlab_wrapper from python to evaluate with bss_eval
 sds.eval()
