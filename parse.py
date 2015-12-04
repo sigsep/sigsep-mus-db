@@ -133,6 +133,7 @@ class pySDS(object):
                 subset_folder = op.join(self.mixtures_folder, subset)
                 for _, track_folders, _ in os.walk(subset_folder):
                     for track_name in track_folders:
+
                         # create new SDS Track
                         track = SDSTrack(
                             name=track_name,
@@ -142,9 +143,10 @@ class pySDS(object):
                             ),
                         )
 
-                        # add sources to tracks
+                        # add sources to track
                         sources = {}
                         for src, rel_path in self.setup['sources'].iteritems():
+                            # create source object
                             sources[src] = SDSSource(
                                 name=src,
                                 path=op.join(
@@ -156,15 +158,15 @@ class pySDS(object):
                             )
                         track.sources = sources
 
-                        # add targets
+                        # add targets to track
                         targets = {}
-                        for key, components in self.setup['targets'].iteritems():
-                            for source, gain in components.iteritems():
+                        for name, srcs in self.setup['targets'].iteritems():
+                            for source, gain in srcs.iteritems():
                                 # add gain to source tracks
                                 track.sources[source].gain = gain
                                 # add tracks to components
-                                components[source] = self.setup['sources'][source]
-                            targets[key] = SDSTarget(sources=components)
+                                srcs[source] = self.setup['sources'][source]
+                            targets[name] = SDSTarget(sources=srcs)
 
                         track.targets = targets
 
