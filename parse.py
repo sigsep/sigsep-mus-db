@@ -4,6 +4,7 @@ from os import path as op
 import os
 import soundfile as sf
 import yaml
+from progressbar import ProgressBar, FormatLabel, Bar, ETA
 
 
 class SDSSource(object):
@@ -11,30 +12,30 @@ class SDSSource(object):
         self.name = name
         self.path = path
         self.gain = 1.0
-        self._audio = None
-        self._rate = None
+        self.__audio = None
+        self.__rate = None
 
     @property
     def audio(self):
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
-        return self._audio
+        if self.__rate is None and self.__audio is None:
+            self.__check_and_read()
+        return self.__audio
 
     @property
     def rate(self):
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
-        return self._rate
+        if self.__rate is None and self.__audio is None:
+            self.__check_and_read()
+        return self.__rate
 
-    def _check_and_read(self):
+    def __check_and_read(self):
         if os.path.exists(self.path):
             audio, rate = sf.read(self.path)
-            self._rate = rate
-            self._audio = audio
+            self.__rate = rate
+            self.__audio = audio
         else:
             print "Oops! %s cannot be loaded" % self.path
-            self._rate = None
-            self._audio = None
+            self.__rate = None
+            self.__audio = None
 
     def __repr__(self):
         return self.path
@@ -43,19 +44,19 @@ class SDSSource(object):
 class SDSTarget():
     def __init__(self, sources):
         self.sources = sources
-        self._audio = None
+        self.__audio = None
 
     @property
     def audio(self):
-        if self._audio is None:
+        if self.__audio is None:
             mix_list = []*len(self.sources)
             for source, track in self.sources.iteritems():
                 if track.audio is not None:
                     mix_list.append(
                         np.array(track.gain) / len(self.sources) * track.audio
                     )
-            self._audio = np.sum(np.array(mix_list), axis=0)
-        return self._audio
+            self.__audio = np.sum(np.array(mix_list), axis=0)
+        return self.__audio
 
     def __repr__(self):
         parts = []
@@ -65,35 +66,35 @@ class SDSTarget():
 
 
 class SDSTrack(object):
-    def __init__(self, name, path):
+    def __init__(self, name, path=None):
         self.name = name
         self.path = path
         self.targets = None
         self.sources = None
-        self._audio = None
-        self._rate = None
+        self.__audio = None
+        self.__rate = None
 
     @property
     def audio(self):
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
-        return self._audio
+        if self.__rate is None and self.__audio is None:
+            self.__check_and_read()
+        return self.__audio
 
     @property
     def rate(self):
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
-        return self._rate
+        if self.__rate is None and self.__audio is None:
+            self.__check_and_read()
+        return self.__rate
 
-    def _check_and_read(self):
+    def __check_and_read(self):
         if os.path.exists(self.path):
             audio, rate = sf.read(self.path)
-            self._rate = rate
-            self._audio = audio
+            self.__rate = rate
+            self.__audio = audio
         else:
             print "Oops!  File cannot be loaded"
-            self._rate = None
-            self._audio = None
+            self.__rate = None
+            self.__audio = None
 
     def __repr__(self):
         return "%s (%s)" % (self.name, self.path)
@@ -112,6 +113,8 @@ class pySDS(object):
                 self.root_dir = os.environ["SDS100_PATH"]
             else:
                 raise RuntimeError("Path to SDS100 root directory isn't set")
+        else:
+            self.root_dir = root_dir
 
         if isinstance(subsets, basestring):
             self.subsets = [subsets]
@@ -126,7 +129,7 @@ class pySDS(object):
         self.sources_names = self.setup['sources'].keys()
         self.targets_names = self.setup['targets'].keys()
 
-    def _sds_tracks(self):
+    def __sds_tracks(self):
         # parse all the mixtures
         if op.isdir(self.mixtures_folder):
             for subset in self.subsets:
@@ -178,10 +181,32 @@ class pySDS(object):
         pass
 
     def test(self, user_function):
-        pass
+        if not hasattr(user_function, '__call__'):
+            raise TypeError("Please provide a callable function")
+
+        test_track = SDSTrack(name="test")
+        signal = np.random.random((48213, 2))
+        test_track.__audio = signal
+        test_track.__rate = 44100
+
+        user_results = user_function(test_track)
+
+        if isinstance(user_results, dict):
+            for target, estimate in user_results.items():
+                if target not in self.targets_names:
+                    raise ValueError("Target '%s' not supported!" % target)
+        else:
+            raise ValueError("output needs ot be a dictionary")
+
+        print "Test passed"
+        return True
 
     def run(self, user_function):
-        for track in self._sds_tracks():
+
+        widgets = [FormatLabel('Track %(value)d '), Bar(), ETA()]
+        progress = ProgressBar(widgets=widgets)
+
+        for track in progress(self.__sds_tracks()):
             user_results = user_function(track)
 
 
@@ -189,18 +214,24 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Parse SISEC dataset')
 
-    parser.add_argument('sds_folder', type=str, help='SDS 100 Folder')
+    parser.add_argument(
+        'sds_folder',
+        nargs='?',
+        default=None,
+        type=str,
+        help='SDS 100 Folder'
+    )
 
     args = parser.parse_args()
 
-    sds = pySDS()
+    sds = pySDS(root_dir=args.sds_folder)
 
     def my_function(sds_track):
         estimates = {
-            'bass': sds_track.path,
+            'basss': sds_track.path,
             'accompaniment': sds_track.name
         }
-        print sds_track.targets
         return estimates
 
+    sds.test(my_function)
     sds.run(my_function)
