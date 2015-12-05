@@ -1,19 +1,34 @@
-import pysdseval
+import pydsd
 
-def my_function(audio, fs):
-    return {"vocals": estimate_array, "accompaniment": estimate_array}
+def my_function(dsd_track):
+    # do your fancy bss algorithm
 
-sds = pysdseval(sds_root="...")
+    # use the tracks mixture audio as numpy array
+    dsd_track.audio
 
-# this takes 3 seconds and verifies if my function works correctly
-sds.test(my_function)
+    # get the path for external processing
+    dsd_track.path
+
+    # get the sample rate
+    dsd_track.rate
+
+    # return any number of targets
+    estimates = {
+        'vocals': vocals_array,
+        'accompaniment': acc_array,
+    }
+    return estimates
+
+
+# initiate the pydsd
+dsd = pydsd(dsd_root="./dsd100")
+
+# this takes 3 seconds and verifies if my_function works correctly
+dsd.test(my_function)
 
 # this takes 3 days to finish and is the actual evaluation
-sds.run(my_function)
+dsd.run(my_function)
 
-# for the machine learning guys this would be
-sds.run(my_training, subset="train")  # this takes 0.3 days to finish
-sds.run(my_test, subset="test")  # this takes 0.3 days to finish
-
-# calling matlab_wrapper from python to evaluate with bss_eval
-sds.eval()
+# for the machine learning guys you want to split the subsets
+dsd.run(my_training_function, subset="train")  # this takes 1.5 days to finish
+dsd.run(my_test_function, subset="test")  # this takes 1.5 days to finish
