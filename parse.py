@@ -27,6 +27,14 @@ class SDSSource(object):
             self._check_and_read()
         return self._rate
 
+    @audio.setter
+    def audio(self, array):
+        self._audio = array
+
+    @rate.setter
+    def rate(self, rate):
+        self._rate = rate
+
     def _check_and_read(self):
         if os.path.exists(self.path):
             audio, rate = sf.read(self.path)
@@ -108,7 +116,7 @@ class SDSTrack(object):
         return "%s (%s)" % (self.name, self.path)
 
 
-class pySDS(object):
+class SDS100(object):
     def __init__(
         self,
         root_dir=None,
@@ -140,7 +148,7 @@ class pySDS(object):
         self.sources_names = self.setup['sources'].keys()
         self.targets_names = self.setup['targets'].keys()
 
-    def __iter_sds_tracks(self):
+    def _iter_sds_tracks(self):
         # parse all the mixtures
         if op.isdir(self.mixtures_dir):
             for subset in self.subsets:
@@ -188,7 +196,7 @@ class pySDS(object):
         else:
             print "%s not exists." % op.join("Estimates", args.mds_folder)
 
-    def __save_estimate(self, estimates, track):
+    def _save_estimate(self, estimates, track):
         track_estimate_dir = op.join(self.estimates_dir, track.name)
         if not os.path.exists(track_estimate_dir):
             os.makedirs(track_estimate_dir)
@@ -225,10 +233,10 @@ class pySDS(object):
         widgets = [FormatLabel('Track: '), Bar(), ETA()]
         progress = ProgressBar(widgets=widgets)
 
-        for track in self.__iter_sds_tracks():
+        for track in self._iter_sds_tracks():
             user_results = user_function(track)
             if save:
-                self.__save_estimate(user_results, track)
+                self._save_estimate(user_results, track)
 
 
 if __name__ == '__main__':
@@ -245,7 +253,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    sds = pySDS(root_dir=args.sds_folder)
+    sds = SDS100(root_dir=args.sds_folder)
 
     def my_function(sds_track):
         estimates = {
