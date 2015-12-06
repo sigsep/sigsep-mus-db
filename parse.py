@@ -12,30 +12,30 @@ class SDSSource(object):
         self.name = name
         self.path = path
         self.gain = 1.0
-        self.__audio = None
-        self.__rate = None
+        self._audio = None
+        self._rate = None
 
     @property
     def audio(self):
-        if self.__rate is None and self.__audio is None:
-            self.__check_and_read()
-        return self.__audio
+        if self._rate is None and self._audio is None:
+            self._check_and_read()
+        return self._audio
 
     @property
     def rate(self):
-        if self.__rate is None and self.__audio is None:
-            self.__check_and_read()
-        return self.__rate
+        if self._rate is None and self._audio is None:
+            self._check_and_read()
+        return self._rate
 
-    def __check_and_read(self):
+    def _check_and_read(self):
         if os.path.exists(self.path):
             audio, rate = sf.read(self.path)
-            self.__rate = rate
-            self.__audio = audio
+            self._rate = rate
+            self._audio = audio
         else:
             print "Oops! %s cannot be loaded" % self.path
-            self.__rate = None
-            self.__audio = None
+            self._rate = None
+            self._audio = None
 
     def __repr__(self):
         return self.path
@@ -44,19 +44,19 @@ class SDSSource(object):
 class SDSTarget():
     def __init__(self, sources):
         self.sources = sources
-        self.__audio = None
+        self._audio = None
 
     @property
     def audio(self):
-        if self.__audio is None:
+        if self._audio is None:
             mix_list = []*len(self.sources)
             for source, track in self.sources.iteritems():
                 if track.audio is not None:
                     mix_list.append(
                         np.array(track.gain) / len(self.sources) * track.audio
                     )
-            self.__audio = np.sum(np.array(mix_list), axis=0)
-        return self.__audio
+            self._audio = np.sum(np.array(mix_list), axis=0)
+        return self._audio
 
     def __repr__(self):
         parts = []
@@ -71,30 +71,38 @@ class SDSTrack(object):
         self.path = path
         self.targets = None
         self.sources = None
-        self.__audio = None
-        self.__rate = None
+        self._audio = None
+        self._rate = None
 
     @property
     def audio(self):
-        if self.__rate is None and self.__audio is None:
-            self.__check_and_read()
-        return self.__audio
+        if self._rate is None and self._audio is None:
+            self._check_and_read()
+        return self._audio
 
     @property
     def rate(self):
-        if self.__rate is None and self.__audio is None:
-            self.__check_and_read()
-        return self.__rate
+        if self._rate is None and self._audio is None:
+            self._check_and_read()
+        return self._rate
 
-    def __check_and_read(self):
+    @audio.setter
+    def audio(self, array):
+        self._audio = array
+
+    @rate.setter
+    def rate(self, rate):
+        self._rate = rate
+
+    def _check_and_read(self):
         if os.path.exists(self.path):
             audio, rate = sf.read(self.path)
-            self.__rate = rate
-            self.__audio = audio
+            self._rate = rate
+            self._audio = audio
         else:
             print "Oops!  File cannot be loaded"
-            self.__rate = None
-            self.__audio = None
+            self._rate = None
+            self._audio = None
 
     def __repr__(self):
         return "%s (%s)" % (self.name, self.path)
@@ -105,7 +113,8 @@ class pySDS(object):
         self,
         root_dir=None,
         subsets=['Dev', 'Test'],
-        setup_file='setup.yaml'
+        setup_file='setup.yaml',
+        estimates_dir='Estimates'
     ):
 
         if root_dir is None:
@@ -124,16 +133,18 @@ class pySDS(object):
         with open(op.join(self.root_dir, setup_file), 'r') as f:
             self.setup = yaml.load(f)
 
-        self.mixtures_folder = op.join(self.root_dir, "Mixtures")
-        self.sources_folder = op.join(self.root_dir, "Sources")
+        self.mixtures_dir = op.join(self.root_dir, "Mixtures")
+        self.sources_dir = op.join(self.root_dir, "Sources")
+        self.estimates_dir = op.join(self.root_dir, "Estimates")
+
         self.sources_names = self.setup['sources'].keys()
         self.targets_names = self.setup['targets'].keys()
 
-    def __sds_tracks(self):
+    def __iter_sds_tracks(self):
         # parse all the mixtures
-        if op.isdir(self.mixtures_folder):
+        if op.isdir(self.mixtures_dir):
             for subset in self.subsets:
-                subset_folder = op.join(self.mixtures_folder, subset)
+                subset_folder = op.join(self.mixtures_dir, subset)
                 for _, track_folders, _ in os.walk(subset_folder):
                     for track_name in track_folders:
 
@@ -153,7 +164,7 @@ class pySDS(object):
                             sources[src] = SDSSource(
                                 name=src,
                                 path=op.join(
-                                    self.sources_folder,
+                                    self.sources_dir,
                                     subset,
                                     track_name,
                                     rel_path
@@ -177,7 +188,15 @@ class pySDS(object):
         else:
             print "%s not exists." % op.join("Estimates", args.mds_folder)
 
-    def _save_estimates(self):
+    def __save_estimate(self, estimates, track):
+        track_estimate_dir = op.join(self.estimates_dir, track.name)
+        if not os.path.exists(track_estimate_dir):
+            os.makedirs(track_estimate_dir)
+
+        # write out tracks to disk
+        for target, estimate in estimates.items():
+            target_path = op.join(track_estimate_dir, target + '.wav')
+            sf.write(target_path, estimate, track.rate)
         pass
 
     def test(self, user_function):
@@ -186,8 +205,8 @@ class pySDS(object):
 
         test_track = SDSTrack(name="test")
         signal = np.random.random((48213, 2))
-        test_track.__audio = signal
-        test_track.__rate = 44100
+        test_track.audio = signal
+        test_track.rate = 44100
 
         user_results = user_function(test_track)
 
@@ -201,13 +220,15 @@ class pySDS(object):
         print "Test passed"
         return True
 
-    def run(self, user_function):
+    def run(self, user_function, save=True):
 
-        widgets = [FormatLabel('Track %(value)d '), Bar(), ETA()]
+        widgets = [FormatLabel('Track: '), Bar(), ETA()]
         progress = ProgressBar(widgets=widgets)
 
-        for track in progress(self.__sds_tracks()):
+        for track in self.__iter_sds_tracks():
             user_results = user_function(track)
+            if save:
+                self.__save_estimate(user_results, track)
 
 
 if __name__ == '__main__':
@@ -228,8 +249,8 @@ if __name__ == '__main__':
 
     def my_function(sds_track):
         estimates = {
-            'basss': sds_track.path,
-            'accompaniment': sds_track.name
+            'bass': sds_track.audio,
+            'accompaniment': sds_track.audio
         }
         return estimates
 
