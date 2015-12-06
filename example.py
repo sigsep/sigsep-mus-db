@@ -25,7 +25,8 @@ def my_function(dsd_track):
 dsd = dsdeval.SDS100(dsd_root="./Volumes/Data/DSD100")
 
 # this takes 3 seconds and verifies if my_function works correctly
-dsd.test(my_function)
+if dsd.test(my_function):
+    print "my_function is valid"
 
 # this takes 3 days to finish and is the actual evaluation
 dsd.run(my_function)

@@ -212,7 +212,7 @@ class SDS100(object):
             raise TypeError("Please provide a callable function")
 
         test_track = SDSTrack(name="test")
-        signal = np.random.random((48213, 2))
+        signal = np.random.random((66000, 2))
         test_track.audio = signal
         test_track.rate = 44100
 
@@ -222,8 +222,14 @@ class SDS100(object):
             for target, estimate in user_results.items():
                 if target not in self.targets_names:
                     raise ValueError("Target '%s' not supported!" % target)
+
+                if estimate.shape != signal.shape:
+                    raise ValueError(
+                        "Shape of estimate does not match input shape"
+                    )
+
         else:
-            raise ValueError("output needs ot be a dictionary")
+            raise ValueError("output needs to wrapped in a dict")
 
         print "Test passed"
         return True
@@ -262,5 +268,5 @@ if __name__ == '__main__':
         }
         return estimates
 
-    sds.test(my_function)
-    sds.run(my_function)
+    if sds.test(my_function):
+        sds.run(my_function)
