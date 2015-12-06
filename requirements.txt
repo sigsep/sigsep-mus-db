@@ -1,6 +1,0 @@
-numpy==1.10.1
-progressbar==2.3
-pyaml==15.8.2
-pycparser==2.14
-PySoundFile==0.8.1
-PyYAML==3.11
