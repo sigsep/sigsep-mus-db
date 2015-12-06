@@ -13,7 +13,8 @@ pip install pydsd
 ### Code Example
 
 ```python
-import pydsd
+import dsdeval
+
 
 def my_function(dsd_track):
     # do your fancy bss algorithm
@@ -36,7 +37,7 @@ def my_function(dsd_track):
 
 
 # initiate the pydsd
-dsd = pydsd(dsd_root="./dsd100")
+dsd = dsdeval.SDS100(dsd_root="./Volumes/Data/DSD100")
 
 # this takes 3 seconds and verifies if my_function works correctly
 dsd.test(my_function)
@@ -47,5 +48,5 @@ dsd.run(my_function)
 # for the machine learning guys you want to split the subsets
 dsd.run(my_training_function, subset="train")  # this takes 1.5 days to finish
 dsd.run(my_test_function, subset="test")  # this takes 1.5 days to finish
-```
 
+```
