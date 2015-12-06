@@ -7,7 +7,7 @@ import yaml
 from progressbar import ProgressBar, FormatLabel, Bar, ETA
 
 
-class SDSSource(object):
+class DSDSource(object):
     def __init__(self, name=None, path=None):
         self.name = name
         self.path = path
@@ -49,7 +49,7 @@ class SDSSource(object):
         return self.path
 
 
-class SDSTarget():
+class DSDTarget():
     def __init__(self, sources):
         self.sources = sources
         self._audio = None
@@ -73,7 +73,7 @@ class SDSTarget():
         return '+'.join(parts)
 
 
-class SDSTrack(object):
+class DSDTrack(object):
     def __init__(self, name, path=None):
         self.name = name
         self.path = path
@@ -116,7 +116,7 @@ class SDSTrack(object):
         return "%s (%s)" % (self.name, self.path)
 
 
-class SDS100(object):
+class DSD100(object):
     def __init__(
         self,
         root_dir=None,
@@ -126,10 +126,10 @@ class SDS100(object):
     ):
 
         if root_dir is None:
-            if "SDS100_PATH" in os.environ:
-                self.root_dir = os.environ["SDS100_PATH"]
+            if "dsd100_PATH" in os.environ:
+                self.root_dir = os.environ["dsd100_PATH"]
             else:
-                raise RuntimeError("Path to SDS100 root directory isn't set")
+                raise RuntimeError("Path to dsd100 root directory isn't set")
         else:
             self.root_dir = root_dir
 
@@ -148,7 +148,7 @@ class SDS100(object):
         self.sources_names = self.setup['sources'].keys()
         self.targets_names = self.setup['targets'].keys()
 
-    def _iter_sds_tracks(self):
+    def _iter_dsd_tracks(self):
         # parse all the mixtures
         if op.isdir(self.mixtures_dir):
             for subset in self.subsets:
@@ -156,8 +156,8 @@ class SDS100(object):
                 for _, track_folders, _ in os.walk(subset_folder):
                     for track_name in track_folders:
 
-                        # create new SDS Track
-                        track = SDSTrack(
+                        # create new dsd Track
+                        track = DSDTrack(
                             name=track_name,
                             path=op.join(
                                 op.join(subset_folder, track_name),
@@ -169,7 +169,7 @@ class SDS100(object):
                         sources = {}
                         for src, rel_path in self.setup['sources'].iteritems():
                             # create source object
-                            sources[src] = SDSSource(
+                            sources[src] = DSDSource(
                                 name=src,
                                 path=op.join(
                                     self.sources_dir,
@@ -188,7 +188,7 @@ class SDS100(object):
                                 track.sources[source].gain = gain
                                 # add tracks to components
                                 srcs[source] = self.setup['sources'][source]
-                            targets[name] = SDSTarget(sources=srcs)
+                            targets[name] = DSDTarget(sources=srcs)
 
                         track.targets = targets
 
@@ -211,7 +211,7 @@ class SDS100(object):
         if not hasattr(user_function, '__call__'):
             raise TypeError("Please provide a callable function")
 
-        test_track = SDSTrack(name="test")
+        test_track = DSDTrack(name="test")
         signal = np.random.random((66000, 2))
         test_track.audio = signal
         test_track.rate = 44100
@@ -239,7 +239,7 @@ class SDS100(object):
         widgets = [FormatLabel('Track: '), Bar(), ETA()]
         progress = ProgressBar(widgets=widgets)
 
-        for track in self._iter_sds_tracks():
+        for track in self._iter_dsd_tracks():
             user_results = user_function(track)
             if save:
                 self._save_estimate(user_results, track)
@@ -250,23 +250,23 @@ if __name__ == '__main__':
         description='Parse SISEC dataset')
 
     parser.add_argument(
-        'sds_folder',
+        'dsd_folder',
         nargs='?',
         default=None,
         type=str,
-        help='SDS 100 Folder'
+        help='dsd 100 Folder'
     )
 
     args = parser.parse_args()
 
-    sds = SDS100(root_dir=args.sds_folder)
+    dsd = DSD100(root_dir=args.dsd_folder)
 
-    def my_function(sds_track):
+    def my_function(dsd_track):
         estimates = {
-            'bass': sds_track.audio,
-            'accompaniment': sds_track.audio
+            'bass': dsd_track.audio,
+            'accompaniment': dsd_track.audio
         }
         return estimates
 
-    if sds.test(my_function):
-        sds.run(my_function)
+    if dsd.test(my_function):
+        dsd.run(my_function)
