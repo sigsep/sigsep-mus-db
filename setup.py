@@ -9,7 +9,7 @@ if __name__ == "__main__":
         version="0.1.0",
 
         # Description
-        description='Audio Degradation SciKit.',
+        description='Evaluate source separation methods using the Demixing Secrets Datasets',
 
         # Your contact information
         author='Fabian-Robert Stöter',
