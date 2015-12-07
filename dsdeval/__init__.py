@@ -75,9 +75,10 @@ class DSDTarget():
 
 
 class DSDTrack(object):
-    def __init__(self, name, path=None):
+    def __init__(self, name, subset=None, path=None):
         self.name = name
         self.path = path
+        self.subset = subset
         self.targets = None
         self.sources = None
         self._audio = None
@@ -123,7 +124,7 @@ class DSD100(object):
         root_dir=None,
         subsets=['Dev', 'Test'],
         setup_file='setup.yaml',
-        estimates_dir='Estimates'
+        estimates_dir=None
     ):
 
         if root_dir is None:
@@ -144,7 +145,11 @@ class DSD100(object):
 
         self.mixtures_dir = op.join(self.root_dir, "Mixtures")
         self.sources_dir = op.join(self.root_dir, "Sources")
-        self.estimates_dir = op.join(self.root_dir, "Estimates")
+
+        if estimates_dir is None:
+            self.estimates_dir = op.join(self.root_dir, "Estimates")
+        else:
+            self.estimates_dir = estimates_dir
 
         self.sources_names = self.setup['sources'].keys()
         self.targets_names = self.setup['targets'].keys()
@@ -164,6 +169,7 @@ class DSD100(object):
                                 op.join(subset_folder, track_name),
                                 self.setup['mix']
                             ),
+                            subset=subset
                         )
 
                         # add sources to track
@@ -198,7 +204,9 @@ class DSD100(object):
             print "%s not exists." % op.join("Estimates", args.mds_folder)
 
     def _save_estimate(self, estimates, track):
-        track_estimate_dir = op.join(self.estimates_dir, track.name)
+        track_estimate_dir = op.join(
+            self.estimates_dir, track.subset, track.name
+        )
         if not os.path.exists(track_estimate_dir):
             os.makedirs(track_estimate_dir)
 
@@ -260,7 +268,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    dsd = DSD100(root_dir=args.dsd_folder)
+    dsd = DSD100(
+        root_dir=args.dsd_folder,
+        estimates_dir='./wurst'
+    )
 
     def my_function(dsd_track):
         estimates = {
