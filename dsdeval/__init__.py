@@ -4,7 +4,7 @@ from os import path as op
 import os
 import soundfile as sf
 import yaml
-from progressbar import ProgressBar, FormatLabel, Bar, ETA
+# from progressbar import ProgressBar, FormatLabel, Bar, ETA
 
 
 class DSDSource(object):
@@ -53,6 +53,7 @@ class DSDTarget():
     def __init__(self, sources):
         self.sources = sources
         self._audio = None
+        self._rate = None
 
     @property
     def audio(self):
@@ -126,10 +127,10 @@ class DSD100(object):
     ):
 
         if root_dir is None:
-            if "dsd100_PATH" in os.environ:
-                self.root_dir = os.environ["dsd100_PATH"]
+            if "DSD100_PATH" in os.environ:
+                self.root_dir = os.environ["DSD100_PATH"]
             else:
-                raise RuntimeError("Path to dsd100 root directory isn't set")
+                raise RuntimeError("Path to DSD100 root directory isn't set")
         else:
             self.root_dir = root_dir
 
@@ -236,8 +237,8 @@ class DSD100(object):
 
     def run(self, user_function, save=True):
 
-        widgets = [FormatLabel('Track: '), Bar(), ETA()]
-        progress = ProgressBar(widgets=widgets)
+        # widgets = [FormatLabel('Track:'), Bar(), ETA()]
+        # progress = ProgressBar(widgets=widgets)
 
         for track in self._iter_dsd_tracks():
             user_results = user_function(track)
