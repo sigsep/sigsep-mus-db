@@ -270,7 +270,7 @@ if __name__ == '__main__':
 
     dsd = DSD100(
         root_dir=args.dsd_folder,
-        estimates_dir='./wurst'
+        estimates_dir='./my_estimates'
     )
 
     def my_function(dsd_track):
