@@ -54,7 +54,7 @@ class DSDSource(object):
 # Target Track from DSD100 DB mixed from several DSDSource Tracks
 class DSDTarget(object):
     def __init__(self, sources):
-        self.sources = sources  # Dict of DSDSources
+        self.sources = sources  # List of DSDSources
         self._audio = None
         self._rate = None
 
@@ -66,10 +66,11 @@ class DSDTarget(object):
     def audio(self):
         if self._audio is None:
             mix_list = []*len(self.sources)
-            for source, track in self.sources.iteritems():
-                if track.audio is not None:
+            for source in self.sources:
+                if source.audio is not None:
                     mix_list.append(
-                        np.array(track.gain) / len(self.sources) * track.audio
+                        np.array(source.gain) /
+                        len(self.sources) * source.audio
                     )
             self._audio = np.sum(np.array(mix_list), axis=0)
         return self._audio
@@ -204,14 +205,15 @@ class DSD100(object):
                         # add targets to track
                         targets = {}
                         for name, srcs in self.setup['targets'].iteritems():
+                            target_sources = []
                             for source, gain in srcs.iteritems():
                                 # add gain to source tracks
                                 track.sources[source].gain = gain
                                 # add tracks to components
-                                srcs[source] = self.setup['sources'][source]
-                                # TODO: srcs is not a a dict of DSDSources
-                            targets[name] = DSDTarget(sources=srcs)
-
+                                target_sources.append(sources[source])
+                            # add sources to target
+                            targets[name] = DSDTarget(sources=target_sources)
+                        # add targets to track
                         track.targets = targets
 
                         yield track
@@ -237,13 +239,11 @@ class DSD100(object):
         for user_estimate in user_estimates:
             audio_estimates.append(user_estimate[1])
             audio_reference.append(track.targets[user_estimate[0]].audio)
+
         audio_estimates = np.array(audio_estimates)
         audio_reference = np.array(audio_reference)
         print audio_estimates.shape
         print audio_reference.shape
-        # for target, estimate in user_results.items():
-        #
-        #     self.evaluator.evaluate(estimate.audio)
 
     def test(self, user_function):
         if not hasattr(user_function, '__call__'):
