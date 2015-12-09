@@ -54,9 +54,13 @@ class DSDSource(object):
 # Target Track from DSD100 DB mixed from several DSDSource Tracks
 class DSDTarget(object):
     def __init__(self, sources):
-        self.sources = sources
+        self.sources = sources  # Dict of DSDSources
         self._audio = None
         self._rate = None
+
+    @property
+    def test(self):
+        return "geht"
 
     @property
     def audio(self):
@@ -72,7 +76,7 @@ class DSDTarget(object):
 
     def __repr__(self):
         parts = []
-        for key, val in self.sources.items():
+        for key, val in self.sources.iteritems():
             parts.append(str(key))
         return '+'.join(parts)
 
@@ -129,7 +133,7 @@ class DSD100(object):
         root_dir=None,
         subsets=['Dev', 'Test'],
         setup_file='setup.yaml',
-        estimates_dir=None,
+        user_estimates_dir=None,
         evaluation=True
     ):
 
@@ -152,10 +156,10 @@ class DSD100(object):
         self.mixtures_dir = op.join(self.root_dir, "Mixtures")
         self.sources_dir = op.join(self.root_dir, "Sources")
 
-        if estimates_dir is None:
-            self.estimates_dir = op.join(self.root_dir, "Estimates")
+        if user_estimates_dir is None:
+            self.user_estimates_dir = op.join(self.root_dir, "Estimates")
         else:
-            self.estimates_dir = estimates_dir
+            self.user_estimates_dir = user_estimates_dir
 
         self.sources_names = self.setup['sources'].keys()
         self.targets_names = self.setup['targets'].keys()
@@ -205,6 +209,7 @@ class DSD100(object):
                                 track.sources[source].gain = gain
                                 # add tracks to components
                                 srcs[source] = self.setup['sources'][source]
+                                # TODO: srcs is not a a dict of DSDSources
                             targets[name] = DSDTarget(sources=srcs)
 
                         track.targets = targets
@@ -213,21 +218,29 @@ class DSD100(object):
         else:
             print "%s not exists." % op.join("Estimates", args.mds_folder)
 
-    def _save_estimate(self, estimates, track):
+    def _save_estimates(self, user_estimates, track):
         track_estimate_dir = op.join(
-            self.estimates_dir, track.subset, track.name
+            self.user_estimates_dir, track.subset, track.name
         )
         if not os.path.exists(track_estimate_dir):
             os.makedirs(track_estimate_dir)
 
         # write out tracks to disk
-        for estimate in estimates:
+        for estimate in user_estimates:
             target_path = op.join(track_estimate_dir, estimate[0] + '.wav')
             sf.write(target_path, estimate[1], track.rate)
         pass
 
-    def _evaluate(self, user_estimates):
-        pass
+    def _evaluate_estimates(self, user_estimates, track):
+        audio_estimates = []
+        audio_reference = []
+        for user_estimate in user_estimates:
+            audio_estimates.append(user_estimate[1])
+            audio_reference.append(track.targets[user_estimate[0]].audio)
+        audio_estimates = np.array(audio_estimates)
+        audio_reference = np.array(audio_reference)
+        print audio_estimates.shape
+        print audio_reference.shape
         # for target, estimate in user_results.items():
         #
         #     self.evaluator.evaluate(estimate.audio)
@@ -273,7 +286,8 @@ class DSD100(object):
         for track in self._iter_dsd_tracks():
             user_results = user_function(track)
             if save:
-                self._save_estimate(user_results, track)
+                self._save_estimates(user_results, track)
+                self._evaluate_estimates(user_results, track)
 
 
 if __name__ == '__main__':
@@ -292,7 +306,7 @@ if __name__ == '__main__':
 
     dsd = DSD100(
         root_dir=args.dsd_folder,
-        estimates_dir='./my_estimates'
+        user_estimates_dir='./my_estimates'
     )
 
     def my_function(dsd_track):
