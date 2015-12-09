@@ -4,9 +4,11 @@ from os import path as op
 import os
 import soundfile as sf
 import yaml
+import evaluate
 # from progressbar import ProgressBar, FormatLabel, Bar, ETA
 
 
+# Source Track from DSD100 DB
 class DSDSource(object):
     def __init__(self, name=None, path=None):
         self.name = name
@@ -49,7 +51,8 @@ class DSDSource(object):
         return self.path
 
 
-class DSDTarget():
+# Target Track from DSD100 DB mixed from several DSDSource Tracks
+class DSDTarget(object):
     def __init__(self, sources):
         self.sources = sources
         self._audio = None
@@ -74,6 +77,7 @@ class DSDTarget():
         return '+'.join(parts)
 
 
+# DSD100 Track which has many targets and sources
 class DSDTrack(object):
     def __init__(self, name, subset=None, path=None):
         self.name = name
@@ -118,13 +122,15 @@ class DSDTrack(object):
         return "%s (%s)" % (self.name, self.path)
 
 
+# DSD100 DB Object which has many targets and sources
 class DSD100(object):
     def __init__(
         self,
         root_dir=None,
         subsets=['Dev', 'Test'],
         setup_file='setup.yaml',
-        estimates_dir=None
+        estimates_dir=None,
+        evaluation=True
     ):
 
         if root_dir is None:
@@ -154,6 +160,10 @@ class DSD100(object):
         self.sources_names = self.setup['sources'].keys()
         self.targets_names = self.setup['targets'].keys()
 
+        if evaluation:
+            self.evaluator = evaluate.BSSeval("mir_eval")
+
+    # generator
     def _iter_dsd_tracks(self):
         # parse all the mixtures
         if op.isdir(self.mixtures_dir):
@@ -211,10 +221,16 @@ class DSD100(object):
             os.makedirs(track_estimate_dir)
 
         # write out tracks to disk
-        for target, estimate in estimates.items():
-            target_path = op.join(track_estimate_dir, target + '.wav')
-            sf.write(target_path, estimate, track.rate)
+        for estimate in estimates:
+            target_path = op.join(track_estimate_dir, estimate[0] + '.wav')
+            sf.write(target_path, estimate[1], track.rate)
         pass
+
+    def _evaluate(self, user_estimates):
+        pass
+        # for target, estimate in user_results.items():
+        #
+        #     self.evaluator.evaluate(estimate.audio)
 
     def test(self, user_function):
         if not hasattr(user_function, '__call__'):
@@ -227,18 +243,24 @@ class DSD100(object):
 
         user_results = user_function(test_track)
 
-        if isinstance(user_results, dict):
-            for target, estimate in user_results.items():
-                if target not in self.targets_names:
-                    raise ValueError("Target '%s' not supported!" % target)
+        if isinstance(user_results, list):
+            for target in user_results:
+                if target[0] not in self.targets_names:
+                    raise ValueError("Target '%s' not supported!" % target[0])
 
-                if estimate.shape != signal.shape:
+                d = target[1].dtype
+                if not np.issubdtype(d, float):
+                    raise ValueError(
+                        "Estimate is not of type numpy.float_"
+                    )
+
+                if target[1].shape != signal.shape:
                     raise ValueError(
                         "Shape of estimate does not match input shape"
                     )
 
         else:
-            raise ValueError("output needs to wrapped in a dict")
+            raise ValueError("output needs to be a list of tuples.")
 
         print "Test passed"
         return True
@@ -274,10 +296,10 @@ if __name__ == '__main__':
     )
 
     def my_function(dsd_track):
-        estimates = {
-            'bass': dsd_track.audio,
-            'accompaniment': dsd_track.audio
-        }
+        estimates = [
+            ('bass', dsd_track.audio),
+            ('accompaniment', dsd_track.audio)
+        ]
         return estimates
 
     if dsd.test(my_function):
