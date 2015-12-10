@@ -61,10 +61,6 @@ class DSDTarget(object):
         self._rate = None
 
     @property
-    def test(self):
-        return "geht"
-
-    @property
     def audio(self):
         if self._audio is None:
             mix_list = []*len(self.sources)
@@ -82,8 +78,8 @@ class DSDTarget(object):
 
     def __repr__(self):
         parts = []
-        for key, val in self.sources.iteritems():
-            parts.append(str(key))
+        for source in self.sources:
+            parts.append(source.name)
         return '+'.join(parts)
 
 
@@ -159,11 +155,17 @@ class DSD100(object):
         with open(op.join(self.root_dir, setup_file), 'r') as f:
             self.setup = yaml.load(f)
 
-        self.mixtures_dir = op.join(self.root_dir, "Mixtures")
-        self.sources_dir = op.join(self.root_dir, "Sources")
+        self.mixtures_dir = op.join(
+            self.root_dir, "DSD100/Mixtures"
+        )
+        self.sources_dir = op.join(
+            self.root_dir, "DSD100/Sources"
+        )
 
         if user_estimates_dir is None:
-            self.user_estimates_dir = op.join(self.root_dir, "Estimates")
+            self.user_estimates_dir = op.join(
+                self.root_dir, "DSD100/Estimates"
+            )
         else:
             self.user_estimates_dir = user_estimates_dir
 
@@ -242,14 +244,25 @@ class DSD100(object):
     def _evaluate_estimates(self, user_estimates, track):
         audio_estimates = []
         audio_reference = []
-        for target, estimate in user_estimates.iteritems():
-            audio_estimates.append(estimate)
-            audio_reference.append(track.targets[target].audio)
+        # make sure to always build the list in the same order
+        # therefore track.targets is an OrderedDict
+        labels_references = []  # save the list of targets to be evaluated
+        for target in track.targets.keys():
+            try:
+                # try to fetch the audio from the user_results of a given key
+                estimate = user_estimates[target]
+                # append this target name to the list of labels
+                labels_references.append(target)
+                # add the audio to the list of estimates
+                audio_estimates.append(estimate)
+                # add the audio to the list of references
+                audio_reference.append(track.targets[target].audio)
+            except KeyError:
+                pass
 
         audio_estimates = np.array(audio_estimates)
         audio_reference = np.array(audio_reference)
-        print audio_estimates.shape
-        print audio_reference.shape
+        self.evaluator.evaluate(audio_estimates, audio_reference, track.rate)
 
     def test(self, user_function):
         if not hasattr(user_function, '__call__'):
@@ -318,7 +331,7 @@ if __name__ == '__main__':
 
     def my_function(dsd_track):
         estimates = {
-            'bass': dsd_track.audio,
+            'vocals': dsd_track.audio,
             'accompaniment': dsd_track.audio
         }
         return estimates
