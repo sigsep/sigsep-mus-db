@@ -8,9 +8,9 @@ class matlabwrapper(matlab_wrapper.MatlabSession):
         self.put('es', estimates)
         self.put('s', originals)
         self.put('fs', rate)
-        if method == "BSSeval_matlab":
+        if method == "bsseval":
             self.eval(
-                '[SDR,ISR,SIR,SAR,perm] = bss_eval(es, s, 30*fs,15*fs)'
+                '[SDR,ISR,SIR,SAR] = bss_eval(es, s, 30*fs,15*fs)'
             )
             SDR = self.get('SDR')
             ISR = self.get('ISR')
@@ -20,18 +20,20 @@ class matlabwrapper(matlab_wrapper.MatlabSession):
             return SDR, ISR, SIR, SAR
 
     def start(self):
-        matlab_path = os.path.join(os.path.abspath(__file__), 'external')
+        matlab_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), 'external'
+        )
         self.eval('addpath(\'%s/\')' % matlab_path)
 
 
 class BSSeval(object):
     def __init__(self, method):
-        methods = ("BSSeval_matlab", "mir_eval")
+        methods = ("bsseval", "mir_eval")
         if method not in methods:
             raise ValueError("method must be in %s" % ','.join(methods))
 
         self.method = method
-        if method == "BSSeval_matlab":
+        if method == "bsseval":
             self.matlab = matlabwrapper(options="-nosplash -nodesktop -nojvm")
             self.matlab.start()
         else:
@@ -70,9 +72,11 @@ class BSSeval(object):
             )
 
             ISR = 0.0
-        elif self.method == "BSSeval_matlab":
+        elif self.method == "bsseval":
+            shaped_estimates = np.transpose(estimates, (1, 2, 0))
+            shaped_originals = np.transpose(originals, (1, 2, 0))
             SDR, ISR, SIR, SAR = self.matlab.run_func(
-                estimates, originals, self.method, rate
+                shaped_estimates, shaped_originals, self.method, rate
             )
 
         if verbose:

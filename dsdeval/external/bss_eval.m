@@ -80,4 +80,3 @@ SDR = 10*log10(sum(s_true.^2)/sum((e_spat+e_interf+e_artif).^2));
 ISR = 10*log10(sum(s_true.^2)/sum(e_spat.^2));
 SIR = 10*log10(sum((s_true+e_spat).^2)/sum(e_interf.^2));
 SAR = 10*log10(sum((s_true+e_spat+e_interf).^2)/sum(e_artif.^2));
-end

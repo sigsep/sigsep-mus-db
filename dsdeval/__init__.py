@@ -173,7 +173,7 @@ class DSD100(object):
         self.targets_names = self.setup['targets'].keys()
 
         if evaluation:
-            self.evaluator = evaluate.BSSeval("mir_eval")
+            self.evaluator = evaluate.BSSeval("bsseval")
 
     # generator
     def _iter_dsd_tracks(self):
@@ -297,16 +297,22 @@ class DSD100(object):
         print "Test passed"
         return True
 
-    def run(self, user_function, save=True):
+    def run(self, user_function=None, save=True, evaluate=False):
 
         # widgets = [FormatLabel('Track:'), Bar(), ETA()]
         # progress = ProgressBar(widgets=widgets)
 
         for track in self._iter_dsd_tracks():
             print track.name
-            user_results = user_function(track)
+            if user_function is not None:
+                user_results = user_function(track)
+            else:
+                pass
+                # user_results = load_estimate_from_disk:
+
             if save:
                 self._save_estimates(user_results, track)
+            if evaluate:
                 self._evaluate_estimates(user_results, track)
 
 
@@ -337,4 +343,4 @@ if __name__ == '__main__':
         return estimates
 
     if dsd.test(my_function):
-        dsd.run(my_function)
+        dsd.run(my_function, evaluate=False)
