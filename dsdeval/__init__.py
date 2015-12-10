@@ -1,10 +1,12 @@
 import argparse
 import numpy as np
+import numpy.matlib
 from os import path as op
 import os
 import soundfile as sf
 import yaml
 import evaluate
+import collections
 # from progressbar import ProgressBar, FormatLabel, Bar, ETA
 
 
@@ -39,7 +41,7 @@ class DSDSource(object):
 
     def _check_and_read(self):
         if os.path.exists(self.path):
-            audio, rate = sf.read(self.path)
+            audio, rate = sf.read(self.path, always_2d=True)
             self._rate = rate
             self._audio = audio
         else:
@@ -68,8 +70,12 @@ class DSDTarget(object):
             mix_list = []*len(self.sources)
             for source in self.sources:
                 if source.audio is not None:
+                    # make sure the target is mixed to 2ch
+                    stereo_src = numpy.matlib.repmat(
+                        source.audio, 1, 3 - source.audio.shape[1]
+                    )
                     mix_list.append(
-                        np.array(source.gain) * source.audio
+                        source.gain * stereo_src
                     )
             self._audio = np.sum(np.array(mix_list), axis=0)
         return self._audio
@@ -114,7 +120,7 @@ class DSDTrack(object):
 
     def _check_and_read(self):
         if os.path.exists(self.path):
-            audio, rate = sf.read(self.path)
+            audio, rate = sf.read(self.path, always_2d=True)
             self._rate = rate
             self._audio = audio
         else:
@@ -202,12 +208,13 @@ class DSD100(object):
                         track.sources = sources
 
                         # add targets to track
-                        targets = {}
+                        targets = collections.OrderedDict()
                         for name, srcs in self.setup['targets'].iteritems():
+                            # add a list of target sources
                             target_sources = []
                             for source, gain in srcs.iteritems():
                                 # add gain to source tracks
-                                track.sources[source].gain = gain
+                                track.sources[source].gain = float(gain)
                                 # add tracks to components
                                 target_sources.append(sources[source])
                             # add sources to target
@@ -227,17 +234,17 @@ class DSD100(object):
             os.makedirs(track_estimate_dir)
 
         # write out tracks to disk
-        for estimate in user_estimates:
-            target_path = op.join(track_estimate_dir, estimate[0] + '.wav')
-            sf.write(target_path, estimate[1], track.rate)
+        for target, estimate in user_estimates.iteritems():
+            target_path = op.join(track_estimate_dir, target + '.wav')
+            sf.write(target_path, estimate, track.rate)
         pass
 
     def _evaluate_estimates(self, user_estimates, track):
         audio_estimates = []
         audio_reference = []
-        for user_estimate in user_estimates:
-            audio_estimates.append(user_estimate[1])
-            audio_reference.append(track.targets[user_estimate[0]].audio)
+        for target, estimate in user_estimates.iteritems():
+            audio_estimates.append(estimate)
+            audio_reference.append(track.targets[target].audio)
 
         audio_estimates = np.array(audio_estimates)
         audio_reference = np.array(audio_reference)
@@ -255,24 +262,24 @@ class DSD100(object):
 
         user_results = user_function(test_track)
 
-        if isinstance(user_results, list):
-            for target in user_results:
-                if target[0] not in self.targets_names:
-                    raise ValueError("Target '%s' not supported!" % target[0])
+        if isinstance(user_results, dict):
+            for target, audio in user_results.iteritems():
+                if target not in self.targets_names:
+                    raise ValueError("Target '%s' not supported!" % target)
 
-                d = target[1].dtype
+                d = audio.dtype
                 if not np.issubdtype(d, float):
                     raise ValueError(
                         "Estimate is not of type numpy.float_"
                     )
 
-                if target[1].shape != signal.shape:
+                if audio.shape != signal.shape:
                     raise ValueError(
                         "Shape of estimate does not match input shape"
                     )
 
         else:
-            raise ValueError("output needs to be a list of tuples.")
+            raise ValueError("output needs to be a dict")
 
         print "Test passed"
         return True
@@ -283,6 +290,7 @@ class DSD100(object):
         # progress = ProgressBar(widgets=widgets)
 
         for track in self._iter_dsd_tracks():
+            print track.name
             user_results = user_function(track)
             if save:
                 self._save_estimates(user_results, track)
@@ -309,10 +317,10 @@ if __name__ == '__main__':
     )
 
     def my_function(dsd_track):
-        estimates = [
-            ('bass', dsd_track.audio),
-            ('accompaniment', dsd_track.audio)
-        ]
+        estimates = {
+            'bass': dsd_track.audio,
+            'accompaniment': dsd_track.audio
+        }
         return estimates
 
     if dsd.test(my_function):
