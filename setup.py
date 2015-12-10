@@ -12,7 +12,7 @@ if __name__ == "__main__":
         description='Evaluate source separation methods using the Demixing Secrets Datasets',
 
         # Your contact information
-        author='Fabian-Robert Stöter',
+        author='Fabian-Robert Stoeter',
         author_email='fabian-robert.stoeter@audiolabs-erlangen.de',
 
         # License

@@ -1,4 +1,5 @@
 import matlab_wrapper
+import os
 
 
 class matlabwrapper(matlab_wrapper.MatlabSession):
@@ -18,7 +19,8 @@ class matlabwrapper(matlab_wrapper.MatlabSession):
             return SDR, ISR, SIR, SAR
 
     def start(self):
-        self.eval('addpath(\'external/\')')
+        matlab_path = os.path.join(os.path.abspath(__file__), 'external')
+        self.eval('addpath(\'%s/\')' % matlab_path)
 
 
 class BSSeval(object):
