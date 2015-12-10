@@ -69,8 +69,7 @@ class DSDTarget(object):
             for source in self.sources:
                 if source.audio is not None:
                     mix_list.append(
-                        np.array(source.gain) /
-                        len(self.sources) * source.audio
+                        np.array(source.gain) * source.audio
                     )
             self._audio = np.sum(np.array(mix_list), axis=0)
         return self._audio
