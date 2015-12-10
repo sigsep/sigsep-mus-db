@@ -7,6 +7,7 @@ import soundfile as sf
 import yaml
 import evaluate
 import collections
+import glob
 # from progressbar import ProgressBar, FormatLabel, Bar, ETA
 
 
@@ -156,15 +157,15 @@ class DSD100(object):
             self.setup = yaml.load(f)
 
         self.mixtures_dir = op.join(
-            self.root_dir, "DSD100/Mixtures"
+            self.root_dir, "Mixtures"
         )
         self.sources_dir = op.join(
-            self.root_dir, "DSD100/Sources"
+            self.root_dir, "Sources"
         )
 
         if user_estimates_dir is None:
             self.user_estimates_dir = op.join(
-                self.root_dir, "DSD100/Estimates"
+                self.root_dir, "Estimates"
             )
         else:
             self.user_estimates_dir = user_estimates_dir
@@ -298,6 +299,8 @@ class DSD100(object):
         return True
 
     def run(self, user_function=None, save=True, evaluate=False):
+        if user_function is None and save:
+            raise RuntimeError("Provide a function use the save feature!")
 
         # widgets = [FormatLabel('Track:'), Bar(), ETA()]
         # progress = ProgressBar(widgets=widgets)
@@ -307,8 +310,17 @@ class DSD100(object):
             if user_function is not None:
                 user_results = user_function(track)
             else:
-                pass
-                # user_results = load_estimate_from_disk:
+                # load estimates from disk
+                track_estimate_dir = op.join(
+                    self.user_estimates_dir,
+                    track.subset,
+                    track.name
+                )
+                user_results = {}
+                for target_path in glob.glob(track_estimate_dir + '/*.wav'):
+                    target_name = op.splitext(os.path.basename(target_path))[0]
+                    target_audio, rate = sf.read(target_path, always_2d=True)
+                    user_results[target_name] = target_audio
 
             if save:
                 self._save_estimates(user_results, track)
@@ -343,4 +355,4 @@ if __name__ == '__main__':
         return estimates
 
     if dsd.test(my_function):
-        dsd.run(my_function, evaluate=False)
+        dsd.run(save=False, evaluate=True)
