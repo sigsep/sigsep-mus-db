@@ -263,7 +263,8 @@ class DSD100(object):
 
         audio_estimates = np.array(audio_estimates)
         audio_reference = np.array(audio_reference)
-        self.evaluator.evaluate(audio_estimates, audio_reference, track.rate)
+        print "test"
+        # self.evaluator.evaluate(audio_estimates, audio_reference, track.rate)
 
     def test(self, user_function):
         if not hasattr(user_function, '__call__'):
@@ -318,9 +319,17 @@ class DSD100(object):
                 )
                 user_results = {}
                 for target_path in glob.glob(track_estimate_dir + '/*.wav'):
-                    target_name = op.splitext(os.path.basename(target_path))[0]
-                    target_audio, rate = sf.read(target_path, always_2d=True)
-                    user_results[target_name] = target_audio
+                    target_name = op.splitext(
+                        os.path.basename(target_path)
+                    )[0]
+                    try:
+                        target_audio, rate = sf.read(
+                            target_path,
+                            always_2d=True
+                        )
+                        user_results[target_name] = target_audio
+                    except RuntimeError:
+                        pass
 
             if save:
                 self._save_estimates(user_results, track)
@@ -355,4 +364,4 @@ if __name__ == '__main__':
         return estimates
 
     if dsd.test(my_function):
-        dsd.run(save=False, evaluate=True)
+        dsd.run(my_function, save=True, evaluate=True)
