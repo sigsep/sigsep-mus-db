@@ -1,6 +1,5 @@
 import argparse
 import numpy as np
-import numpy.matlib
 from os import path as op
 import os
 import soundfile as sf
@@ -8,7 +7,7 @@ import yaml
 import evaluate
 import collections
 import glob
-# from progressbar import ProgressBar, FormatLabel, Bar, ETA
+from progressbar import ProgressBar, FormatLabel, Bar, ETA
 
 
 # Source Track from DSD100 DB
@@ -67,12 +66,8 @@ class DSDTarget(object):
             mix_list = []*len(self.sources)
             for source in self.sources:
                 if source.audio is not None:
-                    # make sure the target is mixed to 2ch
-                    stereo_src = numpy.matlib.repmat(
-                        source.audio, 1, 3 - source.audio.shape[1]
-                    )
                     mix_list.append(
-                        source.gain * stereo_src
+                        source.gain * source.audio
                     )
             self._audio = np.sum(np.array(mix_list), axis=0)
         return self._audio
@@ -299,15 +294,20 @@ class DSD100(object):
         print "Test passed"
         return True
 
+    def evaluate(self):
+        return self.run(user_function=None, save=None, evaluate=True)
+
     def run(self, user_function=None, save=True, evaluate=False):
         if user_function is None and save:
             raise RuntimeError("Provide a function use the save feature!")
 
-        # widgets = [FormatLabel('Track:'), Bar(), ETA()]
-        # progress = ProgressBar(widgets=widgets)
+        widgets = [FormatLabel('Track %(value)d/%(max_value)d'), Bar(), ETA()]
+        progress = ProgressBar(
+            widgets=widgets,
+            max_value=50*int(len(self.subsets))
+        )
 
-        for track in self._iter_dsd_tracks():
-            print track.name
+        for track in progress(self._iter_dsd_tracks()):
             if user_function is not None:
                 user_results = user_function(track)
             else:
@@ -351,11 +351,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    dsd = DSD100(
-        root_dir=args.dsd_folder,
-        user_estimates_dir='./my_estimates'
-    )
-
     def my_function(dsd_track):
         estimates = {
             'vocals': dsd_track.audio,
@@ -363,5 +358,28 @@ if __name__ == '__main__':
         }
         return estimates
 
-    if dsd.test(my_function):
-        dsd.run(my_function, save=True, evaluate=True)
+    dsd = DSD100(
+        root_dir=args.dsd_folder,
+        user_estimates_dir='./my_estimates'
+    )
+
+    # Test my_function
+    dsd.test(my_function)
+
+    # Run my_function and save the results to disk
+    dsd.run(my_function)
+    dsd.run(my_function, save=True, evaluate=False)
+
+    # Evaluate the results and save the estimates to disk
+    dsd.run(my_function, save=True, evaluate=True)
+
+    # Evaluate the results but do not save the estimates to disk
+    dsd.run(my_function, save=False, evaluate=True)
+
+    # Only pass tracks to my_function
+    dsd.run(my_function, save=False, evaluate=False)
+
+    # Just evaluate the user_estimates folder
+    dsd.run(save=False, evaluate=True)
+    # or simply
+    dsd.evaluate()
