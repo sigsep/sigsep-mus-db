@@ -11,7 +11,7 @@ from progressbar import ProgressBar, FormatLabel, Bar, ETA
 
 
 # Source Track from DSD100 DB
-class DSDSource(object):
+class Source(object):
     def __init__(self, name=None, path=None):
         self.name = name
         self.path = path
@@ -54,7 +54,7 @@ class DSDSource(object):
 
 
 # Target Track from DSD100 DB mixed from several DSDSource Tracks
-class DSDTarget(object):
+class Target(object):
     def __init__(self, sources):
         self.sources = sources  # List of DSDSources
         self._audio = None
@@ -80,7 +80,7 @@ class DSDTarget(object):
 
 
 # DSD100 Track which has many targets and sources
-class DSDTrack(object):
+class Track(object):
     def __init__(self, name, subset=None, path=None):
         self.name = name
         self.path = path
@@ -132,7 +132,7 @@ class DSD100(object):
         subsets=['Dev', 'Test'],
         setup_file='setup.yaml',
         user_estimates_dir=None,
-        evaluation=True
+        evaluation=False
     ):
 
         if root_dir is None:
@@ -181,7 +181,7 @@ class DSD100(object):
                     for track_name in track_folders:
 
                         # create new dsd Track
-                        track = DSDTrack(
+                        track = Track(
                             name=track_name,
                             path=op.join(
                                 op.join(subset_folder, track_name),
@@ -194,7 +194,7 @@ class DSD100(object):
                         sources = {}
                         for src, rel_path in self.setup['sources'].iteritems():
                             # create source object
-                            sources[src] = DSDSource(
+                            sources[src] = Source(
                                 name=src,
                                 path=op.join(
                                     self.sources_dir,
@@ -216,7 +216,7 @@ class DSD100(object):
                                 # add tracks to components
                                 target_sources.append(sources[source])
                             # add sources to target
-                            targets[name] = DSDTarget(sources=target_sources)
+                            targets[name] = Target(sources=target_sources)
                         # add targets to track
                         track.targets = targets
 
@@ -258,14 +258,13 @@ class DSD100(object):
 
         audio_estimates = np.array(audio_estimates)
         audio_reference = np.array(audio_reference)
-        print "test"
-        # self.evaluator.evaluate(audio_estimates, audio_reference, track.rate)
+        self.evaluator.evaluate(audio_estimates, audio_reference, track.rate)
 
     def test(self, user_function):
         if not hasattr(user_function, '__call__'):
             raise TypeError("Please provide a callable function")
 
-        test_track = DSDTrack(name="test")
+        test_track = Track(name="test")
         signal = np.random.random((66000, 2))
         test_track.audio = signal
         test_track.rate = 44100
@@ -295,7 +294,7 @@ class DSD100(object):
         return True
 
     def evaluate(self):
-        return self.run(user_function=None, save=None, evaluate=True)
+        return self.run(user_function=None, save=False, evaluate=True)
 
     def run(self, user_function=None, save=True, evaluate=False):
         if user_function is None and save:
