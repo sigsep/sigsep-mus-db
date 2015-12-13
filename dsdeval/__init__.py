@@ -173,6 +173,13 @@ class DSD100(object):
 
     # generator
     def _iter_dsd_tracks(self):
+        """Parses the DSD100 folder structure
+
+        Yields
+        ------
+        int
+            Description of the anonymous integer return value.
+        """
         # parse all the mixtures
         if op.isdir(self.mixtures_dir):
             for subset in self.subsets:
@@ -262,7 +269,7 @@ class DSD100(object):
 
     def test(self, user_function):
         if not hasattr(user_function, '__call__'):
-            raise TypeError("Please provide a callable function")
+            raise TypeError("Please provide a function.")
 
         test_track = Track(name="test")
         signal = np.random.random((66000, 2))
@@ -297,6 +304,26 @@ class DSD100(object):
         return self.run(user_function=None, save=False, evaluate=True)
 
     def run(self, user_function=None, save=True, evaluate=False):
+        """Run the DSD100 evaluation
+
+        Parameters
+        ----------
+        user_function : callable, optional
+            function which separates the mixture into estimates. If no function
+            is provided (default in `None`) estimates are loaded from disk when
+            `evaluate is True`.
+        save : bool, optional
+            save the estimates to disk. Default is True.
+        evaluate : bool, optional
+            evaluate the estimates by using. Default is False
+
+        Raises
+        ------
+        RuntimeError
+            If the provided function handle is not callable.
+
+        """
+
         if user_function is None and save:
             raise RuntimeError("Provide a function use the save feature!")
 
