@@ -82,7 +82,7 @@ dsd.run(my_test_function, subsets="test")
 
 ### Compute the bss_eval measures
 
-Up to date there does not exist a [bss_eval](http://bass-db.gforge.inria.fr/bss_eval/) implementation for python which produces the exact same results; therefore we still relies on _MATLAB_.
+Currently there does not exist a [bss_eval](http://bass-db.gforge.inria.fr/bss_eval/) implementation for python which produces the exact same results; therefore we still relies on _MATLAB_.
 We recommend to run ```DSD100_only_eval.m``` from the DSD100 Matlab scripts in Matlab after you have saved your estimates with __dsdeval__.
 
 ##### Optional

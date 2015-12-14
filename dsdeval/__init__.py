@@ -8,124 +8,54 @@ import evaluate
 import collections
 import glob
 from progressbar import ProgressBar, FormatLabel, Bar, ETA
+from audio_classes import Track, Source, Target
 
 
-# Source Track from DSD100 DB
-class Source(object):
-    def __init__(self, name=None, path=None):
-        self.name = name
-        self.path = path
-        self.gain = 1.0
-        self._audio = None
-        self._rate = None
-
-    @property
-    def audio(self):
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
-        return self._audio
-
-    @property
-    def rate(self):
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
-        return self._rate
-
-    @audio.setter
-    def audio(self, array):
-        self._audio = array
-
-    @rate.setter
-    def rate(self, rate):
-        self._rate = rate
-
-    def _check_and_read(self):
-        if os.path.exists(self.path):
-            audio, rate = sf.read(self.path, always_2d=True)
-            self._rate = rate
-            self._audio = audio
-        else:
-            print "Oops! %s cannot be loaded" % self.path
-            self._rate = None
-            self._audio = None
-
-    def __repr__(self):
-        return self.path
-
-
-# Target Track from DSD100 DB mixed from several DSDSource Tracks
-class Target(object):
-    def __init__(self, sources):
-        self.sources = sources  # List of DSDSources
-        self._audio = None
-        self._rate = None
-
-    @property
-    def audio(self):
-        if self._audio is None:
-            mix_list = []*len(self.sources)
-            for source in self.sources:
-                if source.audio is not None:
-                    mix_list.append(
-                        source.gain * source.audio
-                    )
-            self._audio = np.sum(np.array(mix_list), axis=0)
-        return self._audio
-
-    def __repr__(self):
-        parts = []
-        for source in self.sources:
-            parts.append(source.name)
-        return '+'.join(parts)
-
-
-# DSD100 Track which has many targets and sources
-class Track(object):
-    def __init__(self, name, subset=None, path=None):
-        self.name = name
-        self.path = path
-        self.subset = subset
-        self.targets = None
-        self.sources = None
-        self._audio = None
-        self._rate = None
-
-    @property
-    def audio(self):
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
-        return self._audio
-
-    @property
-    def rate(self):
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
-        return self._rate
-
-    @audio.setter
-    def audio(self, array):
-        self._audio = array
-
-    @rate.setter
-    def rate(self, rate):
-        self._rate = rate
-
-    def _check_and_read(self):
-        if os.path.exists(self.path):
-            audio, rate = sf.read(self.path, always_2d=True)
-            self._rate = rate
-            self._audio = audio
-        else:
-            print "Oops!  File cannot be loaded"
-            self._rate = None
-            self._audio = None
-
-    def __repr__(self):
-        return "%s (%s)" % (self.name, self.path)
-
-
-# DSD100 DB Object which has many targets and sources
 class DSD100(object):
+    """
+    The DSD100 Evaluation Object
+
+    Attributes
+    ----------
+    setup_file : str
+        _DSD100_ Setup file in yaml format. Default is `setup.yaml`
+    root_dir : str
+        DSD100 Root path. If set to `None` it will be read
+        from the `DSD100_PATH` environment variable
+    subsets : list[str]
+        select a _DSD100_ subset `Dev` or `Test`
+    user_estimates_dir : str
+        path to the user provided estimates. Directory will be
+        created if it does not exist
+    evaluation : bool
+        Setup evaluation module and starts matlab if bsseval is enabled
+    mixtures_dir : str
+        path to Mixture directory
+    sources_dir : str
+        path to Sources directory
+    sources_names : list[str]
+        list of names of sources loaded from `setup.yaml`
+    targets_names : list[str]
+        list of names of targets loaded from `setup.yaml`
+    evaluator : BSSeval
+        evaluator used for evaluation of estimates (defaults of `bss_eval`)
+    setup : Dict
+        loaded yaml configuration
+
+    Methods
+    -------
+    iter_dsd_tracks()
+        Iterates through the DSD100 folder structure and
+        returns ``Track`` objects
+    test(user_function)
+        Test the DSD100 processing
+    evaluate()
+        Run the evaluation
+    run(user_function=None, save=True, evaluate=False)
+        Run the DSD100 processing, saving the estimates
+        and optionally evaluate them
+
+    """
     def __init__(
         self,
         root_dir=None,
@@ -134,7 +64,27 @@ class DSD100(object):
         user_estimates_dir=None,
         evaluation=False
     ):
+        """Create DSS100 Object
 
+        Parameters
+        ----------
+        root_dir : str, optional
+            DSD100 Root path. If set to `None` it will be read
+            from the `DSD100_PATH` environment variable
+
+        subsets : str or list, optional
+            select a _DSD100_ subset `Dev` or `Test` (defaults to both)
+
+        setup_file : str, optional
+            _DSD100_ Setup file in yaml format. Default is `setup.yaml`
+
+        user_estimates_dir : str, optional
+            path to the user provided estimates. Directory will be
+            created if it does not exist
+
+        evaluation : bool, optional
+            Setup evaluation module and starts matlab if bsseval is enabled
+        """
         if root_dir is None:
             if "DSD100_PATH" in os.environ:
                 self.root_dir = os.environ["DSD100_PATH"]
@@ -172,13 +122,13 @@ class DSD100(object):
             self.evaluator = evaluate.BSSeval("bsseval")
 
     # generator
-    def _iter_dsd_tracks(self):
-        """Parses the DSD100 folder structure
+    def iter_dsd_tracks(self):
+        """Parses the DSD100 folder structure and return the track
 
-        Yields
+        Return
         ------
-        int
-            Description of the anonymous integer return value.
+        Track
+            yields a ``Track`` Object
         """
         # parse all the mixtures
         if op.isdir(self.mixtures_dir):
@@ -268,6 +218,27 @@ class DSD100(object):
         self.evaluator.evaluate(audio_estimates, audio_reference, track.rate)
 
     def test(self, user_function):
+        """Test the DSD100 processing
+
+        Parameters
+        ----------
+        user_function : callable, optional
+            function which separates the mixture into estimates. If no function
+            is provided (default in `None`) estimates are loaded from disk when
+            `evaluate is True`.
+
+        Raises
+        ------
+        TypeError
+            If the provided function handle is not callable.
+
+        ValueError
+            If the output is not compliant to the bsseval methods
+
+        See Also
+        --------
+        run : Process the DSD100
+        """
         if not hasattr(user_function, '__call__'):
             raise TypeError("Please provide a function.")
 
@@ -301,10 +272,14 @@ class DSD100(object):
         return True
 
     def evaluate(self):
+        """Run the DSD100 evaluation
+
+        shortcut to ``run(user_function=None, save=False, evaluate=True)``
+        """
         return self.run(user_function=None, save=False, evaluate=True)
 
     def run(self, user_function=None, save=True, evaluate=False):
-        """Run the DSD100 evaluation
+        """Run the DSD100 processing
 
         Parameters
         ----------
@@ -322,6 +297,9 @@ class DSD100(object):
         RuntimeError
             If the provided function handle is not callable.
 
+        See Also
+        --------
+        test : Test the user provided function
         """
 
         if user_function is None and save:
@@ -333,7 +311,7 @@ class DSD100(object):
             max_value=50*int(len(self.subsets))
         )
 
-        for track in progress(self._iter_dsd_tracks()):
+        for track in progress(self.iter_dsd_tracks()):
             if user_function is not None:
                 user_results = user_function(track)
             else:
