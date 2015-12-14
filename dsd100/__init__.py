@@ -37,27 +37,25 @@ class DB(object):
     Attributes
     ----------
     setup_file : str
-        _DSD100_ Setup file in yaml format. Default is `setup.yaml`
+        path to yaml file. default: `setup.yaml`
     root_dir : str
-        DSD100 Root path. If set to `None` it will be read
-        from the `DSD100_PATH` environment variable
+        DSD100 Root path. Default is `DSD100_PATH` env
     subsets : list[str]
         select a _DSD100_ subset `Dev` or `Test`
     user_estimates_dir : str
-        path to the user provided estimates. Directory will be
-        created if it does not exist
+        path to the user provided estimates.
     evaluation : bool
-        Setup evaluation module and starts matlab if bsseval is enabled
+        Setup evaluation module
     mixtures_dir : str
         path to Mixture directory
     sources_dir : str
         path to Sources directory
     sources_names : list[str]
-        list of names of sources loaded from `setup.yaml`
+        list of names of sources
     targets_names : list[str]
-        list of names of targets loaded from `setup.yaml`
+        list of names of targets
     evaluator : BSSeval
-        evaluator used for evaluation of estimates (defaults of `bss_eval`)
+        evaluator used for evaluation of estimates
     setup : Dict
         loaded yaml configuration
 
