@@ -11,9 +11,28 @@ from progressbar import ProgressBar, FormatLabel, Bar, ETA
 from audio_classes import Track, Source, Target
 
 
-class DSD100(object):
+class DB(object):
     """
-    The DSD100 Evaluation Object
+    The DSD100 DB Object
+
+    Parameters
+    ----------
+    root_dir : str, optional
+        DSD100 Root path. If set to `None` it will be read
+        from the `DSD100_PATH` environment variable
+
+    subsets : str or list, optional
+        select a _DSD100_ subset `Dev` or `Test` (defaults to both)
+
+    setup_file : str, optional
+        _DSD100_ Setup file in yaml format. Default is `setup.yaml`
+
+    user_estimates_dir : str, optional
+        path to the user provided estimates. Directory will be
+        created if it does not exist
+
+    evaluation : str, {None, 'bss_eval', 'mir_eval'}
+        Setup evaluation module and starts matlab if bsseval is enabled
 
     Attributes
     ----------
@@ -62,29 +81,8 @@ class DSD100(object):
         subsets=['Dev', 'Test'],
         setup_file='setup.yaml',
         user_estimates_dir=None,
-        evaluation=False
+        evaluation=None
     ):
-        """Create DSS100 Object
-
-        Parameters
-        ----------
-        root_dir : str, optional
-            DSD100 Root path. If set to `None` it will be read
-            from the `DSD100_PATH` environment variable
-
-        subsets : str or list, optional
-            select a _DSD100_ subset `Dev` or `Test` (defaults to both)
-
-        setup_file : str, optional
-            _DSD100_ Setup file in yaml format. Default is `setup.yaml`
-
-        user_estimates_dir : str, optional
-            path to the user provided estimates. Directory will be
-            created if it does not exist
-
-        evaluation : bool, optional
-            Setup evaluation module and starts matlab if bsseval is enabled
-        """
         if root_dir is None:
             if "DSD100_PATH" in os.environ:
                 self.root_dir = os.environ["DSD100_PATH"]
@@ -118,15 +116,15 @@ class DSD100(object):
         self.sources_names = self.setup['sources'].keys()
         self.targets_names = self.setup['targets'].keys()
 
-        if evaluation:
-            self.evaluator = evaluate.BSSeval("bsseval")
+        if evaluation is not None:
+            self.evaluator = evaluate.BSSeval(evaluation)
 
     # generator
     def iter_dsd_tracks(self):
-        """Parses the DSD100 folder structure and return the track
+        """Parses the DSD100 folder structure and yields `Track` objects
 
-        Return
-        ------
+        Returns
+        -------
         Track
             yields a ``Track`` Object
         """
@@ -362,7 +360,7 @@ if __name__ == '__main__':
         }
         return estimates
 
-    dsd = DSD100(
+    dsd = DB(
         root_dir=args.dsd_folder,
     )
 

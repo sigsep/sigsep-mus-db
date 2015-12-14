@@ -8,7 +8,7 @@ class matlabwrapper(matlab_wrapper.MatlabSession):
         self.put('es', estimates)
         self.put('s', originals)
         self.put('fs', rate)
-        if method == "bsseval":
+        if method == "bss_eval":
             self.eval(
                 '[SDR,ISR,SIR,SAR] = bss_eval(es, s, 30*fs,15*fs)'
             )
@@ -28,12 +28,12 @@ class matlabwrapper(matlab_wrapper.MatlabSession):
 
 class BSSeval(object):
     def __init__(self, method):
-        methods = ("bsseval", "mir_eval")
+        methods = ("bss_eval", "mir_eval")
         if method not in methods:
             raise ValueError("method must be in %s" % ','.join(methods))
 
         self.method = method
-        if method == "bsseval":
+        if method == "bss_eval":
             self.matlab = matlabwrapper(options="-nosplash -nodesktop -nojvm")
             self.matlab.start()
         else:
@@ -72,7 +72,7 @@ class BSSeval(object):
             )
 
             ISR = 0.0
-        elif self.method == "bsseval":
+        elif self.method == "bss_eval":
             shaped_estimates = np.transpose(estimates, (1, 2, 0))
             shaped_originals = np.transpose(originals, (1, 2, 0))
             SDR, ISR, SIR, SAR = self.matlab.run_func(

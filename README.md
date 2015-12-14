@@ -118,7 +118,7 @@ def my_function(track):
 
 
 # initiate the dsd100
-dsd = dsd100.SDS100(dsd_root="./Volumes/Data/DSD100")
+dsd = dsd100.DB(dsd_root="./Volumes/Data/DSD100")
 
 # this takes 3 seconds and verifies if my_function works correctly
 if dsd.test(my_function):

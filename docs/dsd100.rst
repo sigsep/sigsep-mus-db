@@ -6,3 +6,5 @@ DSD100
     :undoc-members:
     :show-inheritance:
     :inherited-members:
+.. autoclass: dsd100.DB
+    :members:

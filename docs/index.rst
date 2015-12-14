@@ -15,13 +15,13 @@ Installation
 Usage
 -----
 
-This package allows to parse and process the *DSD100* in python and
+This package allows to parse and process *DSD100* in python and
 therefore make it easy to participate in the SISEC MUS tasks.
 
 Providing a compatible function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Participants need to provide a function which separates the mixtures
+Participants can provide a function which separates the mixtures
 into sources.
 
 -  This function will take an ``Track`` object which can be used in
@@ -76,7 +76,7 @@ also imported your evaluation function
 
     import dsd100
 
-    dsd = DSD100(
+    dsd = dsd100.DB(
         root_dir=args.dsd_folder,
         user_estimates_dir='my_estimates'
     )
@@ -150,6 +150,9 @@ Full code Example
         # get the sample rate
         track.rate
 
+        # add your code here
+        # ...
+
         # return any number of targets
         estimates = {
             'vocals': vocals_array,
@@ -175,7 +178,7 @@ Full code Example
 Evaluation in python
 --------------------
 
-**Warning, this is not supported yet**
+.. warning:: This functionality is not fully supported yet
 
 If you really don't want to start MATLAB you can run the bss\_eval from
 python with the help of
@@ -209,11 +212,3 @@ Contents:
 
    dsd100
    audio_classes
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
