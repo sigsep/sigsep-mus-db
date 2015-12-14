@@ -39,6 +39,11 @@ if __name__ == "__main__":
                 'pytest-cov',
                 'pytest-pep8',
             ],
+            'docs': [
+                'sphinx',
+                'sphinx_rtd_theme',
+                'numpydoc',
+            ]
         },
 
         tests_require=[
