@@ -364,7 +364,6 @@ if __name__ == '__main__':
 
     dsd = DSD100(
         root_dir=args.dsd_folder,
-        user_estimates_dir='./my_estimates'
     )
 
     # Test my_function
@@ -372,18 +371,3 @@ if __name__ == '__main__':
 
     # Run my_function and save the results to disk
     dsd.run(my_function)
-    dsd.run(my_function, save=True, evaluate=False)
-
-    # Evaluate the results and save the estimates to disk
-    dsd.run(my_function, save=True, evaluate=True)
-
-    # Evaluate the results but do not save the estimates to disk
-    dsd.run(my_function, save=False, evaluate=True)
-
-    # Only pass tracks to my_function
-    dsd.run(my_function, save=False, evaluate=False)
-
-    # Just evaluate the user_estimates folder
-    dsd.run(save=False, evaluate=True)
-    # or simply
-    dsd.evaluate()

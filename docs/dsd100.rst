@@ -1,7 +1,7 @@
 DSD100
 ----------------
 
-.. automodule:: dsdeval
+.. automodule:: dsd100
     :members:
     :undoc-members:
     :show-inheritance:

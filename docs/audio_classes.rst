@@ -1,7 +1,7 @@
 Audio Classes
 ----------------
 
-.. automodule:: dsdeval.audio_classes
+.. automodule:: dsd100.audio_classes
     :members:
     :undoc-members:
     :show-inheritance:

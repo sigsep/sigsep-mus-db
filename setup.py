@@ -3,7 +3,7 @@ import setuptools
 if __name__ == "__main__":
     setuptools.setup(
         # Name of the project
-        name='dsdeval',
+        name='dsd100',
 
         # Version
         version="0.1.0",
