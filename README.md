@@ -1,4 +1,4 @@
-# dsd100
+# DSD100
 
 A python package to parse and process the __demixing secrets dataset (DSD100)__ as part of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/)
 
