@@ -156,3 +156,24 @@ dsd.evaluate()
 # Only pass the tracks to my_function. Ignore the results. Useful for statistics
 dsd.run(my_function, save=False, evaluate=False)
 ```
+
+### References
+
+We would like to thank [Emmanuel Vincent](http://www.loria.fr/~evincent/) for giving us the permission to
+use the [BSS Eval toolbox 3.0](http://bass-db.gforge.inria.fr/bss_eval/)
+
+If you use this script, please reference the following paper
+
+```tex
+@inproceedings{SiSEC2015,
+  TITLE = {{The 2015 Signal Separation Evaluation Campaign}},
+  AUTHOR = {N. Ono and Z. Rafii and D. Kitamura and N. Ito and A. Liutkus},
+  BOOKTITLE = {{International Conference on Latent Variable Analysis and Signal Separation  (LVA/ICA)}},
+  ADDRESS = {Liberec, France},
+  SERIES = {Latent Variable Analysis and Signal Separation},
+  VOLUME = {9237},
+  PAGES = {387-395},
+  YEAR = {2015},
+  MONTH = Aug,
+}
+```
