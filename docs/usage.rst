@@ -122,7 +122,7 @@ have processed and save your estimates in python.
 Evaluation in python
 ^^^^^^^^^^^^^^^^^^^^
 
-**Warning, this is not supported yet**
+.. warning:: Warning, this is not supported yet
 
 If you really don't want to start MATLAB you can run the bss\_eval from
 python with the help of
