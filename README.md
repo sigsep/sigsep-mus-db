@@ -55,8 +55,8 @@ Simply import the dsd100 package in your main python function:
 ```python
 import dsd100
 
-dsd = DSD100(
-    root_dir=args.dsd_folder,
+dsd = dsd100.DB(
+    root_dir='path/to/DSD100/',
     user_estimates_dir='my_estimates'
 )
 ```
