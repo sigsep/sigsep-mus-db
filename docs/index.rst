@@ -1,4 +1,4 @@
-dsd100
+DSD100
 ======
 
 A python package to parse and process the **demixing secrets dataset
@@ -15,28 +15,30 @@ Installation
 Usage
 -----
 
-This package allows to parse and process *DSD100* in python and
-therefore make it easy to participate in the SISEC MUS tasks.
+This package should nicely integrate with your existing code so that it
+can parse and process the *DSD100* from python, thus makes it easy to
+participate in the SISEC MUS tasks.
 
 Providing a compatible function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Participants can provide a function which separates the mixtures
-into sources.
+The core of this package consists of calling a user-provided function
+which separates the mixtures from the DSD100 into sources.
 
--  This function will take an ``Track`` object which can be used in
-   inside your algorithm.
+-  The function will take an DSD100 ``Track`` object which can be used
+   from inside your algorithm.
 -  Participants can access
--  ``Track.audio`` representing the stereo mixture as an ``np.ndarray``
-   with ``shape=(nun_sampl, 2)``
+-  ``Track.audio``, representing the stereo mixture as an ``np.ndarray``
+   of ``shape=(nun_sampl, 2)``
 -  ``Track.rate``, the sample rate
--  ``Track.path`` for the absolute path of the mixture which might be
-   handy process with external software
--  The function needs to return a python ``Dict`` which includes the
-   target name and the separated target audio arrays with same shape as
-   the mixture.
+-  ``Track.path``, the absolute path of the mixture which might be handy
+   to process with external applications, so that participants don't
+   need to write out temporary wav files.
+-  The function needs to return a python ``Dict`` which consists of
+   target name (``key``) and the estimated target as audio arrays with
+   same shape as the mixture (``value``).
 -  It is the users choice which targets/sources they want to provide for
-   the given mixture. Supported targets are
+   a given mixture. Supported targets are
    ``['vocals', 'accompaniment', 'drums', 'bass', 'other']``.
 -  Please make sure that the returned estimates do have the same sample
    rate as the mixture track.
@@ -48,7 +50,7 @@ Here is an example for such a function separating the mixture into a
 
     def my_function(track):
 
-        # get the audio mixture as numpy array
+        # get the audio mixture as numpy array shape=(nun_sampl, 2)
         track.audio
 
         # get the mixture path for external processing
@@ -69,23 +71,21 @@ Running the SiSEC Evaluation
 Setting up dsd100
 ^^^^^^^^^^^^^^^^^
 
-Simply import the dsd100 package in your main python function which has
-also imported your evaluation function
+Simply import the dsd100 package in your main python function:
 
 .. code:: python
 
     import dsd100
 
-    dsd = dsd100.DB(
+    dsd = DSD100(
         root_dir=args.dsd_folder,
         user_estimates_dir='my_estimates'
     )
 
 The ``root_dir`` is the path to the DSD100 dataset folder. It can also
-be set system-wide instead. There just use
-``export DSD100_PATH=/path/to/DSD100/``. inside your terminal. If
-``user_estimates_dir`` is not set, the default will be used which is
-inside the *DSD100* ``root_dir``.
+be set system-wide. Just ``export DSD100_PATH=/path/to/DSD100/`` inside
+your terminal. If ``user_estimates_dir`` is not set, the default will be
+used which is inside the *DSD100* ``root_dir``.
 
 Test if your separation function generates valid output
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -98,13 +98,14 @@ participants can test their separation function by running:
     dsd.test(my_function)
 
 This test makes sure the user provided output is compatible to the
-dsd100 evaluation framework.
+dsd100 evaluation framework. The function returns ``True`` if the test
+succeeds.
 
 Processing the full DSD100
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The full evaluation processes all 100 DSD tracks and saves the results
-to the ``user_estimates_dir``.
+To process all 100 DSD tracks and saves the results to the
+``user_estimates_dir``:
 
 .. code:: python
 
@@ -114,7 +115,7 @@ Processing training and testing subsets separately
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Algorithms which make use of machine learning techniques can use the
-training subset and then apply the algorithm on the test data.
+training subset and then apply the algorithm on the test data:
 
 .. code:: python
 
@@ -124,12 +125,12 @@ training subset and then apply the algorithm on the test data.
 Compute the bss\_eval measures
 ------------------------------
 
-The official SISEC evaluation still relies on *MATLAB* because currently
-there does not exist a
+The official SISEC evaluation relies on *MATLAB* because currently there
+does not exist a
 `bss\_eval <http://bass-db.gforge.inria.fr/bss_eval/>`__ implementation
 for python which produces the exact same results. We therefore recommend
-to run ``DSD100_only_eval.m`` from the DSD100 Matlab scripts in Matlab
-after you have saved your estimates with *dsd100*.
+to run ``DSD100_only_eval.m`` from the DSD100 Matlab scripts after you
+have processed and save your estimates in python.
 
 Full code Example
 -----------------
@@ -141,7 +142,7 @@ Full code Example
     def my_function(track):
         '''My fancy BSS algorithm'''
 
-        # get the audio mixture as numpy array
+        # get the audio mixture as numpy array shape=(nun_sampl, 2)
         track.audio
 
         # get the mixture path for external processing
@@ -149,9 +150,6 @@ Full code Example
 
         # get the sample rate
         track.rate
-
-        # add your code here
-        # ...
 
         # return any number of targets
         estimates = {
@@ -161,24 +159,24 @@ Full code Example
         return estimates
 
 
-    # initiate the dsd100
-    dsd = dsd100.SDS100(dsd_root="./Volumes/Data/DSD100")
+    # initiate dsd100
+    dsd = dsd100.DB(root_dir="./Volumes/Data/DSD100")
 
-    # this takes 3 seconds and verifies if my_function works correctly
+    # verify if my_function works correctly
     if dsd.test(my_function):
         print "my_function is valid"
 
     # this takes 3 days to finish and is the actual evaluation
     dsd.run(my_function)
 
-    # for the machine learning guys you want to split the subsets
+    # for the machine learning task you want to split the subsets
     dsd.run(my_training_function, subsets="train")  # this takes 1.5 days to finish
     dsd.run(my_test_function, subsets="test")  # this takes 1.5 days to finish
 
 Evaluation in python
 --------------------
 
-.. warning:: This functionality is not fully supported yet
+**Warning, this is not supported yet**
 
 If you really don't want to start MATLAB you can run the bss\_eval from
 python with the help of
