@@ -1,5 +1,5 @@
-DSD100
-----------------
+Modules
+-------
 
 .. automodule:: dsd100
     :members:
@@ -8,3 +8,9 @@ DSD100
     :inherited-members:
 .. autoclass: dsd100.DB
     :members:
+
+.. toctree::
+   :maxdepth: 3
+
+   dsd100
+   dsd100.audio_classes
