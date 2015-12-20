@@ -61,11 +61,11 @@ The ```root_dir``` is the path to the DSD100 dataset folder. It can also be set 
 
 ##### Test if your separation function generates valid output
 
-Before you run the main evaluation which might take very long, participants can test their separation function by running:
+Before you run the full DSD100, which might take very long, participants can test their separation function by running:
 ```python
 dsd.test(my_function)
 ```
-This test makes sure the user provided output is compatible to the dsd100 evaluation framework. The function returns `True` if the test succeeds.
+This test makes sure the user provided output is compatible to the DSD100 framework. The function returns `True` if the test succeeds.
 
 ##### Processing the full DSD100
 
