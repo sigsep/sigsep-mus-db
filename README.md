@@ -87,7 +87,7 @@ dsd.run(my_test_function, subsets="test")
 ### Compute the bss_eval measures
 
 The official SISEC evaluation relies on _MATLAB_ because currently there does not exist a [bss_eval](http://bass-db.gforge.inria.fr/bss_eval/) implementation for python which produces the exact same results.
-Therefore please run ```DSD100_only_eval.m``` from the DSD100 Matlab scripts after you have processed and saved your estimates with _dsd100py_.
+Therefore please run ```DSD100_only_eval.m``` from the [DSD100 Matlab scripts](https://github.com/faroit/dsd100mat) after you have processed and saved your estimates with _dsd100py_.
 
 ### Full code Example
 
