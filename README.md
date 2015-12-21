@@ -8,6 +8,11 @@ A python package to parse and process the __demixing secrets dataset (DSD100)__ 
 pip install dsd100
 ```
 
+### Requirements
+
+In order to make the evaluation results comparable across operating systems and Python and
+Matlab, the actual evaluation needs be run in Matlab using the [DSD100 Matlab scripts](https://github.com/faroit/dsd100mat).
+
 ### Usage
 
 This package should nicely integrate with your existing code so that it can parse and process the _DSD100_ from python, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/professionally-produced-music-recordings).

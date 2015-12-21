@@ -5,6 +5,7 @@ A python package to parse and process the **demixing secrets dataset
 (DSD100)** as part of the `Signal Separation Evaluation Campaign
 (SISEC) <https://sisec.inria.fr/>`__
 
+
 Contents:
 
 .. toctree::
@@ -14,3 +15,27 @@ Contents:
    usage
    example
    dsd100
+
+References
+~~~~~~~~~~
+
+If you use this package, please reference the following paper
+
+.. code:: tex
+
+    @inproceedings{SiSEC2015,
+      TITLE = {{The 2015 Signal Separation Evaluation Campaign}},
+      AUTHOR = {N. Ono and Z. Rafii and D. Kitamura and N. Ito and A. Liutkus},
+      BOOKTITLE = {{International Conference on Latent Variable Analysis and Signal Separation  (LVA/ICA)}},
+      ADDRESS = {Liberec, France},
+      SERIES = {Latent Variable Analysis and Signal Separation},
+      VOLUME = {9237},
+      PAGES = {387-395},
+      YEAR = {2015},
+      MONTH = Aug,
+    }
+
+Furthermore would like to thank `Emmanuel
+Vincent <http://www.loria.fr/~evincent/>`__ for giving us the permission
+to use the `BSS Eval toolbox
+3.0 <http://bass-db.gforge.inria.fr/bss_eval/>`__

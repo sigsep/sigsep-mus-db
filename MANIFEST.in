@@ -1,1 +1,1 @@
-recursive-include dsdeval/external *.m
+recursive-include dsd100/external *.m

@@ -32,7 +32,7 @@ Example
     if dsd.test(my_function):
         print "my_function is valid"
 
-    # this takes 3 days to finish and is the actual evaluation
+    # this might take 3 days to finish
     dsd.run(my_function)
 
     # for the machine learning task you want to split the subsets

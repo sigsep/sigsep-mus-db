@@ -26,7 +26,7 @@ source_suffix = '.rst'
 
 master_doc = 'index'
 
-project = u'dsdeval'
+project = u'dsd100'
 copyright = u'2015, Fabian-Robert Stöter'
 author = u'Fabian-Robert Stöter'
 
@@ -43,23 +43,23 @@ todo_include_todos = False
 
 html_static_path = ['_static']
 
-htmlhelp_basename = 'dsdevaldoc'
+htmlhelp_basename = 'dsd100doc'
 
 latex_elements = {
 }
 
 latex_documents = [
-  (master_doc, 'dsdeval.tex', u'dsdeval Documentation',
+  (master_doc, 'dsd100.tex', u'dsd100 Documentation',
    u'Fabian-Robert Stöter', 'manual'),
 ]
 
 man_pages = [
-    (master_doc, 'dsdeval', u'dsdeval Documentation',
+    (master_doc, 'dsd100', u'dsd100 Documentation',
      [author], 1)
 ]
 
 texinfo_documents = [
-  (master_doc, 'dsdeval', u'dsdeval Documentation',
-   author, 'dsdeval', 'One line description of project.',
+  (master_doc, 'dsd100', u'dsd100 Documentation',
+   author, 'dsd100', 'One line description of project.',
    'Miscellaneous'),
 ]
