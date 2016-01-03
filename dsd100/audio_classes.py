@@ -114,11 +114,11 @@ class Track(object):
     subset : {'Test', 'Dev'}
         belongs to subset
 
-    targets : list[Target]
-        list of mixted Targets for this Track
+    targets : OrderedDict
+        OrderedDict of mixted Targets for this Track
 
-    sources : list[Source]
-        list of ``Source`` objects for this ``Track``
+    sources : Dict
+        Dict of ``Source`` objects for this ``Track``
 
     """
     def __init__(self, name, subset=None, path=None):
