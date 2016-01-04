@@ -370,7 +370,6 @@ if __name__ == '__main__':
 
     dsd = DB(
         root_dir=args.dsd_folder,
-        subsets='Dev'
     )
 
     # Test my_function
