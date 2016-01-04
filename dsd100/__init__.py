@@ -115,7 +115,7 @@ class DB(object):
         Parameters
         ==========
         subsets : list[str], optional
-            select a _DSD100_ subset `Dev` or `Test`. Defaults to `Dev` and `Test`
+            select a _DSD100_ subset `Dev` or `Test`. Defaults to both
 
         Returns
         -------
@@ -292,7 +292,7 @@ class DB(object):
         evaluate : bool, optional
             evaluate the estimates by using. Default is False
         subsets : list[str], optional
-            select a _DSD100_ subset `Dev` or `Test`. Defaults to `Dev` and `Test`
+            select a _DSD100_ subset `Dev` or `Test`. Defaults to both
 
         Raises
         ------
