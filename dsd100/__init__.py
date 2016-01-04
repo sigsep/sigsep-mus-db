@@ -9,6 +9,8 @@ import collections
 import glob
 from progressbar import ProgressBar, FormatLabel, Bar, ETA
 from audio_classes import Track, Source, Target
+import multiprocessing
+import signal
 
 
 class DB(object):
@@ -277,7 +279,8 @@ class DB(object):
         user_function=None,
         save=True,
         evaluate=False,
-        subsets=['Dev', 'Test']
+        subsets=['Dev', 'Test'],
+        parallel=True
     ):
         """Run the DSD100 processing
 
@@ -317,11 +320,12 @@ class DB(object):
             widgets=widgets
         )
 
-        for track in progress(self.load_dsd_tracks(subsets=subsets)):
-            if user_function is not None:
-                user_results = user_function(track)
-            else:
-                # load estimates from disk
+        def init_worker():
+            signal.signal(signal.SIGINT, signal.SIG_IGN)
+
+        if user_function is None:
+            # load estimates from disk
+            for track in progress(self.load_dsd_tracks(subsets=subsets)):
                 track_estimate_dir = op.join(
                     self.user_estimates_dir,
                     track.subset,
@@ -340,11 +344,25 @@ class DB(object):
                         user_results[target_name] = target_audio
                     except RuntimeError:
                         pass
+        else:
+            if parallel:
+                pool = multiprocessing.Pool(4, init_worker)
+                for estimate in pool.imap(
+                    func=user_function,
+                    iterable=self.load_dsd_tracks(subsets=subsets)
+                ):
+                    print estimate
 
-            if save:
-                self._save_estimates(user_results, track)
-            if evaluate:
-                self._evaluate_estimates(user_results, track)
+                pool.close()
+                pool.join()
+
+            else:
+                for track in progress(self.load_dsd_tracks(subsets=subsets)):
+                    user_results = user_function(track)
+                    if save:
+                        self._save_estimates(user_results, track)
+                    if evaluate:
+                        self._evaluate_estimates(user_results, track)
 
 
 if __name__ == '__main__':
@@ -362,6 +380,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     def my_function(dsd_track):
+        import time
+        time.sleep(5)
         estimates = {
             'vocals': dsd_track.audio,
             'accompaniment': dsd_track.audio
@@ -370,7 +390,6 @@ if __name__ == '__main__':
 
     dsd = DB(
         root_dir=args.dsd_folder,
-        subsets='Dev'
     )
 
     # Test my_function
