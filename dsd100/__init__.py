@@ -40,8 +40,6 @@ class DB(object):
         path to yaml file. default: `setup.yaml`
     root_dir : str
         DSD100 Root path. Default is `DSD100_PATH` env
-    subsets : list[str]
-        select a _DSD100_ subset `Dev` or `Test`
     user_estimates_dir : str
         path to the user provided estimates.
     evaluation : bool
@@ -61,7 +59,7 @@ class DB(object):
 
     Methods
     -------
-    iter_dsd_tracks()
+    load_dsd_tracks()
         Iterates through the DSD100 folder structure and
         returns ``Track`` objects
     test(user_function)
@@ -76,7 +74,6 @@ class DB(object):
     def __init__(
         self,
         root_dir=None,
-        subsets=['Dev', 'Test'],
         setup_file='setup.yaml',
         user_estimates_dir=None,
         evaluation=None
@@ -88,11 +85,6 @@ class DB(object):
                 raise RuntimeError("Path to DSD100 root directory isn't set")
         else:
             self.root_dir = root_dir
-
-        if isinstance(subsets, basestring):
-            self.subsets = [subsets]
-        else:
-            self.subsets = subsets
 
         with open(op.join(self.root_dir, setup_file), 'r') as f:
             self.setup = yaml.load(f)
@@ -117,18 +109,23 @@ class DB(object):
         if evaluation is not None:
             self.evaluator = evaluate.BSSeval(evaluation)
 
-    # generator
-    def iter_dsd_tracks(self):
+    def load_dsd_tracks(self, subsets=['Dev', 'Test']):
         """Parses the DSD100 folder structure and yields `Track` objects
+
+        Parameters
+        ==========
+        subsets : list[str], optional
+            select a _DSD100_ subset `Dev` or `Test`. Defaults to `Dev` and `Test`
 
         Returns
         -------
-        Track
-            yields a ``Track`` Object
+        list[Track]
+            return a list of ``Track`` Objects
         """
         # parse all the mixtures
+        tracks = []
         if op.isdir(self.mixtures_dir):
-            for subset in self.subsets:
+            for subset in subsets:
                 subset_folder = op.join(self.mixtures_dir, subset)
                 for _, track_folders, _ in os.walk(subset_folder):
                     for track_name in track_folders:
@@ -173,7 +170,8 @@ class DB(object):
                         # add targets to track
                         track.targets = targets
 
-                        yield track
+                        tracks.append(track)
+            return tracks
         else:
             print "%s not exists." % op.join("Estimates", args.mds_folder)
 
@@ -274,7 +272,13 @@ class DB(object):
         """
         return self.run(user_function=None, save=False, evaluate=True)
 
-    def run(self, user_function=None, save=True, evaluate=False):
+    def run(
+        self,
+        user_function=None,
+        save=True,
+        evaluate=False,
+        subsets=['Dev', 'Test']
+    ):
         """Run the DSD100 processing
 
         Parameters
@@ -287,6 +291,8 @@ class DB(object):
             save the estimates to disk. Default is True.
         evaluate : bool, optional
             evaluate the estimates by using. Default is False
+        subsets : list[str], optional
+            select a _DSD100_ subset `Dev` or `Test`. Defaults to `Dev` and `Test`
 
         Raises
         ------
@@ -301,13 +307,17 @@ class DB(object):
         if user_function is None and save:
             raise RuntimeError("Provide a function use the save feature!")
 
+        if isinstance(subsets, basestring):
+            subsets = [subsets]
+        else:
+            subsets = subsets
+
         widgets = [FormatLabel('Track %(value)d/%(max_value)d'), Bar(), ETA()]
         progress = ProgressBar(
-            widgets=widgets,
-            max_value=50*int(len(self.subsets))
+            widgets=widgets
         )
 
-        for track in progress(self.iter_dsd_tracks()):
+        for track in progress(self.load_dsd_tracks(subsets=subsets)):
             if user_function is not None:
                 user_results = user_function(track)
             else:
@@ -360,6 +370,7 @@ if __name__ == '__main__':
 
     dsd = DB(
         root_dir=args.dsd_folder,
+        subsets='Dev'
     )
 
     # Test my_function
