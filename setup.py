@@ -6,7 +6,7 @@ if __name__ == "__main__":
         name='dsd100',
 
         # Version
-        version="0.1.0",
+        version="0.2.0",
 
         # Description
         description='Easily parse the SISEC Demixing Secrets Dataset',
