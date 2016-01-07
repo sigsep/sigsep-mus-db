@@ -7,10 +7,12 @@ import yaml
 import evaluate
 import collections
 import glob
-from progressbar import ProgressBar, FormatLabel, Bar, ETA
+import tqdm
 from audio_classes import Track, Source, Target
 import multiprocessing
 import signal
+import functools
+import itertools
 
 
 class DB(object):
@@ -274,13 +276,21 @@ class DB(object):
         """
         return self.run(user_function=None, save=False, evaluate=True)
 
+    def _process_function(self, track, user_function, save, evaluate):
+        user_results = user_function(track)
+        if save:
+            self._save_estimates(user_results, track)
+        if evaluate:
+            self._evaluate_estimates(user_results, track)
+
     def run(
         self,
         user_function=None,
         save=True,
         evaluate=False,
         subsets=['Dev', 'Test'],
-        parallel=True
+        parallel=False,
+        cpus=4
     ):
         """Run the DSD100 processing
 
@@ -296,6 +306,10 @@ class DB(object):
             evaluate the estimates by using. Default is False
         subsets : list[str], optional
             select a _DSD100_ subset `Dev` or `Test`. Defaults to both
+        parallel: bool, optional
+            activate multiprocessing
+        cpus: int, optional
+            set number of cores if `parallel` mode is active, defaults to 4
 
         Raises
         ------
@@ -315,17 +329,12 @@ class DB(object):
         else:
             subsets = subsets
 
-        widgets = [FormatLabel('Track %(value)d/%(max_value)d'), Bar(), ETA()]
-        progress = ProgressBar(
-            widgets=widgets
-        )
-
-        def init_worker():
-            signal.signal(signal.SIGINT, signal.SIG_IGN)
+        # list of tracks to be processed
+        tracks = self.load_dsd_tracks(subsets=subsets)
 
         if user_function is None:
             # load estimates from disk
-            for track in progress(self.load_dsd_tracks(subsets=subsets)):
+            for track in tqdm.tqdm(tracks):
                 track_estimate_dir = op.join(
                     self.user_estimates_dir,
                     track.subset,
@@ -346,23 +355,51 @@ class DB(object):
                         pass
         else:
             if parallel:
-                pool = multiprocessing.Pool(4, init_worker)
-                for estimate in pool.imap(
-                    func=user_function,
-                    iterable=self.load_dsd_tracks(subsets=subsets)
-                ):
-                    print estimate
+                pool = multiprocessing.Pool(cpus, initializer=init_worker)
+                success = list(
+                    tqdm.tqdm(
+                        pool.imap_unordered(
+                            func=functools.partial(
+                                process_function_alias,
+                                self,
+                                user_function=user_function,
+                                save=save,
+                                evaluate=evaluate
+                            ),
+                            iterable=tracks,
+                            chunksize=1
+                        ),
+                        total=len(tracks)
+                    )
+                )
 
                 pool.close()
                 pool.join()
 
             else:
-                for track in progress(self.load_dsd_tracks(subsets=subsets)):
-                    user_results = user_function(track)
-                    if save:
-                        self._save_estimates(user_results, track)
-                    if evaluate:
-                        self._evaluate_estimates(user_results, track)
+                success = success = list(
+                    tqdm.tqdm(
+                        itertools.imap(
+                            lambda x: self._process_function(
+                                x,
+                                user_function,
+                                save,
+                                evaluate
+                            ),
+                            tracks
+                        ),
+                        total=len(tracks)
+                    )
+                )
+            print success
+
+
+def process_function_alias(obj, *args, **kwargs):
+    return obj._process_function(*args, **kwargs)
+
+
+def init_worker():
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 
 if __name__ == '__main__':
@@ -380,8 +417,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     def my_function(dsd_track):
-        import time
-        time.sleep(5)
+        for i in range(1000000):
+            i * i + i
+
         estimates = {
             'vocals': dsd_track.audio,
             'accompaniment': dsd_track.audio
@@ -390,6 +428,7 @@ if __name__ == '__main__':
 
     dsd = DB(
         root_dir=args.dsd_folder,
+        user_estimates_dir="temp"
     )
 
     # Test my_function

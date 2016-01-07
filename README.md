@@ -89,6 +89,15 @@ dsd.run(my_training_function, subsets="train")
 dsd.run(my_test_function, subsets="test")
 ```
 
+##### Use Multiprocessing
+
+To speed up the processing, `run` can make use of multiple CPUs:
+
+```python
+dsd.run(my_function, parallel=True, cpus=4)
+```
+
+
 ### Compute the bss_eval measures
 
 The official SISEC evaluation relies on _MATLAB_ because currently there does not exist a [bss_eval](http://bass-db.gforge.inria.fr/bss_eval/) implementation for python which produces the exact same results.

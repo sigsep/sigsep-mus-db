@@ -27,7 +27,7 @@ if __name__ == "__main__":
         install_requires=[
             'numpy>=1.7',
             'scipy>=0.9',
-            'progressbar2',
+            'tqdm',
             'pyaml',
             'matlab_wrapper',
             'PySoundFile>=0.8'
