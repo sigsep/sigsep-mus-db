@@ -107,6 +107,16 @@ training subset and then apply the algorithm on the test data:
    dsd.run(my_training_function, subsets="train")
    dsd.run(my_test_function, subsets="test")
 
+Use Multiprocessing
+'''''''''''''''''''
+
+To speed up the processing, ``run`` can make use of multiple CPUs:
+
+.. code:: python
+
+   dsd.run(my_function, parallel=True, cpus=4)
+
+
 Compute the bss\_eval measures
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
