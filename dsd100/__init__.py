@@ -113,13 +113,15 @@ class DB(object):
         if evaluation is not None:
             self.evaluator = evaluate.BSSeval(evaluation)
 
-    def load_dsd_tracks(self, subsets=['Dev', 'Test']):
+    def load_dsd_tracks(self, subsets=None, ids=None):
         """Parses the DSD100 folder structure and yields `Track` objects
 
         Parameters
         ==========
         subsets : list[str], optional
             select a _DSD100_ subset `Dev` or `Test`. Defaults to both
+        ids : list[int] or int, optional
+            select single or multiple _DSD100_ items by ID
 
         Returns
         -------
@@ -127,6 +129,18 @@ class DB(object):
             return a list of ``Track`` Objects
         """
         # parse all the mixtures
+        if ids is not None:
+            if not isinstance(ids, collections.Sequence):
+                ids = [ids]
+
+        if subsets is not None:
+            if isinstance(subsets, basestring):
+                subsets = [subsets]
+            else:
+                subsets = subsets
+        else:
+            subsets = ['Dev', 'Test']
+
         tracks = []
         if op.isdir(self.mixtures_dir):
             for subset in subsets:
@@ -175,7 +189,12 @@ class DB(object):
                         track.targets = targets
 
                         tracks.append(track)
-            return tracks
+
+            if ids is not None:
+                return [tracks[i] for i in ids]
+            else:
+                return tracks
+
         else:
             print "%s not exists." % op.join("Estimates", args.mds_folder)
 
@@ -266,7 +285,6 @@ class DB(object):
         else:
             raise ValueError("output needs to be a dict")
 
-        print "Test passed"
         return True
 
     def evaluate(self):
@@ -288,7 +306,8 @@ class DB(object):
         user_function=None,
         save=True,
         evaluate=False,
-        subsets=['Dev', 'Test'],
+        subsets=None,
+        ids=None,
         parallel=False,
         cpus=4
     ):
@@ -306,6 +325,8 @@ class DB(object):
             evaluate the estimates by using. Default is False
         subsets : list[str], optional
             select a _DSD100_ subset `Dev` or `Test`. Defaults to both
+        ids : list[int] or int, optional
+            select single or multiple _DSD100_ items by ID
         parallel: bool, optional
             activate multiprocessing
         cpus: int, optional
@@ -324,13 +345,13 @@ class DB(object):
         if user_function is None and save:
             raise RuntimeError("Provide a function use the save feature!")
 
-        if isinstance(subsets, basestring):
-            subsets = [subsets]
-        else:
-            subsets = subsets
+        try:
+            ids = int(os.environ['DSD100_ID'])
+        except KeyError:
+            pass
 
         # list of tracks to be processed
-        tracks = self.load_dsd_tracks(subsets=subsets)
+        tracks = self.load_dsd_tracks(subsets=subsets, ids=ids)
 
         if user_function is None:
             # load estimates from disk

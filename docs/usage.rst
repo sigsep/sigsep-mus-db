@@ -94,7 +94,7 @@ To process all 100 DSD tracks and saves the results to the
 
 .. code:: python
 
-   dsd.run(my_function)
+    dsd.run(my_function)
 
 Processing training and testing subsets separately
 ''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -104,17 +104,56 @@ training subset and then apply the algorithm on the test data:
 
 .. code:: python
 
-   dsd.run(my_training_function, subsets="train")
-   dsd.run(my_test_function, subsets="test")
+    dsd.run(my_training_function, subsets="train")
+    dsd.run(my_test_function, subsets="test")
 
-Use Multiprocessing
-'''''''''''''''''''
+Processing single or multiple DSD100 items
+''''''''''''''''''''''''''''''''''''''''''
+
+.. code:: python
+
+    dsd.run(my_function, ids=30)
+    dsd.run(my_function, ids=[1, 2, 3])
+    dsd.run(my_function, ids=range(90, 99))
+
+Note, that the provided list of ids can be overridden if the user sets a
+terminal environment variable ``DSD100_ID=1``.
+
+Use multiple cores
+''''''''''''''''''
+
+Python Multiprocessing
+""""""""""""""""""""""
 
 To speed up the processing, ``run`` can make use of multiple CPUs:
 
 .. code:: python
 
-   dsd.run(my_function, parallel=True, cpus=4)
+    dsd.run(my_function, parallel=True, cpus=4)
+
+Note: We use the python builtin multiprocessing package, which sometimes
+is unable to parallelize the user provided function to
+`PicklingError <http://stackoverflow.com/a/8805244>`__.
+
+GNU Parallel
+""""""""""""
+
+    `GNU parallel <http://www.gnu.org/software/parallel>`__ is a shell
+    tool for executing jobs in parallel using one or more computers. A
+    job can be a single command or a small script that has to be run for
+    each of the lines in the input. The typical input is a list of
+    files, a list of hosts, a list of users, a list of URLs, or a list
+    of tables. A job can also be a command that reads from a pipe. GNU
+    parallel can then split the input and pipe it into commands in
+    parallel.
+
+By running only one ``id`` in each python process the DSD100 set can
+easily be processed with GNU parallel using multiple CPUs without any
+further modifications to your code:
+
+.. code:: bash
+
+    parallel --bar 'DSD100_ID={0} python dsd100_main.py' ::: {1..100}
 
 
 Compute the bss\_eval measures
