@@ -104,8 +104,8 @@ training subset and then apply the algorithm on the test data:
 
 .. code:: python
 
-    dsd.run(my_training_function, subsets="train")
-    dsd.run(my_test_function, subsets="test")
+    dsd.run(my_training_function, subsets="Dev")
+    dsd.run(my_test_function, subsets="Test")
 
 Processing single or multiple DSD100 items
 ''''''''''''''''''''''''''''''''''''''''''

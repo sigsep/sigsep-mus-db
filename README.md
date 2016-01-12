@@ -162,8 +162,8 @@ if dsd.test(my_function):
 dsd.run(my_function)
 
 # for the machine learning task you want to split the subsets
-dsd.run(my_training_function, subsets="train")  # this takes 1.5 days to finish
-dsd.run(my_test_function, subsets="test")  # this takes 1.5 days to finish
+dsd.run(my_training_function, subsets="Dev")  # this takes 1.5 days to finish
+dsd.run(my_test_function, subsets="Test")  # this takes 1.5 days to finish
 
 ```
 
