@@ -118,7 +118,7 @@ Note: We use the python builtin multiprocessing package, which sometimes is unab
 By running only one ```id``` in each python process the DSD100 set can easily be processed with GNU parallel using multiple CPUs without any further modifications to your code:
 
 ```bash
-parallel --bar 'DSD100_ID={0} python dsd100_main.py' ::: {1..100}  
+parallel --bar 'DSD100_ID={0} python dsd100_main.py' ::: {0..99}  
 ```
 
 ## Compute the bss_eval measures
