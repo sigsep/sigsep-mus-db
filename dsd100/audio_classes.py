@@ -27,16 +27,29 @@ class Source(object):
     def audio(self):
         """array_like: [shape=(num_samples, num_channels)]
         """
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
-        return self._audio
+
+        # return cached audio it explicitly set bet setter
+        if self._audio is not None:
+            return self._audio
+        # read from disk to save RAM otherwise
+        else:
+            if os.path.exists(self.path):
+                audio, rate = sf.read(self.path, always_2d=True)
+                self._rate = rate
+                return audio
+            else:
+                print "Oops! %s cannot be loaded" % self.path
+                self._rate = None
+                self._audio = None
 
     @property
     def rate(self):
         """int: sample rate in Hz
         """
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
+
+        # load audio to set rate
+        if self._rate is None:
+            self.audio()
         return self._rate
 
     @audio.setter
@@ -46,16 +59,6 @@ class Source(object):
     @rate.setter
     def rate(self, rate):
         self._rate = rate
-
-    def _check_and_read(self):
-        if os.path.exists(self.path):
-            audio, rate = sf.read(self.path, always_2d=True)
-            self._rate = rate
-            self._audio = audio
-        else:
-            print "Oops! %s cannot be loaded" % self.path
-            self._rate = None
-            self._audio = None
 
     def __repr__(self):
         return self.path
@@ -73,22 +76,20 @@ class Target(object):
     """
     def __init__(self, sources):
         self.sources = sources  # List of DSDSources
-        self._audio = None
-        self._rate = None
 
     @property
     def audio(self):
         """array_like: [shape=(num_samples, num_channels)]
+
+        mixes audio for targets on the fly
         """
-        if self._audio is None:
-            mix_list = []*len(self.sources)
-            for source in self.sources:
-                if source.audio is not None:
-                    mix_list.append(
-                        source.gain * source.audio
-                    )
-            self._audio = np.sum(np.array(mix_list), axis=0)
-        return self._audio
+        mix_list = []*len(self.sources)
+        for source in self.sources:
+            if source.audio is not None:
+                mix_list.append(
+                    source.gain * source.audio
+                )
+        return np.sum(np.array(mix_list), axis=0)
 
     def __repr__(self):
         parts = []
@@ -134,16 +135,29 @@ class Track(object):
     def audio(self):
         """array_like: [shape=(num_samples, num_channels)]
         """
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
-        return self._audio
+
+        # return cached audio it explicitly set bet setter
+        if self._audio is not None:
+            return self._audio
+        # read from disk to save RAM otherwise
+        else:
+            if os.path.exists(self.path):
+                audio, rate = sf.read(self.path, always_2d=True)
+                self._rate = rate
+                return audio
+            else:
+                print "Oops! %s cannot be loaded" % self.path
+                self._rate = None
+                self._audio = None
 
     @property
     def rate(self):
         """int: sample rate in Hz
         """
-        if self._rate is None and self._audio is None:
-            self._check_and_read()
+
+        # load audio to set rate
+        if self._rate is None:
+            self.audio()
         return self._rate
 
     @audio.setter
@@ -153,16 +167,6 @@ class Track(object):
     @rate.setter
     def rate(self, rate):
         self._rate = rate
-
-    def _check_and_read(self):
-        if os.path.exists(self.path):
-            audio, rate = sf.read(self.path, always_2d=True)
-            self._rate = rate
-            self._audio = audio
-        else:
-            print "Oops!  File cannot be loaded"
-            self._rate = None
-            self._audio = None
 
     def __repr__(self):
         return "%s (%s)" % (self.name, self.path)
