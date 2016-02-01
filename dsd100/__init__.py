@@ -1,4 +1,3 @@
-import argparse
 import numpy as np
 from os import path as op
 import os
@@ -196,7 +195,9 @@ class DB(object):
                 return tracks
 
         else:
-            print "%s not exists." % op.join("Estimates", args.mds_folder)
+            print "%s not exists." % op.join(
+                "Estimates", self.user_estimates_dir
+            )
 
     def _save_estimates(self, user_estimates, track):
         track_estimate_dir = op.join(
@@ -398,7 +399,7 @@ class DB(object):
                 pool.join()
 
             else:
-                success = success = list(
+                success = list(
                     tqdm.tqdm(
                         itertools.imap(
                             lambda x: self._process_function(
@@ -412,7 +413,7 @@ class DB(object):
                         total=len(tracks)
                     )
                 )
-            print success
+                return success
 
 
 def process_function_alias(obj, *args, **kwargs):
@@ -424,36 +425,21 @@ def init_worker():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Parse SISEC dataset')
-
-    parser.add_argument(
-        'dsd_folder',
-        nargs='?',
-        default=None,
-        type=str,
-        help='dsd 100 Folder'
-    )
-
-    args = parser.parse_args()
-
     def my_function(dsd_track):
+        print dsd_track.name
         for i in range(1000000):
             i * i + i
-
         estimates = {
             'vocals': dsd_track.audio,
             'accompaniment': dsd_track.audio
         }
         return estimates
 
-    dsd = DB(
-        root_dir=args.dsd_folder,
-        user_estimates_dir="temp"
-    )
+    dsd = DB()
 
     # Test my_function
-    dsd.test(my_function)
+    if dsd.test(my_function):
+        print "success"
 
     # Run my_function and save the results to disk
     dsd.run(my_function)
