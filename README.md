@@ -57,12 +57,11 @@ Simply import the dsd100 package in your main python function:
 import dsd100
 
 dsd = dsd100.DB(
-    root_dir='path/to/DSD100/',
-    user_estimates_dir='my_estimates'
+    root_dir='path/to/DSD100',
 )
 ```
 
-The ```root_dir``` is the path to the DSD100 dataset folder. It can also be set system-wide. Just ```export DSD100_PATH=/path/to/DSD100/``` inside your terminal. The  ```user_estimates_dir``` is the path to the user estimates. If it is not set, the default will be used which is inside the _DSD100_ ```root_dir```.
+The ```root_dir``` is the path to the DSD100 dataset folder. It can also be set system-wide. Just ```export DSD100_PATH=/path/to/DSD100``` inside your terminal.
 
 #### Test if your separation function generates valid output
 
@@ -74,10 +73,10 @@ This test makes sure the user provided output is compatible to the DSD100 framew
 
 #### Processing the full DSD100
 
-To process all 100 DSD tracks and saves the results to the ```user_estimates_dir```:
+To process all 100 DSD tracks and saves the results to the folder ```estimates_dir```:
 
 ```python
-dsd.run(my_function)
+dsd.run(my_function, estimates_dir="path/to/estimates")
 ```
 
 #### Processing training and testing subsets separately
@@ -159,11 +158,11 @@ if dsd.test(my_function):
     print "my_function is valid"
 
 # this might take 3 days to finish
-dsd.run(my_function)
+dsd.run(my_function, dir="path/to/estimates")
 
 # for the machine learning task you want to split the subsets
-dsd.run(my_training_function, subsets="Dev")  # this takes 1.5 days to finish
-dsd.run(my_test_function, subsets="Test")  # this takes 1.5 days to finish
+dsd.run(my_training_function, subsets="Dev", estimates_dir="path/to/dev")  # this takes 1.5 days to finish
+dsd.run(my_test_function, subsets="Test", estimates_dir="path/to/test")  # this takes 1.5 days to finish
 
 ```
 

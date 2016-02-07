@@ -30,10 +30,6 @@ class DB(object):
     setup_file : str, optional
         _DSD100_ Setup file in yaml format. Default is `setup.yaml`
 
-    user_estimates_dir : str, optional
-        path to the user provided estimates. Directory will be
-        created if it does not exist
-
     evaluation : str, {None, 'bss_eval', 'mir_eval'}
         Setup evaluation module and starts matlab if bsseval is enabled
 
@@ -69,7 +65,7 @@ class DB(object):
         Test the DSD100 processing
     evaluate()
         Run the evaluation
-    run(user_function=None, save=True, evaluate=False)
+    run(user_function=None, estimates_dir=None, evaluate=False)
         Run the DSD100 processing, saving the estimates
         and optionally evaluate them
 
@@ -78,7 +74,6 @@ class DB(object):
         self,
         root_dir=None,
         setup_file='setup.yaml',
-        user_estimates_dir=None,
         evaluation=None
     ):
         if root_dir is None:
@@ -98,13 +93,6 @@ class DB(object):
         self.sources_dir = op.join(
             self.root_dir, "Sources"
         )
-
-        if user_estimates_dir is None:
-            self.user_estimates_dir = op.join(
-                self.root_dir, "Estimates"
-            )
-        else:
-            self.user_estimates_dir = user_estimates_dir
 
         self.sources_names = self.setup['sources'].keys()
         self.targets_names = self.setup['targets'].keys()
@@ -199,9 +187,9 @@ class DB(object):
                 "Estimates", self.user_estimates_dir
             )
 
-    def _save_estimates(self, user_estimates, track):
+    def _save_estimates(self, user_estimates, track, estimates_dir):
         track_estimate_dir = op.join(
-            self.user_estimates_dir, track.subset, track.name
+            estimates_dir, track.subset, track.name
         )
         if not os.path.exists(track_estimate_dir):
             os.makedirs(track_estimate_dir)
@@ -295,17 +283,17 @@ class DB(object):
         """
         return self.run(user_function=None, save=False, evaluate=True)
 
-    def _process_function(self, track, user_function, save, evaluate):
+    def _process_function(self, track, user_function, estimates_dir, evaluate):
         user_results = user_function(track)
-        if save:
-            self._save_estimates(user_results, track)
+        if estimates_dir:
+            self._save_estimates(user_results, track, estimates_dir)
         if evaluate:
             self._evaluate_estimates(user_results, track)
 
     def run(
         self,
         user_function=None,
-        save=True,
+        estimates_dir=None,
         evaluate=False,
         subsets=None,
         ids=None,
@@ -320,8 +308,10 @@ class DB(object):
             function which separates the mixture into estimates. If no function
             is provided (default in `None`) estimates are loaded from disk when
             `evaluate is True`.
-        save : bool, optional
-            save the estimates to disk. Default is True.
+        estimates_dir : str, optional
+            path to the user provided estimates. Directory will be
+            created if it does not exist. Default is `none` which means that
+            the results are not saved.
         evaluate : bool, optional
             evaluate the estimates by using. Default is False
         subsets : list[str], optional
@@ -343,7 +333,7 @@ class DB(object):
         test : Test the user provided function
         """
 
-        if user_function is None and save:
+        if user_function is None and estimates_dir:
             raise RuntimeError("Provide a function use the save feature!")
 
         try:
@@ -385,7 +375,7 @@ class DB(object):
                                 process_function_alias,
                                 self,
                                 user_function=user_function,
-                                save=save,
+                                estimates_dir=estimates_dir,
                                 evaluate=evaluate
                             ),
                             iterable=tracks,
@@ -405,7 +395,7 @@ class DB(object):
                             lambda x: self._process_function(
                                 x,
                                 user_function,
-                                save,
+                                estimates_dir,
                                 evaluate
                             ),
                             tracks

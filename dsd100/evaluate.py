@@ -3,6 +3,22 @@ import numpy as np
 import os
 
 
+class Compare(object):
+    def __init__(self, DB):
+        self.DB = DB
+        
+        pass
+
+    def boxplot(self):
+        pass
+
+    def load_matlab_eval(self, estimates_dir):
+
+
+    def load_matfile(matfile):
+        pass
+
+
 class matlabwrapper(matlab_wrapper.MatlabSession):
     def run_func(self, estimates, originals, method, rate):
         self.put('es', estimates)

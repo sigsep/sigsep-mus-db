@@ -64,7 +64,6 @@ Simply import the dsd100 package in your main python function:
 
    dsd = dsd100.DB(
        root_dir='path/to/DSD100/',
-       user_estimates_dir='my_estimates'
    )
 
 The ``root_dir`` is the path to the DSD100 dataset folder. It can also
@@ -90,11 +89,11 @@ Processing the full DSD100
 ''''''''''''''''''''''''''
 
 To process all 100 DSD tracks and saves the results to the
-``user_estimates_dir``:
+``dir``:
 
 .. code:: python
 
-    dsd.run(my_function)
+    dsd.run(my_function, dir="path/to/estimates")
 
 Processing training and testing subsets separately
 ''''''''''''''''''''''''''''''''''''''''''''''''''
