@@ -93,7 +93,7 @@ To process all 100 DSD tracks and saves the results to the
 
 .. code:: python
 
-    dsd.run(my_function, dir="path/to/estimates")
+    dsd.run(my_function, estimates_dir="path/to/estimates")
 
 Processing training and testing subsets separately
 ''''''''''''''''''''''''''''''''''''''''''''''''''

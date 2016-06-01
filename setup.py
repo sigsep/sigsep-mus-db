@@ -29,7 +29,6 @@ if __name__ == "__main__":
             'scipy>=0.9',
             'tqdm',
             'pyaml',
-            'matlab_wrapper',
             'PySoundFile>=0.8'
         ],
 

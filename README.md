@@ -158,7 +158,7 @@ if dsd.test(my_function):
     print "my_function is valid"
 
 # this might take 3 days to finish
-dsd.run(my_function, dir="path/to/estimates")
+dsd.run(my_function, estimates_dir="path/to/estimates")
 
 # for the machine learning task you want to split the subsets
 dsd.run(my_training_function, subsets="Dev", estimates_dir="path/to/dev")  # this takes 1.5 days to finish

@@ -1,17 +1,17 @@
-import numpy as np
-from os import path as op
-import os
-import soundfile as sf
-import yaml
-import evaluate
-import collections
-import glob
-import tqdm
 from audio_classes import Track, Source, Target
+from os import path as op
 import multiprocessing
-import signal
+import soundfile as sf
+import collections
+import numpy as np
 import functools
 import itertools
+import evaluate
+import signal
+import yaml
+import glob
+import tqdm
+import os
 
 
 class DB(object):
@@ -39,8 +39,6 @@ class DB(object):
         path to yaml file. default: `setup.yaml`
     root_dir : str
         DSD100 Root path. Default is `DSD100_PATH` env
-    user_estimates_dir : str
-        path to the user provided estimates.
     evaluation : bool
         Setup evaluation module
     mixtures_dir : str
@@ -181,11 +179,6 @@ class DB(object):
                 return [tracks[i] for i in ids]
             else:
                 return tracks
-
-        else:
-            print "%s not exists." % op.join(
-                "Estimates", self.user_estimates_dir
-            )
 
     def _save_estimates(self, user_estimates, track, estimates_dir):
         track_estimate_dir = op.join(
@@ -348,7 +341,7 @@ class DB(object):
             # load estimates from disk
             for track in tqdm.tqdm(tracks):
                 track_estimate_dir = op.join(
-                    self.user_estimates_dir,
+                    estimates_dir,
                     track.subset,
                     track.name
                 )

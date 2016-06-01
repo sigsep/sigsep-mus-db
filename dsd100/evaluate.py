@@ -1,59 +1,13 @@
-import matlab_wrapper
 import numpy as np
-import os
-
-
-class Compare(object):
-    def __init__(self, DB):
-        self.DB = DB
-        
-        pass
-
-    def boxplot(self):
-        pass
-
-    def load_matlab_eval(self, estimates_dir):
-
-
-    def load_matfile(matfile):
-        pass
-
-
-class matlabwrapper(matlab_wrapper.MatlabSession):
-    def run_func(self, estimates, originals, method, rate):
-        self.put('es', estimates)
-        self.put('s', originals)
-        self.put('fs', rate)
-        if method == "bss_eval":
-            self.eval(
-                '[SDR,ISR,SIR,SAR] = bss_eval(es, s, 30*fs,15*fs)'
-            )
-            SDR = self.get('SDR')
-            ISR = self.get('ISR')
-            SIR = self.get('SIR')
-            SAR = self.get('SAR')
-
-            return SDR, ISR, SIR, SAR
-
-    def start(self):
-        matlab_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 'external'
-        )
-        self.eval('addpath(\'%s/\')' % matlab_path)
 
 
 class BSSeval(object):
     def __init__(self, method):
-        methods = ("bss_eval", "mir_eval")
+        methods = ("mir_eval")
         if method not in methods:
             raise ValueError("method must be in %s" % ','.join(methods))
 
         self.method = method
-        if method == "bss_eval":
-            self.matlab = matlabwrapper(options="-nosplash -nodesktop -nojvm")
-            self.matlab.start()
-        else:
-            self.matlab = None
 
     def evaluate(self, estimates, originals, rate, verbose=True):
         """Universal BSS evaluate frontend for several evaluators
@@ -87,13 +41,7 @@ class BSSeval(object):
                 mono_originals,
             )
 
-            ISR = 0.0
-        elif self.method == "bss_eval":
-            shaped_estimates = np.transpose(estimates, (1, 2, 0))
-            shaped_originals = np.transpose(originals, (1, 2, 0))
-            SDR, ISR, SIR, SAR = self.matlab.run_func(
-                shaped_estimates, shaped_originals, self.method, rate
-            )
+            ISR = np.nan
 
         if verbose:
             print "SDR: " + str(SDR)
