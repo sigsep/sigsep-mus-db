@@ -24,11 +24,13 @@ def my_function(track):
 # initiate dsd100
 dsd = dsd100.DB(
     root_dir="../data/DSD100subset",
-    user_estimates_dir='./Estimates'
 )
 
 # verify if my_function works correctly
 if dsd.test(my_function):
     print "my_function is valid"
 
-dsd.run(my_function)
+dsd.run(
+    my_function,
+    estimates_dir='./Estimates'
+)
