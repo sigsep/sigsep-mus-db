@@ -1,4 +1,6 @@
-# DSD100
+# DSD100 Python Tools
+
+[![Build Status](https://travis-ci.org/faroit/dsd100py.svg?branch=master)](https://travis-ci.org/faroit/dsd100py)
 
 A python package to parse and process the __demixing secrets dataset (DSD100)__ as part of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/)
 
@@ -8,10 +10,9 @@ A python package to parse and process the __demixing secrets dataset (DSD100)__ 
 pip install dsd100
 ```
 
-## Requirements
+## Evaluation
 
-In order to make the evaluation results comparable across operating systems and Python and
-Matlab, the actual evaluation needs be run in Matlab using the [DSD100 Matlab scripts](https://github.com/faroit/dsd100mat).
+In order to make the evaluation results comparable across operating systems as well as Python and Matlab, the actual evaluation needs be run in Matlab using the [DSD100 Matlab scripts](https://github.com/faroit/dsd100mat).
 
 ## Usage
 
@@ -19,7 +20,7 @@ This package should nicely integrate with your existing code so that it can pars
 
 ## Test Data / DSD100 Subset
 
-For testing and development we provide a subset of DSD100 [to download here](https://www.loria.fr/~aliutkus/DSD100subset.zip). It has the same file and folder structure as well as the same audio file formats. 
+For testing and development we provide a subset of DSD100 [to download here](https://www.loria.fr/~aliutkus/DSD100subset.zip). It has the same file and folder structure as well as the same audio file formats.
 
 ### Providing a compatible function
 
