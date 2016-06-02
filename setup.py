@@ -9,7 +9,7 @@ if __name__ == "__main__":
         version="0.2.2",
 
         # Description
-        description='Easily parse the SISEC Demixing Secrets Dataset',
+        description='Python tools for the Demixing Secrets Dataset (DSD100)',
 
         # Your contact information
         author='Fabian-Robert Stoeter',
