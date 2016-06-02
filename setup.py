@@ -27,6 +27,7 @@ if __name__ == "__main__":
         install_requires=[
             'numpy>=1.7',
             'scipy>=0.9',
+            'six',
             'tqdm',
             'pyaml',
             'PySoundFile>=0.8'

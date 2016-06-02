@@ -1,12 +1,13 @@
-from audio_classes import Track, Source, Target
+from __future__ import print_function
+from .audio_classes import Track, Source, Target
+from . import evaluate
 from os import path as op
+from six.moves import map
 import multiprocessing
 import soundfile as sf
 import collections
 import numpy as np
 import functools
-import itertools
-import evaluate
 import signal
 import yaml
 import glob
@@ -92,8 +93,8 @@ class DB(object):
             self.root_dir, "Sources"
         )
 
-        self.sources_names = self.setup['sources'].keys()
-        self.targets_names = self.setup['targets'].keys()
+        self.sources_names = list(self.setup['sources'].keys())
+        self.targets_names = list(self.setup['targets'].keys())
 
         if evaluation is not None:
             self.evaluator = evaluate.BSSeval(evaluation)
@@ -119,7 +120,7 @@ class DB(object):
                 ids = [ids]
 
         if subsets is not None:
-            if isinstance(subsets, basestring):
+            if isinstance(subsets, str):
                 subsets = [subsets]
             else:
                 subsets = subsets
@@ -145,7 +146,9 @@ class DB(object):
 
                         # add sources to track
                         sources = {}
-                        for src, rel_path in self.setup['sources'].iteritems():
+                        for src, rel_path in list(
+                            self.setup['sources'].items()
+                        ):
                             # create source object
                             sources[src] = Source(
                                 name=src,
@@ -160,10 +163,10 @@ class DB(object):
 
                         # add targets to track
                         targets = collections.OrderedDict()
-                        for name, srcs in self.setup['targets'].iteritems():
+                        for name, srcs in list(self.setup['targets'].items()):
                             # add a list of target sources
                             target_sources = []
-                            for source, gain in srcs.iteritems():
+                            for source, gain in list(srcs.items()):
                                 # add gain to source tracks
                                 track.sources[source].gain = float(gain)
                                 # add tracks to components
@@ -188,7 +191,7 @@ class DB(object):
             os.makedirs(track_estimate_dir)
 
         # write out tracks to disk
-        for target, estimate in user_estimates.iteritems():
+        for target, estimate in list(user_estimates.items()):
             target_path = op.join(track_estimate_dir, target + '.wav')
             sf.write(target_path, estimate, track.rate)
         pass
@@ -199,7 +202,7 @@ class DB(object):
         # make sure to always build the list in the same order
         # therefore track.targets is an OrderedDict
         labels_references = []  # save the list of targets to be evaluated
-        for target in track.targets.keys():
+        for target in list(track.targets.keys()):
             try:
                 # try to fetch the audio from the user_results of a given key
                 estimate = user_estimates[target]
@@ -249,7 +252,7 @@ class DB(object):
         user_results = user_function(test_track)
 
         if isinstance(user_results, dict):
-            for target, audio in user_results.iteritems():
+            for target, audio in list(user_results.items()):
                 if target not in self.targets_names:
                     raise ValueError("Target '%s' not supported!" % target)
 
@@ -384,7 +387,7 @@ class DB(object):
             else:
                 success = list(
                     tqdm.tqdm(
-                        itertools.imap(
+                        map(
                             lambda x: self._process_function(
                                 x,
                                 user_function,
@@ -409,7 +412,7 @@ def init_worker():
 
 if __name__ == '__main__':
     def my_function(dsd_track):
-        print dsd_track.name
+        print(dsd_track.name)
         for i in range(1000000):
             i * i + i
 
@@ -423,7 +426,7 @@ if __name__ == '__main__':
 
     # Test my_function
     if dsd.test(my_function):
-        print "success"
+        print("success")
 
     # Run my_function and save the results to disk
     dsd.run(my_function)

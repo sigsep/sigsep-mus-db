@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 
 
@@ -30,7 +31,7 @@ class BSSeval(object):
         SAR : np.ndarray, shape=(nsrc,)
             vector of Sources to Artifacts Ratios (SAR)
         """
-        print "Evaluating with %s" % self.method
+        print("Evaluating with %s" % self.method)
 
         if self.method == "mir_eval":
             import mir_eval
@@ -44,9 +45,9 @@ class BSSeval(object):
             ISR = np.nan
 
         if verbose:
-            print "SDR: " + str(SDR)
-            print "ISR: " + str(ISR)
-            print "SIR: " + str(SIR)
-            print "SAR: " + str(SAR)
+            print("SDR: ", str(SDR))
+            print("ISR: ", str(ISR))
+            print("SIR: ", str(SIR))
+            print("SAR: ", str(SAR))
 
         return SDR, ISR, SIR, SAR

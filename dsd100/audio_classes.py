@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import soundfile as sf
 import numpy as np
@@ -38,7 +39,7 @@ class Source(object):
                 self._rate = rate
                 return audio
             else:
-                print "Oops! %s cannot be loaded" % self.path
+                print("Oops! %s cannot be loaded" % self.path)
                 self._rate = None
                 self._audio = None
 
@@ -146,7 +147,7 @@ class Track(object):
                 self._rate = rate
                 return audio
             else:
-                print "Oops! %s cannot be loaded" % self.path
+                print("Oops! %s cannot be loaded" % self.path)
                 self._rate = None
                 self._audio = None
 

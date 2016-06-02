@@ -3,7 +3,7 @@ import dsd100
 
 
 def user_function1(track):
-    '''Should work'''
+    '''Pass'''
 
     # return any number of targets
     estimates = {
@@ -14,11 +14,33 @@ def user_function1(track):
 
 
 def user_function2(track):
-    '''wrong shape'''
+    '''fails because of wrong shape'''
 
     # return any number of targets
     estimates = {
         'vocals': track.audio[:-1],
+        'accompaniment': track.audio,
+    }
+    return estimates
+
+
+def user_function3(track):
+    '''fails because of wrong estimate name'''
+
+    # return any number of targets
+    estimates = {
+        'triangle': track.audio,
+        'accompaniment': track.audio,
+    }
+    return estimates
+
+
+def user_function4(track):
+    '''fails because of wrong estimate name'''
+
+    # return any number of targets
+    estimates = {
+        'triangle': track.audio,
         'accompaniment': track.audio,
     }
     return estimates
@@ -33,14 +55,18 @@ def test_fileloading():
     assert len(tracks) == 4
 
 
+@pytest.fixture(params=['data/DSD100subset'])
+def dsd(request):
+    return dsd100.DB(root_dir=request.param)
+
+
 @pytest.mark.parametrize(
     "func",
     [
         user_function1,
         pytest.mark.xfail(user_function2, raises=ValueError),
+        pytest.mark.xfail(user_function3, raises=ValueError),
     ]
 )
-def test_user_functions(func):
-    dsd = dsd100.DB(root_dir="data/DSD100subset")
-
+def test_user_functions(func, dsd):
     assert dsd.test(user_function=func)
