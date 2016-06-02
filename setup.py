@@ -29,7 +29,8 @@ if __name__ == "__main__":
             'six',
             'tqdm',
             'pyaml',
-            'PySoundFile>=0.8'
+            'PySoundFile>=0.8',
+            'mir_eval'
         ],
 
         extras_require={

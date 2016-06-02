@@ -35,8 +35,8 @@ class BSSeval(object):
 
         if self.method == "mir_eval":
             import mir_eval
-            mono_estimates = np.sum(np.array(estimates), axis=0)
-            mono_originals = np.sum(np.array(originals), axis=0)
+            mono_estimates = np.mean(estimates, axis=0).T
+            mono_originals = np.mean(originals, axis=0).T
             SDR, SIR, SAR, perm = mir_eval.separation.bss_eval_sources(
                 mono_estimates,
                 mono_originals,

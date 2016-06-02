@@ -1,6 +1,7 @@
 import pytest
 import dsd100
 import numpy as np
+import os
 
 
 def user_function1(track):
@@ -69,5 +70,46 @@ def dsd(request):
         pytest.mark.xfail(user_function4, raises=ValueError),
     ]
 )
-def test_user_functions(func, dsd):
+def test_user_functions_test(func, dsd):
     assert dsd.test(user_function=func)
+
+
+@pytest.mark.parametrize(
+    "func",
+    [
+        user_function1,
+        pytest.mark.xfail(user_function2, raises=ValueError),
+        pytest.mark.xfail(user_function3, raises=ValueError),
+        pytest.mark.xfail(user_function4, raises=ValueError),
+    ]
+)
+def test_run(func, dsd):
+
+    # process dsd but do not save the results
+    assert dsd.run(
+        user_function=func
+    )
+
+    assert dsd.run(
+        user_function=func,
+        estimates_dir='./Estimates'
+    )
+
+    dsd.run(estimates_dir='./Estimates')
+
+
+@pytest.mark.parametrize(
+    "method",
+    [
+        'mir_eval',
+        pytest.mark.xfail('not_a_function', raises=ValueError)
+    ]
+)
+def test_evaluate(method):
+
+    dsd = dsd100.DB(root_dir='data/DSD100subset', evaluation=method)
+
+    # process dsd but do not save the results
+    assert dsd.evaluate(
+        user_function=user_function1
+    )

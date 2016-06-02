@@ -272,16 +272,48 @@ class DB(object):
 
         return True
 
-    def evaluate(self):
+    def evaluate(self, user_function=None, estimates_dir=None):
         """Run the DSD100 evaluation
 
-        shortcut to ``run(user_function=None, save=False, evaluate=True)``
+        shortcut to
+        ``run(
+            user_function=None,
+            estimates_dir=estimates_dir,
+            save=False,
+            evaluate=True
+        )``
         """
-        return self.run(user_function=None, save=False, evaluate=True)
+        return self.run(
+            user_function=user_function,
+            estimates_dir=estimates_dir,
+            evaluate=True
+        )
 
     def _process_function(self, track, user_function, estimates_dir, evaluate):
-        user_results = user_function(track)
-        if estimates_dir:
+        # load estimates from disk instead of processing
+        if user_function is None:
+            track_estimate_dir = op.join(
+                estimates_dir,
+                track.subset,
+                track.name
+            )
+            user_results = {}
+            for target_path in glob.glob(track_estimate_dir + '/*.wav'):
+                target_name = op.splitext(
+                    os.path.basename(target_path)
+                )[0]
+                try:
+                    target_audio, rate = sf.read(
+                        target_path,
+                        always_2d=True
+                    )
+                    user_results[target_name] = target_audio
+                except RuntimeError:
+                    pass
+        else:
+            # call the user provided function
+            user_results = user_function(track)
+        if estimates_dir and not evaluate and user_function is not None:
             self._save_estimates(user_results, track, estimates_dir)
         if evaluate:
             self._evaluate_estimates(user_results, track)
@@ -329,8 +361,8 @@ class DB(object):
         test : Test the user provided function
         """
 
-        if user_function is None and estimates_dir:
-            raise RuntimeError("Provide a function use the save feature!")
+        if user_function is None and estimates_dir and evaluate is None:
+            raise RuntimeError("Provide a function or use evaluate feature!")
 
         try:
             ids = int(os.environ['DSD100_ID'])
@@ -340,66 +372,44 @@ class DB(object):
         # list of tracks to be processed
         tracks = self.load_dsd_tracks(subsets=subsets, ids=ids)
 
-        if user_function is None:
-            # load estimates from disk
-            for track in tqdm.tqdm(tracks):
-                track_estimate_dir = op.join(
-                    estimates_dir,
-                    track.subset,
-                    track.name
+        if parallel:
+            pool = multiprocessing.Pool(cpus, initializer=init_worker)
+            success = list(
+                tqdm.tqdm(
+                    pool.imap_unordered(
+                        func=functools.partial(
+                            process_function_alias,
+                            self,
+                            user_function=user_function,
+                            estimates_dir=estimates_dir,
+                            evaluate=evaluate
+                        ),
+                        iterable=tracks,
+                        chunksize=1
+                    ),
+                    total=len(tracks)
                 )
-                user_results = {}
-                for target_path in glob.glob(track_estimate_dir + '/*.wav'):
-                    target_name = op.splitext(
-                        os.path.basename(target_path)
-                    )[0]
-                    try:
-                        target_audio, rate = sf.read(
-                            target_path,
-                            always_2d=True
-                        )
-                        user_results[target_name] = target_audio
-                    except RuntimeError:
-                        pass
+            )
+
+            pool.close()
+            pool.join()
+
         else:
-            if parallel:
-                pool = multiprocessing.Pool(cpus, initializer=init_worker)
-                success = list(
-                    tqdm.tqdm(
-                        pool.imap_unordered(
-                            func=functools.partial(
-                                process_function_alias,
-                                self,
-                                user_function=user_function,
-                                estimates_dir=estimates_dir,
-                                evaluate=evaluate
-                            ),
-                            iterable=tracks,
-                            chunksize=1
+            success = list(
+                tqdm.tqdm(
+                    map(
+                        lambda x: self._process_function(
+                            x,
+                            user_function,
+                            estimates_dir,
+                            evaluate
                         ),
-                        total=len(tracks)
-                    )
+                        tracks
+                    ),
+                    total=len(tracks)
                 )
-
-                pool.close()
-                pool.join()
-
-            else:
-                success = list(
-                    tqdm.tqdm(
-                        map(
-                            lambda x: self._process_function(
-                                x,
-                                user_function,
-                                estimates_dir,
-                                evaluate
-                            ),
-                            tracks
-                        ),
-                        total=len(tracks)
-                    )
-                )
-                return success
+            )
+            return success
 
 
 def process_function_alias(obj, *args, **kwargs):

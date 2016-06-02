@@ -58,3 +58,4 @@ target/
 
 data/*
 !data/fetch.sh
+Estimates/
