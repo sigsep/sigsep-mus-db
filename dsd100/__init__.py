@@ -99,7 +99,7 @@ class DB(object):
             self.evaluator = evaluate.BSSeval(evaluation)
 
     def load_dsd_tracks(self, subsets=None, ids=None):
-        """Parses the DSD100 folder structure and yields `Track` objects
+        """Parses the DSD100 folder structure and returns `Track` objects
 
         Parameters
         ==========
