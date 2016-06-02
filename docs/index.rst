@@ -34,8 +34,3 @@ If you use this package, please reference the following paper
       YEAR = {2015},
       MONTH = Aug,
     }
-
-Furthermore would like to thank `Emmanuel
-Vincent <http://www.loria.fr/~evincent/>`__ for giving us the permission
-to use the `BSS Eval toolbox
-3.0 <http://bass-db.gforge.inria.fr/bss_eval/>`__

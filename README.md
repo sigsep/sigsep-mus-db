@@ -10,10 +10,6 @@ A python package to parse and process the __demixing secrets dataset (DSD100)__ 
 pip install dsd100
 ```
 
-## Evaluation
-
-In order to make the evaluation results comparable across operating systems as well as Python and Matlab, the actual evaluation needs be run in Matlab using the [DSD100 Matlab scripts](https://github.com/faroit/dsd100mat).
-
 ## Usage
 
 This package should nicely integrate with your existing code so that it can parse and process the _DSD100_ from python, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/professionally-produced-music-recordings).
@@ -127,7 +123,7 @@ parallel --bar 'DSD100_ID={0} python dsd100_main.py' ::: {0..99}
 
 ## Compute the bss_eval measures
 
-The official SISEC evaluation relies on _MATLAB_ because currently there does not exist a [bss_eval](http://bass-db.gforge.inria.fr/bss_eval/) implementation for python which produces the exact same results.
+The official SISEC evaluation relies on _MATLAB_ because currently there does not exist a [bss_eval](http://bass-db.gforge.inria.fr/bss_eval/) implementation for python which produces identical results.
 Therefore please run ```DSD100_only_eval.m``` from the [DSD100 Matlab scripts](https://github.com/faroit/dsd100mat) after you have processed and saved your estimates with _dsd100py_.
 
 ## Full code Example
@@ -138,7 +134,7 @@ import dsd100
 def my_function(track):
     '''My fancy BSS algorithm'''
 
-    # get the audio mixture as numpy array shape=(nun_sampl, 2)
+    # get the audio mixture as numpy array shape=(num_sampl, 2)
     track.audio
 
     # get the mixture path for external processing
@@ -165,10 +161,6 @@ if dsd.test(my_function):
 # this might take 3 days to finish
 dsd.run(my_function, estimates_dir="path/to/estimates")
 
-# for the machine learning task you want to split the subsets
-dsd.run(my_training_function, subsets="Dev", estimates_dir="path/to/dev")  # this takes 1.5 days to finish
-dsd.run(my_test_function, subsets="Test", estimates_dir="path/to/test")  # this takes 1.5 days to finish
-
 ```
 
 ## References
@@ -188,5 +180,3 @@ If you use this package, please reference the following paper
   MONTH = Aug,
 }
 ```
-
-Furthermore would like to thank [Emmanuel Vincent](http://www.loria.fr/~evincent/) for giving us the permission to use the [BSS Eval toolbox 3.0](http://bass-db.gforge.inria.fr/bss_eval/)

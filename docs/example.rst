@@ -8,7 +8,7 @@ Example
     def my_function(track):
         '''My fancy BSS algorithm'''
 
-        # get the audio mixture as numpy array shape=(nun_sampl, 2)
+        # get the audio mixture as numpy array shape=(num_sampl, 2)
         track.audio
 
         # get the mixture path for external processing
@@ -34,7 +34,3 @@ Example
 
     # this might take 3 days to finish
     dsd.run(my_function, estimates_dir="path/to/estimates")
-
-    # for the machine learning task you want to split the subsets
-    dsd.run(my_training_function, subsets="train", estimates_dir="path/to/dev")  # this takes 1.5 days to finish
-    dsd.run(my_test_function, subsets="test", estimates_dir="path/to/test")  # this takes 1.5 days to finish
