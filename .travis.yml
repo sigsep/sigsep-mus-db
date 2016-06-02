@@ -1,8 +1,14 @@
 language: python
+
 cache: pip
+
 python:
     - 2.7
     - 3.5
+
+virtualenv:
+    system_site_packages: true
+
 before_install:
     - sudo apt-get update -qq
     - if [[ $TRAVIS_PYTHON_VERSION == *"2."* ]]; then sudo apt-get install python-numpy; fi
@@ -11,9 +17,11 @@ before_install:
     - cd data
     - sh fetch.sh
     - cd ..
+
 install:
     - pip install -U pip wheel
     - pip install -e .[tests,docs]
+
 script:
     - py.test
     - python setup.py build_sphinx
