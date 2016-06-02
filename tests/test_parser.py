@@ -37,7 +37,7 @@ def user_function3(track):
 
 
 def user_function4(track):
-    '''fails because of evaluation'''
+    '''fails because of wrong type'''
 
     # return any number of targets
     estimates = {
