@@ -12,5 +12,5 @@ Modules
 .. toctree::
    :maxdepth: 3
 
-   dsd100
+   self
    dsd100.audio_classes
