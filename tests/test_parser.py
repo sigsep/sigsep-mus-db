@@ -1,5 +1,6 @@
 import pytest
 import dsd100
+import numpy as np
 
 
 def user_function1(track):
@@ -36,12 +37,11 @@ def user_function3(track):
 
 
 def user_function4(track):
-    '''fails because of wrong estimate name'''
+    '''fails because of evaluation'''
 
     # return any number of targets
     estimates = {
-        'triangle': track.audio,
-        'accompaniment': track.audio,
+        'vocals': track.audio.astype(np.int32),
     }
     return estimates
 
@@ -66,6 +66,7 @@ def dsd(request):
         user_function1,
         pytest.mark.xfail(user_function2, raises=ValueError),
         pytest.mark.xfail(user_function3, raises=ValueError),
+        pytest.mark.xfail(user_function4, raises=ValueError),
     ]
 )
 def test_user_functions(func, dsd):
