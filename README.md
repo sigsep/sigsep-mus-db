@@ -17,6 +17,10 @@ Matlab, the actual evaluation needs be run in Matlab using the [DSD100 Matlab sc
 
 This package should nicely integrate with your existing code so that it can parse and process the _DSD100_ from python, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/professionally-produced-music-recordings).
 
+## Test Data / DSD100 Subset
+
+For testing and development we provide a subset of DSD100 [to download here](https://www.loria.fr/~aliutkus/DSD100subset.zip). It has the same file and folder structure as well as the same audio file formats. 
+
 ### Providing a compatible function
 
  The core of this package consists of calling a user-provided function which separates the mixtures from the DSD100 into estimated target sources.
