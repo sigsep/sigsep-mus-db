@@ -12,26 +12,28 @@ pip install dsdtools
 
 ## Usage
 
-This package should nicely integrate with your existing code so that it can parse and process the _dsdtools_ from python, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/professionally-produced-music-recordings).
+This package should nicely integrate with your existing  python code, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/professionally-produced-music-recordings).
 
-## Test Data / dsdtools Subset
+## DSD100 Dataset / Subset
 
-For testing and development we provide a subset of dsdtools [to download here](https://www.loria.fr/~aliutkus/DSD100subset.zip). It has the same file and folder structure as well as the same audio file formats.
+A link to the complete dataset is found [here](https://sisec.inria.fr/professionally-produced-music-recordings). For testing and development we provide a subset of the dsd100 [for direct download here](https://www.loria.fr/~aliutkus/DSD100subset.zip). It has the same file and folder structure as well as the same audio file formats but consists of only 4 tracks of 30s each.
 
 ### Providing a compatible function
 
- The core of this package consists of calling a user-provided function which separates the mixtures from the dsdtools into estimated target sources.
+ The core of this package is calling a user-provided function that separates the mixtures from the DSD into several estimated target sources.
 
-- The function will take an dsdtools ```Track``` object which can be used from inside your algorithm.
-- Participants can access
+- The function will take an DSD ```Track``` object which can be used from inside your algorithm.
+- Participants can access:
+
  - ```Track.audio```, representing the stereo mixture as an ```np.ndarray``` of ```shape=(nun_sampl, 2)```
  - ```Track.rate```, the sample rate
  - ```Track.path```, the absolute path of the mixture which might be handy to process with external applications, so that participants don't need to write out temporary wav files.
-- The function needs to return a python ```Dict``` which consists of target name (```key```) and the estimated target as audio arrays with same shape as the mixture (```value```).
-- It is the users choice which target sources they want to provide for a given mixture. Supported targets are ```['vocals', 'accompaniment', 'drums', 'bass', 'other']```.
+
+- The provided function needs to return a python ```Dict``` which consists of target name (```key```) and the estimated target as audio arrays with same shape as the mixture (```value```).
+- It is the choice of the users which target sources they want to provide for a given mixture. Supported targets are ```['vocals', 'accompaniment', 'drums', 'bass', 'other']```.
 - Please make sure that the returned estimates do have the same sample rate as the mixture track.
 
-Here is an example for such a function separating the mixture into a __vocals__ and __accompaniment__ track.
+Here is an example for such a function separating the mixture into a __vocals__ and __accompaniment__ track:
 
 ```python
 def my_function(track):
