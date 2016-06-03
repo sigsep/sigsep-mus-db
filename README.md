@@ -1,28 +1,28 @@
-# DSD100 Python Tools
+# dsdtools Python Tools
 
-[![Build Status](https://travis-ci.org/faroit/dsd100py.svg?branch=master)](https://travis-ci.org/faroit/dsd100py)
+[![Build Status](https://travis-ci.org/faroit/dsdtoolspy.svg?branch=master)](https://travis-ci.org/faroit/dsdtoolspy)
 
-A python package to parse and process the __demixing secrets dataset (DSD100)__ as part of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/)
+A python package to parse and process the __demixing secrets dataset (dsdtools)__ as part of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/)
 
 ## Installation
 
 ```bash
-pip install dsd100
+pip install dsdtools
 ```
 
 ## Usage
 
-This package should nicely integrate with your existing code so that it can parse and process the _DSD100_ from python, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/professionally-produced-music-recordings).
+This package should nicely integrate with your existing code so that it can parse and process the _dsdtools_ from python, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/professionally-produced-music-recordings).
 
-## Test Data / DSD100 Subset
+## Test Data / dsdtools Subset
 
-For testing and development we provide a subset of DSD100 [to download here](https://www.loria.fr/~aliutkus/DSD100subset.zip). It has the same file and folder structure as well as the same audio file formats.
+For testing and development we provide a subset of dsdtools [to download here](https://www.loria.fr/~aliutkus/dsdtoolssubset.zip). It has the same file and folder structure as well as the same audio file formats.
 
 ### Providing a compatible function
 
- The core of this package consists of calling a user-provided function which separates the mixtures from the DSD100 into estimated target sources.
+ The core of this package consists of calling a user-provided function which separates the mixtures from the dsdtools into estimated target sources.
 
-- The function will take an DSD100 ```Track``` object which can be used from inside your algorithm.
+- The function will take an dsdtools ```Track``` object which can be used from inside your algorithm.
 - Participants can access
  - ```Track.audio```, representing the stereo mixture as an ```np.ndarray``` of ```shape=(nun_sampl, 2)```
  - ```Track.rate```, the sample rate
@@ -50,29 +50,29 @@ def my_function(track):
 
 ### Create estimates for SiSEC evaluation
 
-#### Setting up dsd100
+#### Setting up dsdtools
 
-Simply import the dsd100 package in your main python function:
+Simply import the dsdtools package in your main python function:
 
 ```python
-import dsd100
+import dsdtools
 
-dsd = dsd100.DB(
-    root_dir='path/to/DSD100',
+dsd = dsdtools.DB(
+    root_dir='path/to/dsdtools',
 )
 ```
 
-The ```root_dir``` is the path to the DSD100 dataset folder. It can also be set system-wide. Just ```export DSD100_PATH=/path/to/DSD100``` inside your terminal.
+The ```root_dir``` is the path to the dsdtools dataset folder. It can also be set system-wide. Just ```export dsdtools_PATH=/path/to/dsdtools``` inside your terminal.
 
 #### Test if your separation function generates valid output
 
-Before you run the full DSD100, which might take very long, participants can test their separation function by running:
+Before you run the full dsdtools, which might take very long, participants can test their separation function by running:
 ```python
 dsd.test(my_function)
 ```
-This test makes sure the user provided output is compatible to the DSD100 framework. The function returns `True` if the test succeeds.
+This test makes sure the user provided output is compatible to the dsdtools framework. The function returns `True` if the test succeeds.
 
-#### Processing the full DSD100
+#### Processing the full dsdtools
 
 To process all 100 DSD tracks and saves the results to the folder ```estimates_dir```:
 
@@ -89,7 +89,7 @@ dsd.run(my_training_function, subsets="train")
 dsd.run(my_test_function, subsets="test")
 ```
 
-#### Processing single or multiple DSD100 items
+#### Processing single or multiple dsdtools items
 
 ```python
 dsd.run(my_function, ids=30)
@@ -97,7 +97,7 @@ dsd.run(my_function, ids=[1, 2, 3])
 dsd.run(my_function, ids=range(90, 99))
 ```
 
-Note, that the provided list of ids can be overridden if the user sets a terminal environment variable ```DSD100_ID=1```.
+Note, that the provided list of ids can be overridden if the user sets a terminal environment variable ```dsdtools_ID=1```.
 
 #### Use multiple cores
 
@@ -115,21 +115,21 @@ Note: We use the python builtin multiprocessing package, which sometimes is unab
 
 > [GNU parallel](http://www.gnu.org/software/parallel) is a shell tool for executing jobs in parallel using one or more computers. A job can be a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, a list of URLs, or a list of tables. A job can also be a command that reads from a pipe. GNU parallel can then split the input and pipe it into commands in parallel.
 
-By running only one ```id``` in each python process the DSD100 set can easily be processed with GNU parallel using multiple CPUs without any further modifications to your code:
+By running only one ```id``` in each python process the dsdtools set can easily be processed with GNU parallel using multiple CPUs without any further modifications to your code:
 
 ```bash
-parallel --bar 'DSD100_ID={0} python dsd100_main.py' ::: {0..99}  
+parallel --bar 'dsdtools_ID={0} python dsdtools_main.py' ::: {0..99}  
 ```
 
 ## Compute the bss_eval measures
 
 The official SISEC evaluation relies on _MATLAB_ because currently there does not exist a [bss_eval](http://bass-db.gforge.inria.fr/bss_eval/) implementation for python which produces identical results.
-Therefore please run ```DSD100_only_eval.m``` from the [DSD100 Matlab scripts](https://github.com/faroit/dsd100mat) after you have processed and saved your estimates with _dsd100py_.
+Therefore please run ```dsdtools_only_eval.m``` from the [dsdtools Matlab scripts](https://github.com/faroit/dsdtoolsmat) after you have processed and saved your estimates with _dsdtoolspy_.
 
 ## Full code Example
 
 ```python
-import dsd100
+import dsdtools
 
 def my_function(track):
     '''My fancy BSS algorithm'''
@@ -151,8 +151,8 @@ def my_function(track):
     return estimates
 
 
-# initiate dsd100
-dsd = dsd100.DB(root_dir="./Volumes/Data/DSD100")
+# initiate dsdtools
+dsd = dsdtools.DB(root_dir="./Volumes/Data/dsdtools")
 
 # verify if my_function works correctly
 if dsd.test(my_function):

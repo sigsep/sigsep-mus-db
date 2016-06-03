@@ -1,16 +1,16 @@
 Modules
 -------
 
-.. automodule:: dsd100
+.. automodule:: dsdtools
     :members:
     :undoc-members:
     :show-inheritance:
     :inherited-members:
-.. autoclass: dsd100.DB
+.. autoclass: dsdtools.DB
     :members:
 
 .. toctree::
    :maxdepth: 3
 
    self
-   dsd100.audio_classes
+   dsdtools.audio_classes

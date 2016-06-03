@@ -1,5 +1,5 @@
 import pytest
-import dsd100
+import dsdtools
 import numpy as np
 
 
@@ -47,9 +47,9 @@ def user_function4(track):
 
 
 def test_fileloading():
-    # initiate dsd100
+    # initiate dsdtools
 
-    dsd = dsd100.DB(root_dir="data/DSD100subset")
+    dsd = dsdtools.DB(root_dir="data/DSD100subset")
     tracks = dsd.load_dsd_tracks()
 
     assert len(tracks) == 4
@@ -57,7 +57,7 @@ def test_fileloading():
 
 @pytest.fixture(params=['data/DSD100subset'])
 def dsd(request):
-    return dsd100.DB(root_dir=request.param)
+    return dsdtools.DB(root_dir=request.param)
 
 
 @pytest.mark.parametrize(
@@ -106,7 +106,7 @@ def test_run(func, dsd):
 )
 def test_evaluate(method):
 
-    dsd = dsd100.DB(root_dir='data/DSD100subset', evaluation=method)
+    dsd = dsdtools.DB(root_dir='data/DSD100subset', evaluation=method)
 
     # process dsd but do not save the results
     assert dsd.evaluate(

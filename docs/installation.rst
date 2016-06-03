@@ -3,4 +3,4 @@ Installation
 
 .. code:: bash
 
-    pip install dsd100
+    pip install dsdtools

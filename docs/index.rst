@@ -1,8 +1,8 @@
-DSD100
+dsdtools
 ======
 
 A python package to parse and process the **demixing secrets dataset
-(DSD100)** as part of the `Signal Separation Evaluation Campaign
+(dsdtools)** as part of the `Signal Separation Evaluation Campaign
 (SISEC) <https://sisec.inria.fr/>`__
 
 
@@ -14,7 +14,7 @@ Contents:
    installation
    usage
    example
-   dsd100
+   dsdtools
 
 References
 ~~~~~~~~~~

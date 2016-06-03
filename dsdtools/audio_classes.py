@@ -65,7 +65,7 @@ class Source(object):
         return self.path
 
 
-# Target Track from DSD100 DB mixed from several DSDSource Tracks
+# Target Track from dsdtools DB mixed from several DSDSource Tracks
 class Target(object):
     """
     An audio Target which is a linear mixture of several sources
@@ -99,7 +99,7 @@ class Target(object):
         return '+'.join(parts)
 
 
-# DSD100 Track which has many targets and sources
+# dsdtools Track which has many targets and sources
 class Track(object):
     """
     An audio Track which is mixture of several sources

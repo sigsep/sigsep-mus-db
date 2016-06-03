@@ -17,19 +17,19 @@ import os
 
 class DB(object):
     """
-    The DSD100 DB Object
+    The dsdtools DB Object
 
     Parameters
     ----------
     root_dir : str, optional
-        DSD100 Root path. If set to `None` it will be read
-        from the `DSD100_PATH` environment variable
+        dsdtools Root path. If set to `None` it will be read
+        from the `dsdtools_PATH` environment variable
 
     subsets : str or list, optional
-        select a _DSD100_ subset `Dev` or `Test` (defaults to both)
+        select a _dsdtools_ subset `Dev` or `Test` (defaults to both)
 
     setup_file : str, optional
-        _DSD100_ Setup file in yaml format. Default is `setup.yaml`
+        _dsdtools_ Setup file in yaml format. Default is `setup.yaml`
 
     evaluation : str, {None, 'bss_eval', 'mir_eval'}
         Setup evaluation module and starts matlab if bsseval is enabled
@@ -39,7 +39,7 @@ class DB(object):
     setup_file : str
         path to yaml file. default: `setup.yaml`
     root_dir : str
-        DSD100 Root path. Default is `DSD100_PATH` env
+        dsdtools Root path. Default is `dsdtools_PATH` env
     evaluation : bool
         Setup evaluation module
     mixtures_dir : str
@@ -58,14 +58,14 @@ class DB(object):
     Methods
     -------
     load_dsd_tracks()
-        Iterates through the DSD100 folder structure and
+        Iterates through the dsdtools folder structure and
         returns ``Track`` objects
     test(user_function)
-        Test the DSD100 processing
+        Test the dsdtools processing
     evaluate()
         Run the evaluation
     run(user_function=None, estimates_dir=None, evaluate=False)
-        Run the DSD100 processing, saving the estimates
+        Run the dsdtools processing, saving the estimates
         and optionally evaluate them
 
     """
@@ -76,10 +76,10 @@ class DB(object):
         evaluation=None
     ):
         if root_dir is None:
-            if "DSD100_PATH" in os.environ:
-                self.root_dir = os.environ["DSD100_PATH"]
+            if "dsdtools_PATH" in os.environ:
+                self.root_dir = os.environ["dsdtools_PATH"]
             else:
-                raise RuntimeError("Path to DSD100 root directory isn't set")
+                raise RuntimeError("Path to dsdtools root directory isn't set")
         else:
             self.root_dir = root_dir
 
@@ -100,14 +100,14 @@ class DB(object):
             self.evaluator = evaluate.BSSeval(evaluation)
 
     def load_dsd_tracks(self, subsets=None, ids=None):
-        """Parses the DSD100 folder structure and returns `Track` objects
+        """Parses the dsdtools folder structure and returns `Track` objects
 
         Parameters
         ==========
         subsets : list[str], optional
-            select a _DSD100_ subset `Dev` or `Test`. Defaults to both
+            select a _dsdtools_ subset `Dev` or `Test`. Defaults to both
         ids : list[int] or int, optional
-            select single or multiple _DSD100_ items by ID
+            select single or multiple _dsdtools_ items by ID
 
         Returns
         -------
@@ -232,7 +232,7 @@ class DB(object):
                 )
 
     def test(self, user_function):
-        """Test the DSD100 processing
+        """Test the dsdtools processing
 
         Parameters
         ----------
@@ -251,7 +251,7 @@ class DB(object):
 
         See Also
         --------
-        run : Process the DSD100
+        run : Process the dsdtools
         """
         if not hasattr(user_function, '__call__'):
             raise TypeError("Please provide a function.")
@@ -285,7 +285,7 @@ class DB(object):
         return True
 
     def evaluate(self, user_function=None, estimates_dir=None):
-        """Run the DSD100 evaluation
+        """Run the dsdtools evaluation
 
         shortcut to
         ``run(
@@ -340,7 +340,7 @@ class DB(object):
         parallel=False,
         cpus=4
     ):
-        """Run the DSD100 processing
+        """Run the dsdtools processing
 
         Parameters
         ----------
@@ -355,9 +355,9 @@ class DB(object):
         evaluate : bool, optional
             evaluate the estimates by using. Default is False
         subsets : list[str], optional
-            select a _DSD100_ subset `Dev` or `Test`. Defaults to both
+            select a _dsdtools_ subset `Dev` or `Test`. Defaults to both
         ids : list[int] or int, optional
-            select single or multiple _DSD100_ items by ID
+            select single or multiple _dsdtools_ items by ID
         parallel: bool, optional
             activate multiprocessing
         cpus: int, optional
@@ -377,7 +377,7 @@ class DB(object):
             raise RuntimeError("Provide a function or use evaluate feature!")
 
         try:
-            ids = int(os.environ['DSD100_ID'])
+            ids = int(os.environ['dsdtools_ID'])
         except KeyError:
             pass
 

@@ -24,7 +24,7 @@ source_suffix = '.rst'
 
 master_doc = 'index'
 
-project = u'dsd100'
+project = u'dsdtools'
 copyright = u'2016, Fabian-Robert Stöter'
 author = u'Fabian-Robert Stöter'
 
@@ -41,23 +41,23 @@ todo_include_todos = False
 
 html_static_path = ['_static']
 
-htmlhelp_basename = 'dsd100doc'
+htmlhelp_basename = 'dsdtoolsdoc'
 
 latex_elements = {
 }
 
 latex_documents = [
-  (master_doc, 'dsd100.tex', u'dsd100 Documentation',
+  (master_doc, 'dsdtools.tex', u'dsdtools Documentation',
    u'Fabian-Robert Stöter', 'manual'),
 ]
 
 man_pages = [
-    (master_doc, 'dsd100', u'dsd100 Documentation',
+    (master_doc, 'dsdtools', u'dsdtools Documentation',
      [author], 1)
 ]
 
 texinfo_documents = [
-  (master_doc, 'dsd100', u'dsd100 Documentation',
-   author, 'dsd100', 'One line description of project.',
+  (master_doc, 'dsdtools', u'dsdtools Documentation',
+   author, 'dsdtools', 'One line description of project.',
    'Miscellaneous'),
 ]

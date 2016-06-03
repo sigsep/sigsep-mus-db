@@ -3,7 +3,7 @@ Example
 
 .. code:: python
 
-    import dsd100
+    import dsdtools
 
     def my_function(track):
         '''My fancy BSS algorithm'''
@@ -25,8 +25,8 @@ Example
         return estimates
 
 
-    # initiate dsd100
-    dsd = dsd100.DB(root_dir="./Volumes/Data/DSD100")
+    # initiate dsdtools
+    dsd = dsdtools.DB(root_dir="./Volumes/Data/dsdtools")
 
     # verify if my_function works correctly
     if dsd.test(my_function):

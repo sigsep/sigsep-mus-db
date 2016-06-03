@@ -1,4 +1,4 @@
-import dsd100
+import dsdtools
 
 
 def my_function(track):
@@ -21,9 +21,9 @@ def my_function(track):
     return estimates
 
 
-# initiate dsd100
-dsd = dsd100.DB(
-    root_dir="../data/DSD100subset",
+# initiate dsdtools
+dsd = dsdtools.DB(
+    root_dir="../data/dsdtoolssubset",
 )
 
 # verify if my_function works correctly
