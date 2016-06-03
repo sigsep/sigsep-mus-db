@@ -1,7 +1,6 @@
 import pytest
 import dsd100
 import numpy as np
-import os
 
 
 def user_function1(track):

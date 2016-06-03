@@ -150,32 +150,40 @@ class DB(object):
                             self.setup['sources'].items()
                         ):
                             # create source object
-                            sources[src] = Source(
-                                name=src,
-                                path=op.join(
-                                    self.sources_dir,
-                                    subset,
-                                    track_name,
-                                    rel_path
-                                )
+                            abs_path = op.join(
+                                self.sources_dir,
+                                subset,
+                                track_name,
+                                rel_path
                             )
+                            if os.path.exists(abs_path):
+                                sources[src] = Source(
+                                    name=src,
+                                    path=abs_path
+                                )
                         track.sources = sources
 
                         # add targets to track
                         targets = collections.OrderedDict()
-                        for name, srcs in list(self.setup['targets'].items()):
+                        for name, target_srcs in list(
+                            self.setup['targets'].items()
+                        ):
                             # add a list of target sources
+
                             target_sources = []
-                            for source, gain in list(srcs.items()):
-                                # add gain to source tracks
-                                track.sources[source].gain = float(gain)
-                                # add tracks to components
-                                target_sources.append(sources[source])
+                            for source, gain in list(target_srcs.items()):
+                                if source in track.sources.keys():
+                                    # add gain to source tracks
+                                    track.sources[source].gain = float(gain)
+                                    # add tracks to components
+                                    target_sources.append(sources[source])
                             # add sources to target
-                            targets[name] = Target(sources=target_sources)
+                            if not target_sources:
+                                targets[name] = Target(sources=target_sources)
                         # add targets to track
                         track.targets = targets
 
+                        # add track to list of tracks
                         tracks.append(track)
 
             if ids is not None:
@@ -215,9 +223,13 @@ class DB(object):
             except KeyError:
                 pass
 
-        audio_estimates = np.array(audio_estimates)
-        audio_reference = np.array(audio_reference)
-        self.evaluator.evaluate(audio_estimates, audio_reference, track.rate)
+        if audio_estimates and audio_reference:
+            audio_estimates = np.array(audio_estimates)
+            audio_reference = np.array(audio_reference)
+            if audio_estimates.shape == audio_reference.shape:
+                self.evaluator.evaluate(
+                    audio_estimates, audio_reference, track.rate
+                )
 
     def test(self, user_function):
         """Test the DSD100 processing

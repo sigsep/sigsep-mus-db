@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import sys
 import os
-import shlex
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
