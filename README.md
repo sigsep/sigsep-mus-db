@@ -16,7 +16,7 @@ This package should nicely integrate with your existing code so that it can pars
 
 ## Test Data / dsdtools Subset
 
-For testing and development we provide a subset of dsdtools [to download here](https://www.loria.fr/~aliutkus/dsdtoolssubset.zip). It has the same file and folder structure as well as the same audio file formats.
+For testing and development we provide a subset of dsdtools [to download here](https://www.loria.fr/~aliutkus/DSD100subset.zip). It has the same file and folder structure as well as the same audio file formats.
 
 ### Providing a compatible function
 
@@ -124,7 +124,7 @@ parallel --bar 'dsdtools_ID={0} python dsdtools_main.py' ::: {0..99}
 ## Compute the bss_eval measures
 
 The official SISEC evaluation relies on _MATLAB_ because currently there does not exist a [bss_eval](http://bass-db.gforge.inria.fr/bss_eval/) implementation for python which produces identical results.
-Therefore please run ```dsdtools_only_eval.m``` from the [dsdtools Matlab scripts](https://github.com/faroit/dsdtoolsmat) after you have processed and saved your estimates with _dsdtoolspy_.
+Therefore please run ```dsd100_only_eval.m``` from the [dsdtools Matlab scripts](https://github.com/faroit/dsd100mat) after you have processed and saved your estimates with _dsdtools_.
 
 ## Full code Example
 
