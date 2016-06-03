@@ -79,7 +79,7 @@ class DB(object):
             if "DSD_PATH" in os.environ:
                 self.root_dir = os.environ["DSD_PATH"]
             else:
-                raise RuntimeError("Path to dsdtools root directory isn't set")
+                raise RuntimeError("Variable `DSD_PATH` has not been set.")
         else:
             self.root_dir = root_dir
 
