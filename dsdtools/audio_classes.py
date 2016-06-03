@@ -29,7 +29,7 @@ class Source(object):
         """array_like: [shape=(num_samples, num_channels)]
         """
 
-        # return cached audio it explicitly set bet setter
+        # return cached audio if explicitly set by setter
         if self._audio is not None:
             return self._audio
         # read from disk to save RAM otherwise
@@ -39,9 +39,9 @@ class Source(object):
                 self._rate = rate
                 return audio
             else:
-                print("Oops! %s cannot be loaded" % self.path)
                 self._rate = None
                 self._audio = None
+                raise ValueError("Oops! %s cannot be loaded" % self.path)
 
     @property
     def rate(self):
@@ -50,7 +50,14 @@ class Source(object):
 
         # load audio to set rate
         if self._rate is None:
-            self.audio()
+            if os.path.exists(self.path):
+                audio, rate = sf.read(self.path, always_2d=True)
+                self._rate = rate
+                return rate
+            else:
+                self._rate = None
+                self._audio = None
+                raise ValueError("Oops! %s cannot be loaded" % self.path)
         return self._rate
 
     @audio.setter
@@ -147,9 +154,9 @@ class Track(object):
                 self._rate = rate
                 return audio
             else:
-                print("Oops! %s cannot be loaded" % self.path)
                 self._rate = None
                 self._audio = None
+                raise ValueError("Oops! %s cannot be loaded" % self.path)
 
     @property
     def rate(self):
@@ -158,7 +165,14 @@ class Track(object):
 
         # load audio to set rate
         if self._rate is None:
-            self.audio()
+            if os.path.exists(self.path):
+                audio, rate = sf.read(self.path, always_2d=True)
+                self._rate = rate
+                return rate
+            else:
+                self._rate = None
+                self._audio = None
+                raise ValueError("Oops! %s cannot be loaded" % self.path)
         return self._rate
 
     @audio.setter

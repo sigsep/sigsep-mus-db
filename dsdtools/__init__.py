@@ -178,7 +178,7 @@ class DB(object):
                                     # add tracks to components
                                     target_sources.append(sources[source])
                             # add sources to target
-                            if not target_sources:
+                            if target_sources:
                                 targets[name] = Target(sources=target_sources)
                         # add targets to track
                         track.targets = targets
@@ -284,21 +284,23 @@ class DB(object):
 
         return True
 
-    def evaluate(self, user_function=None, estimates_dir=None):
+    def evaluate(
+        self, user_function=None, estimates_dir=None, *args, **kwargs
+    ):
         """Run the dsdtools evaluation
 
         shortcut to
         ``run(
             user_function=None,
             estimates_dir=estimates_dir,
-            save=False,
             evaluate=True
         )``
         """
         return self.run(
             user_function=user_function,
             estimates_dir=estimates_dir,
-            evaluate=True
+            evaluate=True,
+            *args, **kwargs
         )
 
     def _process_function(self, track, user_function, estimates_dir, evaluate):
@@ -384,6 +386,7 @@ class DB(object):
         # list of tracks to be processed
         tracks = self.load_dsd_tracks(subsets=subsets, ids=ids)
 
+        success = False
         if parallel:
             pool = multiprocessing.Pool(cpus, initializer=init_worker)
             success = list(
@@ -421,7 +424,7 @@ class DB(object):
                     total=len(tracks)
                 )
             )
-            return success
+        return success
 
 
 def process_function_alias(obj, *args, **kwargs):
@@ -430,25 +433,3 @@ def process_function_alias(obj, *args, **kwargs):
 
 def init_worker():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
-
-
-if __name__ == '__main__':
-    def my_function(dsd_track):
-        print(dsd_track.name)
-        for i in range(1000000):
-            i * i + i
-
-        estimates = {
-            'vocals': dsd_track.audio,
-            'accompaniment': dsd_track.audio
-        }
-        return estimates
-
-    dsd = DB()
-
-    # Test my_function
-    if dsd.test(my_function):
-        print("success")
-
-    # Run my_function and save the results to disk
-    dsd.run(my_function)

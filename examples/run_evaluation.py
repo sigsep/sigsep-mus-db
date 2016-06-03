@@ -23,7 +23,7 @@ def my_function(track):
 
 # initiate dsdtools
 dsd = dsdtools.DB(
-    root_dir="../data/dsdtoolssubset",
+    root_dir="../data/DSD100subset",
 )
 
 # verify if my_function works correctly
@@ -32,5 +32,5 @@ if dsd.test(my_function):
 
 dsd.run(
     my_function,
-    estimates_dir='./Estimates'
+    estimates_dir='./Estimates',
 )

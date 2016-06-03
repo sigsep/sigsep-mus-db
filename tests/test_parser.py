@@ -1,3 +1,4 @@
+import os
 import pytest
 import dsdtools
 import numpy as np
@@ -46,7 +47,14 @@ def user_function4(track):
     return estimates
 
 
-def test_fileloading():
+def user_function5(track):
+    '''fails because output is not a dict'''
+
+    # return any number of targets
+    return track.audio
+
+
+def test_file_loading():
     # initiate dsdtools
 
     dsd = dsdtools.DB(root_dir="data/DSD100subset")
@@ -54,10 +62,44 @@ def test_fileloading():
 
     assert len(tracks) == 4
 
+    for track in tracks:
+        assert track.audio.shape[1] > 0
+
+    # load only the dev set
+    tracks = dsd.load_dsd_tracks(subsets='dev')
+
+    assert len(tracks) == 2
+
+    # load only the dev set
+    tracks = dsd.load_dsd_tracks(subsets=['dev', 'test'])
+
+    assert len(tracks) == 4
+
+    # load only a single id
+    tracks = dsd.load_dsd_tracks(ids=1)
+
+    assert len(tracks) == 1
+
 
 @pytest.fixture(params=['data/DSD100subset'])
 def dsd(request):
     return dsdtools.DB(root_dir=request.param)
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        pytest.mark.xfail(None, raises=RuntimeError),
+        pytest.mark.xfail("wrong/path", raises=IOError),
+        "data/DSD100subset",
+    ]
+)
+def test_env(path):
+
+    if path is not None:
+        os.environ["DSD_PATH"] = path
+
+    assert dsdtools.DB()
 
 
 @pytest.mark.parametrize(
@@ -67,6 +109,8 @@ def dsd(request):
         pytest.mark.xfail(user_function2, raises=ValueError),
         pytest.mark.xfail(user_function3, raises=ValueError),
         pytest.mark.xfail(user_function4, raises=ValueError),
+        pytest.mark.xfail(user_function5, raises=ValueError),
+        pytest.mark.xfail("not_a_function", raises=TypeError),
     ]
 )
 def test_user_functions_test(func, dsd):
@@ -97,18 +141,10 @@ def test_run(func, dsd):
     dsd.run(estimates_dir='./Estimates')
 
 
-@pytest.mark.parametrize(
-    "method",
-    [
-        'mir_eval',
-        pytest.mark.xfail('not_a_function', raises=ValueError)
-    ]
-)
-def test_evaluate(method):
+def test_parallel(dsd):
 
-    dsd = dsdtools.DB(root_dir='data/DSD100subset', evaluation=method)
-
-    # process dsd but do not save the results
-    assert dsd.evaluate(
-        user_function=user_function1
+    assert dsd.run(
+        user_function=user_function1,
+        parallel=True,
+        cpus=1
     )
