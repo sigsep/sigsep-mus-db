@@ -62,7 +62,7 @@ dsd = dsdtools.DB(
 )
 ```
 
-The ```root_dir``` is the path to the dsdtools dataset folder. It can also be set system-wide. Just ```export dsdtools_PATH=/path/to/dsdtools``` inside your terminal.
+The ```root_dir``` is the path to the dsdtools dataset folder. It can also be set system-wide. Just ```export DSD_PATH=/path/to/dsdtools``` inside your terminal.
 
 #### Test if your separation function generates valid output
 

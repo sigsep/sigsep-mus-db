@@ -67,7 +67,7 @@ Simply import the dsdtools package in your main python function:
    )
 
 The ``root_dir`` is the path to the dsdtools dataset folder. It can also
-be set system-wide. Just ``export dsdtools_PATH=/path/to/dsdtools/`` inside
+be set system-wide. Just ``export DSD_PATH=/path/to/dsdtools/`` inside
 your terminal. The ``user_estimates_dir`` is the path to the user
 estimates. If it is not set, the default will be used which is inside
 the *dsdtools* ``root_dir``.

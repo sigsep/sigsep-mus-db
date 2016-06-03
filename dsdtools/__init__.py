@@ -23,7 +23,7 @@ class DB(object):
     ----------
     root_dir : str, optional
         dsdtools Root path. If set to `None` it will be read
-        from the `dsdtools_PATH` environment variable
+        from the `DSD_PATH` environment variable
 
     subsets : str or list, optional
         select a _dsdtools_ subset `Dev` or `Test` (defaults to both)
@@ -39,7 +39,7 @@ class DB(object):
     setup_file : str
         path to yaml file. default: `setup.yaml`
     root_dir : str
-        dsdtools Root path. Default is `dsdtools_PATH` env
+        dsdtools Root path. Default is `DSD_PATH` env
     evaluation : bool
         Setup evaluation module
     mixtures_dir : str
@@ -76,8 +76,8 @@ class DB(object):
         evaluation=None
     ):
         if root_dir is None:
-            if "dsdtools_PATH" in os.environ:
-                self.root_dir = os.environ["dsdtools_PATH"]
+            if "DSD_PATH" in os.environ:
+                self.root_dir = os.environ["DSD_PATH"]
             else:
                 raise RuntimeError("Path to dsdtools root directory isn't set")
         else:
