@@ -1,8 +1,8 @@
-# dsdtools Python Tools
+# dsdtools
 
-[![Build Status](https://travis-ci.org/faroit/dsdtoolspy.svg?branch=master)](https://travis-ci.org/faroit/dsdtoolspy)
+[![Build Status](https://travis-ci.org/faroit/dsdtools.svg?branch=master)](https://travis-ci.org/faroit/dsdtools)
 
-A python package to parse and process the __demixing secrets dataset (dsdtools)__ as part of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/)
+A python package to parse and process the __demixing secrets dataset (DSD)__ as part of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/)
 
 ## Installation
 
