@@ -1,3 +1,4 @@
+from __future__ import print_function
 import pytest
 import dsdtools.audio_classes as ac
 import dsdtools
@@ -15,7 +16,7 @@ def test_targets(dsd):
 
     for track in tracks:
         for key, target in track.targets.items():
-            print target
+            print(target)
             assert target.audio.shape > 0
 
 
@@ -47,7 +48,7 @@ def test_source(dsd):
     source.rate = 44100
     assert source.rate == 44100
 
-    print source
+    print(source)
 
 
 def test_track(dsd):
@@ -66,4 +67,4 @@ def test_track(dsd):
     track.rate = 44100
     assert track.rate == 44100
 
-    print track
+    print(track)
