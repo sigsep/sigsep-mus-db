@@ -66,12 +66,12 @@ def test_file_loading():
         assert track.audio.shape[1] > 0
 
     # load only the dev set
-    tracks = dsd.load_dsd_tracks(subsets='dev')
+    tracks = dsd.load_dsd_tracks(subsets='Dev')
 
     assert len(tracks) == 2
 
     # load only the dev set
-    tracks = dsd.load_dsd_tracks(subsets=['dev', 'test'])
+    tracks = dsd.load_dsd_tracks(subsets=['Dev', 'Test'])
 
     assert len(tracks) == 4
 
