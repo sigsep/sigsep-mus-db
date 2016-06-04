@@ -15,9 +15,9 @@ def test_targets(dsd):
     tracks = dsd.load_dsd_tracks(ids=1)
 
     for track in tracks:
-        for key, target in track.targets.items():
+        for key, target in list(track.targets.items()):
             print(target)
-            assert target.audio.shape > 0
+            assert target.audio.shape
 
 
 def test_rates(dsd):
@@ -27,9 +27,9 @@ def test_rates(dsd):
     for track in tracks:
         assert track.rate == 44100
         assert track.audio.shape > 0
-        for key, source in track.sources.items():
+        for key, source in list(track.sources.items()):
             assert source.rate == 44100
-            assert source.audio.shape > 0
+            assert source.audio.shape
 
 
 def test_source(dsd):
