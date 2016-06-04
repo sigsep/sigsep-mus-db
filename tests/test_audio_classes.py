@@ -26,7 +26,7 @@ def test_rates(dsd):
 
     for track in tracks:
         assert track.rate == 44100
-        assert track.audio.shape > 0
+        assert track.audio.shape
         for key, source in list(track.sources.items()):
             assert source.rate == 44100
             assert source.audio.shape
