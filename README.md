@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/faroit/dsdtools.svg?branch=master)](https://travis-ci.org/faroit/dsdtools)
 [![Coverage Status](https://coveralls.io/repos/github/faroit/dsdtools/badge.svg?branch=master)](https://coveralls.io/github/faroit/dsdtools?branch=master)
+[![Docs Status](https://readthedocs.org/projects/dsdtools/badge/?version=latest)](https://dsdtools.readthedocs.org/en/latest/)
+
 
 A python package to parse and process the __demixing secrets dataset (DSD)__ as part of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/)
 
