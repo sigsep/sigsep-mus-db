@@ -76,7 +76,7 @@ def test_file_loading():
     assert len(tracks) == 4
 
     # load only a single id
-    tracks = dsd.load_dsd_tracks(ids=1)
+    tracks = dsd.load_dsd_tracks(ids=55)
 
     assert len(tracks) == 1
 

@@ -12,7 +12,7 @@ def dsd(request):
 
 def test_targets(dsd):
 
-    tracks = dsd.load_dsd_tracks(ids=1)
+    tracks = dsd.load_dsd_tracks(ids=55)
 
     for track in tracks:
         for key, target in list(track.targets.items()):
@@ -22,7 +22,7 @@ def test_targets(dsd):
 
 def test_rates(dsd):
 
-    tracks = dsd.load_dsd_tracks(ids=1)
+    tracks = dsd.load_dsd_tracks(ids=55)
 
     for track in tracks:
         assert track.rate == 44100
