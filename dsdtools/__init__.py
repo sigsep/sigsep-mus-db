@@ -140,13 +140,13 @@ class DB(object):
             for subset in subsets:
                 subset_folder = op.join(self.mixtures_dir, subset)
                 for _, track_folders, _ in os.walk(subset_folder):
-                    for track_name in track_folders:
+                    for track_filename in track_folders:
 
                         # create new dsd Track
                         track = Track(
-                            name=track_name,
+                            filename=track_filename,
                             path=op.join(
-                                op.join(subset_folder, track_name),
+                                op.join(subset_folder, track_filename),
                                 self.setup['mix']
                             ),
                             subset=subset
@@ -161,7 +161,7 @@ class DB(object):
                             abs_path = op.join(
                                 self.sources_dir,
                                 subset,
-                                track_name,
+                                track_filename,
                                 rel_path
                             )
                             if os.path.exists(abs_path):
@@ -195,13 +195,13 @@ class DB(object):
                         tracks.append(track)
 
             if ids is not None:
-                return [tracks[i] for i in ids]
+                return [t for t in tracks if t.id in ids]
             else:
                 return tracks
 
     def _save_estimates(self, user_estimates, track, estimates_dir):
         track_estimate_dir = op.join(
-            estimates_dir, track.subset, track.name
+            estimates_dir, track.subset, track.filename
         )
         if not os.path.exists(track_estimate_dir):
             os.makedirs(track_estimate_dir)
@@ -264,7 +264,7 @@ class DB(object):
         if not hasattr(user_function, '__call__'):
             raise TypeError("Please provide a function.")
 
-        test_track = Track(name="test")
+        test_track = Track(filename="test")
         signal = np.random.random((66000, 2))
         test_track.audio = signal
         test_track.rate = 44100
@@ -317,7 +317,7 @@ class DB(object):
             track_estimate_dir = op.join(
                 estimates_dir,
                 track.subset,
-                track.name
+                track.filename
             )
             user_results = {}
             for target_path in glob.glob(track_estimate_dir + '/*.wav'):
@@ -387,7 +387,7 @@ class DB(object):
             raise RuntimeError("Provide a function or use evaluate feature!")
 
         try:
-            ids = int(os.environ['dsdtools_ID'])
+            ids = int(os.environ['DSD_ID'])
         except KeyError:
             pass
 

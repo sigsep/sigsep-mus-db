@@ -54,11 +54,11 @@ def test_source(dsd):
 def test_track(dsd):
 
     with pytest.raises(ValueError):
-        track = ac.Track(name="test", path="None")
+        track = ac.Track(filename="test", path="None")
         track.audio
 
     with pytest.raises(ValueError):
-        track = ac.Track(name="test", path="None")
+        track = ac.Track(filename="test", path="None")
         track.rate
 
     track.audio = np.zeros((2, 44100))

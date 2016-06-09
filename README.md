@@ -15,11 +15,11 @@ pip install dsdtools
 
 ## Usage
 
-This package should nicely integrate with your existing  python code, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/professionally-produced-music-recordings).
+This package should nicely integrate with your existing  python code, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings).
 
 ## DSD100 Dataset / Subset
 
-A link to the complete dataset is found [here](https://sisec.inria.fr/professionally-produced-music-recordings). For testing and development we provide a subset of the dsd100 [for direct download here](https://www.loria.fr/~aliutkus/DSD100subset.zip). It has the same file and folder structure as well as the same audio file formats but consists of only 4 tracks of 30s each.
+The complete dataset (~14 GB) can be downloaded [here](https://infinit.io/_/332Augp). For testing and development we provide a subset of the dsd100 [for direct download here](https://www.loria.fr/~aliutkus/DSD100subset.zip). It has the same file and folder structure as well as the same audio file formats but consists of only 4 tracks of 30s each.
 
 ### Providing a compatible function
 
@@ -90,8 +90,8 @@ dsd.run(my_function, estimates_dir="path/to/estimates")
 Algorithms which make use of machine learning techniques can use the training subset and then apply the algorithm on the test data:
 
 ```python
-dsd.run(my_training_function, subsets="train")
-dsd.run(my_test_function, subsets="test")
+dsd.run(my_training_function, subsets="Dev")
+dsd.run(my_test_function, subsets="Test")
 ```
 
 #### Processing single or multiple dsdtools items
@@ -102,7 +102,7 @@ dsd.run(my_function, ids=[1, 2, 3])
 dsd.run(my_function, ids=range(90, 99))
 ```
 
-Note, that the provided list of ids can be overridden if the user sets a terminal environment variable ```dsdtools_ID=1```.
+Note, that the provided list of ids can be overridden if the user sets a terminal environment variable ```DSD_ID=1```.
 
 #### Use multiple cores
 
@@ -123,7 +123,7 @@ Note: We use the python builtin multiprocessing package, which sometimes is unab
 By running only one ```id``` in each python process the dsdtools set can easily be processed with GNU parallel using multiple CPUs without any further modifications to your code:
 
 ```bash
-parallel --bar 'dsdtools_ID={0} python dsdtools_main.py' ::: {0..99}  
+parallel --bar 'DSD_ID={0} python main.py' ::: {0..99}  
 ```
 
 ## Compute the bss_eval measures

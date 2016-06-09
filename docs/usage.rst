@@ -116,7 +116,7 @@ Processing single or multiple dsdtools items
     dsd.run(my_function, ids=range(90, 99))
 
 Note, that the provided list of ids can be overridden if the user sets a
-terminal environment variable ``dsdtools_ID=1``.
+terminal environment variable ``DSD_ID=1``.
 
 Use multiple cores
 ''''''''''''''''''
@@ -152,7 +152,7 @@ further modifications to your code:
 
 .. code:: bash
 
-    parallel --bar 'dsdtools_ID={0} python dsdtools_main.py' ::: {1..100}
+    parallel --bar 'DSD_ID={0} python main.py' ::: {1..100}
 
 
 Compute the bss\_eval measures

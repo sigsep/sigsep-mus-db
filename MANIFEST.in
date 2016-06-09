@@ -1,1 +1,1 @@
-recursive-include dsdtools/external *.m
+recursive-include dsdtools/configs *.yaml

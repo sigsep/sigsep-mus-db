@@ -130,8 +130,27 @@ class Track(object):
         Dict of ``Source`` objects for this ``Track``
 
     """
-    def __init__(self, name, subset=None, path=None):
-        self.name = name
+    def __init__(
+        self,
+        filename,
+        track_id=None,
+        track_artist=None,
+        track_title=None,
+        subset=None,
+        path=None
+    ):
+        self.filename = filename
+        try:
+            track_id, track_artist, track_title = \
+                filename.split(' - ')
+            self.id = int(track_id)
+            self.artist = track_artist
+            self.title = track_title
+        except ValueError:
+            self.id = track_id
+            self.artist = track_artist
+            self.title = track_title
+
         self.path = path
         self.subset = subset
         self.targets = None
@@ -184,4 +203,4 @@ class Track(object):
         self._rate = rate
 
     def __repr__(self):
-        return "%s (%s)" % (self.name, self.path)
+        return "\n%s (%s)" % (self.filename, self.path)
