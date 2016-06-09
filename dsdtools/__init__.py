@@ -13,6 +13,7 @@ import yaml
 import glob
 import tqdm
 import os
+import dsdtools
 
 
 class DB(object):
@@ -29,7 +30,7 @@ class DB(object):
         select a _dsdtools_ subset `Dev` or `Test` (defaults to both)
 
     setup_file : str, optional
-        _dsdtools_ Setup file in yaml format. Default is `setup.yaml`
+        _dsdtools_ Setup file in yaml format. Default is provided `dsd100.yaml`
 
     evaluation : str, {None, 'bss_eval', 'mir_eval'}
         Setup evaluation module and starts matlab if bsseval is enabled
@@ -72,7 +73,7 @@ class DB(object):
     def __init__(
         self,
         root_dir=None,
-        setup_file='setup.yaml',
+        setup_file=None,
         evaluation=None
     ):
         if root_dir is None:
@@ -83,7 +84,14 @@ class DB(object):
         else:
             self.root_dir = root_dir
 
-        with open(op.join(self.root_dir, setup_file), 'r') as f:
+        if setup_file is not None:
+            setup_path = op.join(self.root_dir, setup_file)
+        else:
+            setup_path = os.path.join(
+                dsdtools.__path__[0], 'configs', 'dsd100.yaml'
+            )
+
+        with open(setup_path, 'r') as f:
             self.setup = yaml.load(f)
 
         self.mixtures_dir = op.join(
@@ -172,7 +180,7 @@ class DB(object):
 
                             target_sources = []
                             for source, gain in list(target_srcs.items()):
-                                if source in track.sources.keys():
+                                if source in list(track.sources.keys()):
                                     # add gain to source tracks
                                     track.sources[source].gain = float(gain)
                                     # add tracks to components

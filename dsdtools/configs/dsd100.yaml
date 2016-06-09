@@ -1,0 +1,27 @@
+# SISEC DSD100 MUS Task Configuration
+
+# Define the Input sources for each track
+sources:
+    vocals: vocals.wav
+    drums: drums.wav
+    bass: bass.wav
+    other: other.wav
+
+# Additionally provide the artistic mix
+mix:
+    mixture.wav
+
+# Define output targets to be tested using linear mixtures
+targets:
+    vocals:
+        vocals: 1
+    drums:
+        drums: 1
+    bass:
+        bass: 1
+    other:
+        other: 1
+    accompaniment:
+        bass: 1
+        drums: 1
+        other: 1
