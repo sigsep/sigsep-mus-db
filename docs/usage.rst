@@ -162,36 +162,12 @@ The official SISEC evaluation relies on *MATLAB* because currently there
 does not exist a
 `bss\_eval <http://bass-db.gforge.inria.fr/bss_eval/>`__ implementation
 for python which produces indentical results. Therefore please run
-``dsdtools_only_eval.m`` from the `dsdtools Matlab
-scripts <https://github.com/faroit/dsdtoolsmat>`__ after you have
+``dsd100_eval_only.m`` from the `DSD100 Matlab
+scripts <https://github.com/faroit/dsd100mat>`__ after you have
 processed and saved your estimates with *dsdtoolspy*.
 
 
 Evaluation in python
 ^^^^^^^^^^^^^^^^^^^^
 
-.. warning:: Warning, this is not supported yet
-
-If you really don't want to start MATLAB you can run the bss\_eval from
-python with the help of
-`matlab\_wrapper <https://github.com/mrkrd/matlab_wrapper>`__. For
-convenience this package already has implemented the MATLAB evaluation
-functions but does not write them to mat files yet. We offer several
-optional methods to parse the dsdtools:
-
-.. code:: python
-
-    # Evaluate the results using matlab_wrapper and save the estimates to disk
-    dsd.run(my_function, save=True, evaluate=True)
-
-    # Evaluate the results using matlab_wrapper but do not save the estimates to disk
-    dsd.run(my_function, save=False, evaluate=True)
-
-    # Just evaluate the user_estimates folder when the estimates have already been saved to disk
-    # this equivalent to the MATLAB dsdtools_only_eval.m function
-    dsd.run(save=False, evaluate=True)
-    # or simply which is the same as as last line
-    dsd.evaluate()
-
-    # Only pass the tracks to my_function. Ignore the results. Useful for statistics
-    dsd.run(my_function, save=False, evaluate=False)
+.. warning:: Evaluation in python is not supported yet
