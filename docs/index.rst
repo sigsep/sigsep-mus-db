@@ -2,7 +2,9 @@ dsdtools
 ======
 
 A python package to parse and process the **demixing secrets dataset
-(dsdtools)** as part of the `Signal Separation Evaluation Campaign
+(DSD)** as part of the `MUS
+task <https://sisec.inria.fr/home/2016-professionally-produced-music-recordings/>`__
+of the `Signal Separation Evaluation Campaign
 (SISEC) <https://sisec.inria.fr/>`__
 
 

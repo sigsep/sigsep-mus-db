@@ -1,10 +1,12 @@
 Usage
 =====
 
-This package should nicely integrate with your existing code so that it
-can parse and process the *dsdtools* from python, thus makes it easy to
-participate in the `SISEC MUS
-tasks <https://sisec.inria.fr/professionally-produced-music-recordings>`__.
+This package should nicely integrate with your existing python code,
+thus makes it easy to participate in the `SISEC MUS
+tasks <https://sisec.inria.fr/home/2016-professionally-produced-music-recordings>`__.
+The core of this package is calling a user-provided function that
+separates the mixtures from the DSD into several estimated target
+sources.
 
 
 Providing a compatible function
@@ -66,16 +68,14 @@ Simply import the dsdtools package in your main python function:
        root_dir='path/to/dsdtools/',
    )
 
-The ``root_dir`` is the path to the dsdtools dataset folder. It can also
-be set system-wide. Just ``export DSD_PATH=/path/to/dsdtools/`` inside
-your terminal. The ``user_estimates_dir`` is the path to the user
-estimates. If it is not set, the default will be used which is inside
-the *dsdtools* ``root_dir``.
+The ``root_dir`` is the path to the dsdtools dataset folder. Instead of
+``root_dir`` it can also be set system-wide. Just
+``export DSD_PATH=/path/to/dsdtools`` inside your terminal environment.
 
 Test if your separation function generates valid output
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-Before you run the full dsdtools, which might take very long, participants
+Before you run the full DSD100, which might take very long, participants
 can test their separation function by running:
 
 .. code:: python
@@ -85,11 +85,11 @@ can test their separation function by running:
 This test makes sure the user provided output is compatible to the
 dsdtools framework. The function returns ``True`` if the test succeeds.
 
-Processing the full dsdtools
+Processing the full DSD100
 ''''''''''''''''''''''''''
 
 To process all 100 DSD tracks and saves the results to the
-``dir``:
+``estimates_dir``:
 
 .. code:: python
 
@@ -106,7 +106,7 @@ training subset and then apply the algorithm on the test data:
     dsd.run(my_training_function, subsets="Dev")
     dsd.run(my_test_function, subsets="Test")
 
-Processing single or multiple dsdtools items
+Processing single or multiple DSD100 tracks
 ''''''''''''''''''''''''''''''''''''''''''
 
 .. code:: python
