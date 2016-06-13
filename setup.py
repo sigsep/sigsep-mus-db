@@ -63,7 +63,6 @@ if __name__ == "__main__":
             'Programming Language :: Python :: 3',
             'Topic :: Multimedia :: Sound/Audio :: Analysis',
             'Topic :: Multimedia :: Sound/Audio :: Sound Synthesis'
-            'Topic :: Scientific/Engineering :: Information Analysis',
         ],
 
         zip_safe=False,
