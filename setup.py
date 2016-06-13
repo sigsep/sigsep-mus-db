@@ -10,6 +10,7 @@ if __name__ == "__main__":
 
         # Description
         description='Python tools for the Demixing Secrets Dataset (DSD)',
+        url='https://github.com/faroit/dsdtools',
 
         # Your contact information
         author='Fabian-Robert Stoeter',
