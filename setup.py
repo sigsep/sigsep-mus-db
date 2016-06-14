@@ -6,7 +6,7 @@ if __name__ == "__main__":
         name='dsdtools',
 
         # Version
-        version="0.1.0",
+        version="0.1.1",
 
         # Description
         description='Python tools for the Demixing Secrets Dataset (DSD)',
@@ -33,6 +33,10 @@ if __name__ == "__main__":
             'PySoundFile>=0.8',
             'mir_eval'
         ],
+
+        package_data={
+            'dsdtools': ['configs/dsd100.yaml'],
+        },
 
         extras_require={
             'tests': [
