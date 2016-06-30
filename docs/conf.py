@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
+import fake_numpy
+import fake_cffi
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -63,7 +66,5 @@ texinfo_documents = [
 ]
 
 # Fake imports to avoid actually loading NumPy and libsndfile
-import fake_numpy
 sys.modules['numpy'] = sys.modules['fake_numpy']
-import fake_cffi
 sys.modules['cffi'] = sys.modules['fake_cffi']
