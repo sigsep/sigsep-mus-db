@@ -61,3 +61,9 @@ texinfo_documents = [
    author, 'dsdtools', 'One line description of project.',
    'Miscellaneous'),
 ]
+
+# Fake imports to avoid actually loading NumPy and libsndfile
+import fake_numpy
+sys.modules['numpy'] = sys.modules['fake_numpy']
+import fake_cffi
+sys.modules['cffi'] = sys.modules['fake_cffi']
