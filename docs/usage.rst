@@ -56,7 +56,7 @@ Create estimates for SiSEC evaluation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Setting up dsdtools
-'''''''''''''''''
+'''''''''''''''''''
 
 Simply import the dsdtools package in your main python function:
 
@@ -107,7 +107,7 @@ training subset and then apply the algorithm on the test data:
     dsd.run(my_test_function, subsets="Test")
 
 Processing single or multiple DSD100 tracks
-''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''
 
 .. code:: python
 
