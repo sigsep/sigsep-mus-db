@@ -28,8 +28,8 @@ project = u'dsdtools'
 copyright = u'2016, Fabian-Robert Stöter'
 author = u'Fabian-Robert Stöter'
 
-version = u'0.1.0'
-release = u'0.1.0'
+version = u'0.1.1'
+release = u'0.1.1'
 
 language = None
 
