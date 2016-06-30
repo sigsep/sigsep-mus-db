@@ -1,3 +1,4 @@
+from __future__ import print_function
 import dsdtools
 
 
@@ -25,7 +26,7 @@ dsd = dsdtools.DB()
 
 # verify if my_function works correctly
 if dsd.test(my_function):
-    print "my_function is valid"
+    print("my_function is valid")
 
 dsd.run(
     my_function,
