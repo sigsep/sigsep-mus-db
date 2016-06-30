@@ -2,8 +2,32 @@
 
 import os
 import sys
-import fake_numpy
-import fake_cffi
+import six
+
+if six.PY3:
+    from unittest.mock import MagicMock
+else:
+    from mock import Mock as MagicMock
+
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
+
+
+# -- Options for HTML output -------------------------------------------------
+
+
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+if on_rtd:
+    html_theme = 'default'
+    MOCK_MODULES = ['argparse', 'numpy', 'scipy', 'soundfile', 'matplotlib']
+    sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+else:
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -64,7 +88,3 @@ texinfo_documents = [
    author, 'dsdtools', 'One line description of project.',
    'Miscellaneous'),
 ]
-
-# Fake imports to avoid actually loading NumPy and libsndfile
-sys.modules['numpy'] = sys.modules['fake_numpy']
-sys.modules['cffi'] = sys.modules['fake_cffi']
