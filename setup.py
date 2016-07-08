@@ -6,7 +6,7 @@ if __name__ == "__main__":
         name='dsdtools',
 
         # Version
-        version="0.1.1",
+        version="0.1.2",
 
         # Description
         description='Python tools for the Demixing Secrets Dataset (DSD)',

@@ -81,6 +81,23 @@ def test_file_loading():
     assert len(tracks) == 1
 
 
+def test_file_loading_valid():
+    # initiate dsdtools
+
+    dsd = dsdtools.DB(root_dir="data/DSD100subset", valid_ids=55)
+    tracks = dsd.load_dsd_tracks(subsets='Dev')
+    # from two tracks there is only one track left (id=81)
+    assert len(tracks) == 1
+    assert tracks[0].id == 81
+
+    tracks = dsd.load_dsd_tracks(subsets='Valid')
+    assert len(tracks) == 1
+    assert tracks[0].id == 55
+
+    with pytest.raises(ValueError):
+        tracks = dsd.load_dsd_tracks(subsets=['Dev', 'Valid'])
+
+
 @pytest.fixture(params=['data/DSD100subset'])
 def dsd(request):
     return dsdtools.DB(root_dir=request.param)
