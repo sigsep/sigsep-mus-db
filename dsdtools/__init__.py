@@ -35,6 +35,10 @@ class DB(object):
     evaluation : str, {None, 'bss_eval', 'mir_eval'}
         Setup evaluation module and starts matlab if bsseval is enabled
 
+    valid_ids : list[int] or int, optional
+        select single or multiple _dsdtools_ items by ID that will be used
+        for validation data (ie not included in the `Dev` set)
+
     Attributes
     ----------
     setup_file : str
@@ -74,7 +78,8 @@ class DB(object):
         self,
         root_dir=None,
         setup_file=None,
-        evaluation=None
+        evaluation=None,
+        valid_ids=None,
     ):
         if root_dir is None:
             if "DSD_PATH" in os.environ:
@@ -100,6 +105,12 @@ class DB(object):
         self.sources_dir = op.join(
             self.root_dir, "Sources"
         )
+
+        if valid_ids is not None:
+            if not isinstance(valid_ids, collections.Sequence):
+                valid_ids = [valid_ids]
+
+        self.valid_ids = valid_ids
 
         self.sources_names = list(self.setup['sources'].keys())
         self.targets_names = list(self.setup['targets'].keys())
@@ -132,13 +143,23 @@ class DB(object):
                 subsets = [subsets]
             else:
                 subsets = subsets
+                if all(x in ['Valid', 'Dev'] for x in subsets):
+                    raise ValueError(
+                        "Cannot load Valid and Dev at the same time"
+                    )
         else:
             subsets = ['Dev', 'Test']
 
         tracks = []
         if op.isdir(self.mixtures_dir):
             for subset in subsets:
-                subset_folder = op.join(self.mixtures_dir, subset)
+
+                # For validation use Dev set and filter by ids later
+                if subset == 'Valid':
+                    subset_folder = op.join(self.mixtures_dir, 'Dev')
+                else:
+                    subset_folder = op.join(self.mixtures_dir, subset)
+
                 for _, track_folders, _ in os.walk(subset_folder):
                     for track_filename in track_folders:
 
@@ -193,6 +214,14 @@ class DB(object):
 
                         # add track to list of tracks
                         tracks.append(track)
+
+                # Filter tracks by valid_ids
+                if self.valid_ids is not None:
+                    if subset == 'Dev':
+                        tracks = [t for t in tracks
+                                  if t.id not in self.valid_ids]
+                    if subset == 'Valid':
+                        tracks = [t for t in tracks if t.id in self.valid_ids]
 
             if ids is not None:
                 return [t for t in tracks if t.id in ids]
