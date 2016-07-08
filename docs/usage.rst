@@ -106,6 +106,11 @@ training subset and then apply the algorithm on the test data:
     dsd.run(my_training_function, subsets="Dev")
     dsd.run(my_test_function, subsets="Test")
 
+If you want to exclude tracks from the training you can specify track ids as
+``dsdtools.DB(..., valid_ids=[1, 2]`` object. Those tracks are then not
+included in ``Dev`` but are returned for ``subsets="Valid"``.
+
+
 Processing single or multiple DSD100 tracks
 '''''''''''''''''''''''''''''''''''''''''''
 
