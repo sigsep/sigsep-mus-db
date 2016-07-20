@@ -141,13 +141,12 @@ class Track(object):
     ):
         self.filename = filename
         try:
-            track_id, track_artist, track_title = \
-                filename.split(' - ')
-            self.id = int(track_id)
-            self.artist = track_artist
-            self.title = track_title
+            split_name = filename.split(' - ')
+            self.id = int(split_name[0])
+            self.artist = split_name[1]
+            self.title = split_name[2]
         except ValueError:
-            self.id = track_id
+            self.id = 0
             self.artist = track_artist
             self.title = track_title
 
