@@ -203,4 +203,4 @@ class Track(object):
         self._rate = rate
 
     def __repr__(self):
-        return "\n%s (%s)" % (self.filename, self.path)
+        return "\n%d >> %s" % (self.id, self.path)

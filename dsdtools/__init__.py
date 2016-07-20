@@ -143,7 +143,7 @@ class DB(object):
                 subsets = [subsets]
             else:
                 subsets = subsets
-                if all(x in ['Valid', 'Dev'] for x in subsets):
+                if 'Valid' in subsets and 'Dev' in subsets:
                     raise ValueError(
                         "Cannot load Valid and Dev at the same time"
                     )
@@ -161,7 +161,7 @@ class DB(object):
                     subset_folder = op.join(self.mixtures_dir, subset)
 
                 for _, track_folders, _ in os.walk(subset_folder):
-                    for track_filename in track_folders:
+                    for track_filename in sorted(track_folders):
 
                         # create new dsd Track
                         track = Track(
