@@ -186,7 +186,6 @@ If you use this package, please reference the following paper
   Year = {2017},
   booktitle = {Latent Variable Analysis and Signal Separation - 12th International
     Conference, {LVA/ICA} 2015, Liberec, Czech Republic, August 25-28,
-    2015, Proceedings},
-}
+    2015, Proceedings}
 }
 ```
