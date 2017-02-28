@@ -5,7 +5,7 @@
 [![Docs Status](https://readthedocs.org/projects/dsdtools/badge/?version=latest)](https://dsdtools.readthedocs.org/en/latest/)
 
 
-A python package to parse and process the __demixing secrets dataset (DSD)__ as part of the [MUS task](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings/) of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/)
+A python package to parse and process the __demixing secrets dataset (DSD)__ as part of the [MUS task](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings/) of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/).
 
 ## Installation
 
@@ -83,12 +83,20 @@ dsd.run(my_function, estimates_dir="path/to/estimates")
 
 #### Processing training and testing subsets separately
 
-Algorithms which make use of machine learning techniques can use the training subset and then apply the algorithm on the test data. That way it is possible to
-apply different user functions for both datasets.
+Algorithms which make use of machine learning techniques can use the training subset and then apply the algorithm on the test data. That way it is possible to apply different user functions for both datasets.
 
 ```python
 dsd.run(my_training_function, subsets="Dev")
 dsd.run(my_test_function, subsets="Test")
+```
+
+##### Access the reference signals / targets
+
+For supervised learning you can use the provided reference sources by loading the `track.targets` dictionary.
+E.g. to access the vocal reference from a track:
+
+```python
+track.targets['vocals'].audio
 ```
 
 If you want to exclude tracks from the training you can specify track ids as  the `dsdtools.DB(..., valid_ids=[1, 2]`) object. Those tracks are then not included in `Dev` but are returned for `subsets="Valid"`.
@@ -173,19 +181,14 @@ If you use this package, please reference the following paper
 
 ```tex
 @inproceedings{
-  SiSEC16,
+  SiSEC17,
   Title = {The 2016 Signal Separation Evaluation Campaign},
   Address = {Cham},
-  Author = {Liutkus, Antoine and St{\"o}ter, Fabian-Robert and Rafii, Zafar and
-    Kitamura, Daichi and Rivet, Bertrand and Ito, Nobutaka and
-    Ono, Nobutaka and Fontecave, Julie},
-  Editor = {Tichavsk{\'y}, Petr and Babaie-Zadeh, Massoud and
-    Michel, Olivier J.J. and Thirion-Moreau, Nad{\`e}ge},
+  Author = {Liutkus, Antoine and St{\"o}ter, Fabian-Robert and Rafii, Zafar and Kitamura, Daichi and Rivet, Bertrand and Ito, Nobutaka and Ono, Nobutaka and Fontecave, Julie},
+  Editor = {Tichavsk{\'y}, Petr and Babaie-Zadeh, Massoud and Michel, Olivier J.J. and Thirion-Moreau, Nad{\`e}ge},
   Pages = {323--332},
   Publisher = {Springer International Publishing},
   Year = {2017},
-  booktitle = {Latent Variable Analysis and Signal Separation - 12th International
-    Conference, {LVA/ICA} 2015, Liberec, Czech Republic, August 25-28,
-    2015, Proceedings}
+  booktitle = {Latent Variable Analysis and Signal Separation - 12th International Conference, {LVA/ICA} 2015, Liberec, Czech Republic, August 25-28, 2015, Proceedings},
 }
 ```

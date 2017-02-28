@@ -106,6 +106,17 @@ training subset and then apply the algorithm on the test data:
     dsd.run(my_training_function, subsets="Dev")
     dsd.run(my_test_function, subsets="Test")
 
+
+Access the reference signals / targets
+''''''''''''''''''''''''''''''''''''''
+
+For supervised learning you can use the provided reference sources by loading the `track.targets` dictionary.
+E.g. to access the vocal reference from a track:
+
+.. code:: python
+
+    track.targets['vocals'].audio
+
 If you want to exclude tracks from the training you can specify track ids as
 ``dsdtools.DB(..., valid_ids=[1, 2]`` object. Those tracks are then not
 included in ``Dev`` but are returned for ``subsets="Valid"``.
