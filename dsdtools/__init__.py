@@ -119,7 +119,7 @@ class DB(object):
             self.evaluator = evaluate.BSSeval(evaluation)
 
     def load_dsd_tracks(self, subsets=None, ids=None):
-        """Parses the dsdtools folder structure and returns `Track` objects
+        """Parses the dsdtools folder structure, returns list of `Track` objects
 
         Parameters
         ==========
