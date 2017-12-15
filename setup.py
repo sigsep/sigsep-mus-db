@@ -6,10 +6,10 @@ if __name__ == "__main__":
         name='dsdtools',
 
         # Version
-        version="0.1.3",
+        version="0.2.0",
 
         # Description
-        description='Python tools for the Demixing Secrets Dataset (DSD)',
+        description='Python tools for the SIGSEP MUS Dataset',
         url='https://github.com/faroit/dsdtools',
 
         # Your contact information
@@ -30,12 +30,11 @@ if __name__ == "__main__":
             'six',
             'tqdm',
             'pyaml',
-            'PySoundFile>=0.8',
-            'mir_eval'
+            'PySoundFile>=0.8'
         ],
 
         package_data={
-            'dsdtools': ['configs/dsd100.yaml'],
+            'dsdtools': ['configs/mus.yaml'],
         },
 
         extras_require={
@@ -64,7 +63,9 @@ if __name__ == "__main__":
             'Intended Audience :: Telecommunications Industry',
             'Intended Audience :: Science/Research',
             'Programming Language :: Python :: 2.7',
-            'Programming Language :: Python :: 3',
+            'Programming Language :: Python :: 3.4',
+            'Programming Language :: Python :: 3.5',
+            'Programming Language :: Python :: 3.6',
             'Topic :: Multimedia :: Sound/Audio :: Analysis',
             'Topic :: Multimedia :: Sound/Audio :: Sound Synthesis'
         ],

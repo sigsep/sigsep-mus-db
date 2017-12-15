@@ -10,7 +10,7 @@ A python package to parse and process the __demixing secrets dataset (DSD)__ as 
 ## Installation
 
 ```bash
-pip install dsdtools
+pip install mustools
 ```
 
 ## DSD100 Dataset / Subset

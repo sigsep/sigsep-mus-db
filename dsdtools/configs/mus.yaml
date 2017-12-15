@@ -1,4 +1,4 @@
-# SISEC DSD100 MUS Task Configuration
+# SISEC MUS 2018 Configuration
 
 # Define the Input sources for each track
 sources:
@@ -8,8 +8,15 @@ sources:
     other: other.wav
 
 # Additionally provide the artistic mix
-mix:
+mixture:
     mixture.wav
+
+stemids:
+    mixture: 0
+    drums: 1
+    bass: 2
+    other: 3
+    vocals: 4
 
 # Define output targets to be tested using linear mixtures
 targets:

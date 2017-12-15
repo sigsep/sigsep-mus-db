@@ -120,7 +120,7 @@ class Track(object):
     path : str
         Absolute path of mixture audio file
 
-    subset : {'Test', 'Dev'}
+    subset : {'train', 'test'}
         belongs to subset
 
     targets : OrderedDict
@@ -133,7 +133,6 @@ class Track(object):
     def __init__(
         self,
         filename,
-        track_id=None,
         track_artist=None,
         track_title=None,
         subset=None,
@@ -142,11 +141,9 @@ class Track(object):
         self.filename = filename
         try:
             split_name = filename.split(' - ')
-            self.id = int(split_name[0])
             self.artist = split_name[1]
             self.title = split_name[2]
         except ValueError:
-            self.id = 0
             self.artist = track_artist
             self.title = track_title
 
@@ -202,4 +199,4 @@ class Track(object):
         self._rate = rate
 
     def __repr__(self):
-        return "\n%d >> %s" % (self.id, self.path)
+        return "\n%d >> %s" % (self.path)
