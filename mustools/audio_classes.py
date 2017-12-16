@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 import soundfile as sf
 import numpy as np
+import stempeg
 
 
 class Source(object):
@@ -12,14 +13,17 @@ class Source(object):
     ----------
     name : str
         Name of this source
+    stem_id : int
+        If part of a stem file, the stem/substream ID is set here.
     path : str
         Absolute path to audio file
     gain : float
         Mixing weight for this source
     """
-    def __init__(self, name=None, path=None):
+    def __init__(self, name=None, path=None, stem_id=None):
         self.name = name
         self.path = path
+        self.stem_id = stem_id
         self.gain = 1.0
         self._audio = None
         self._rate = None
@@ -35,7 +39,12 @@ class Source(object):
         # read from disk to save RAM otherwise
         else:
             if os.path.exists(self.path):
-                audio, rate = sf.read(self.path, always_2d=True)
+                if self.stem_id is not None:
+                    audio, rate = stempeg.read_stems(
+                        filename=self.path, stem_idx=self.stem_id
+                    )
+                else:
+                    audio, rate = sf.read(self.path, always_2d=True)
                 self._rate = rate
                 return audio
             else:
@@ -51,7 +60,12 @@ class Source(object):
         # load audio to set rate
         if self._rate is None:
             if os.path.exists(self.path):
-                audio, rate = sf.read(self.path, always_2d=True)
+                if self.stem_id is not None:
+                    audio, rate = stempeg.read_stems(
+                        filename=self.path, stem_idx=self.stem_id
+                    )
+                else:
+                    audio, rate = sf.read(self.path, always_2d=True)
                 self._rate = rate
                 return rate
             else:
@@ -120,6 +134,9 @@ class Track(object):
     path : str
         Absolute path of mixture audio file
 
+    stem_id : int
+        If part of a stem file, the stem/substream ID is set here.
+
     subset : {'train', 'test'}
         belongs to subset
 
@@ -133,6 +150,7 @@ class Track(object):
     def __init__(
         self,
         filename,
+        stem_id=None,
         track_artist=None,
         track_title=None,
         subset=None,
@@ -151,21 +169,44 @@ class Track(object):
         self.subset = subset
         self.targets = None
         self.sources = None
+        self.stem_id = None
         self._audio = None
+        self._stems = None
         self._rate = None
+
+    @property
+    def stems(self):
+        """array_like: [shape=(stems, num_samples, num_channels)]
+        """
+
+        # return cached audio it explicitly set bet setter
+        if self._stems is not None:
+            return self._stems
+        # read from disk to save RAM otherwise
+        else:
+            if os.path.exists(self.path):
+                S, rate = stempeg.read_stems(filename=self.path)
+                self._rate = rate
+                return S
+
 
     @property
     def audio(self):
         """array_like: [shape=(num_samples, num_channels)]
         """
 
-        # return cached audio it explicitly set bet setter
+        # return cached audio it explicitly set by setter
         if self._audio is not None:
             return self._audio
         # read from disk to save RAM otherwise
         else:
             if os.path.exists(self.path):
-                audio, rate = sf.read(self.path, always_2d=True)
+                if self.stem_id is not None:
+                    audio, rate = stempeg.read_stems(
+                        filename=self.path, stem_idx=self.stem_id
+                    )
+                else:
+                    audio, rate = sf.read(self.path, always_2d=True)
                 self._rate = rate
                 return audio
             else:
@@ -181,7 +222,12 @@ class Track(object):
         # load audio to set rate
         if self._rate is None:
             if os.path.exists(self.path):
-                audio, rate = sf.read(self.path, always_2d=True)
+                if self.stem_id is not None:
+                    audio, rate = stempeg.read_stems(
+                        filename=self.path, stem_idx=self.stem_id
+                    )
+                else:
+                    audio, rate = sf.read(self.path, always_2d=True)
                 self._rate = rate
                 return rate
             else:

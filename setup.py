@@ -30,7 +30,8 @@ if __name__ == "__main__":
             'six',
             'tqdm',
             'pyaml',
-            'PySoundFile>=0.8'
+            'soundfile>=0.8',
+            'stempeg==0.1.0'
         ],
 
         package_data={
