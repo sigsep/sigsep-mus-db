@@ -5,7 +5,7 @@
 [![Docs Status](https://readthedocs.org/projects/mustools/badge/?version=latest)](https://mustools.readthedocs.org/en/latest/)
 
 
-A python package to parse and process the __demixing secrets dataset (DSD)__ as part of the [MUS task](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings/) of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/).
+A python package to parse and process the __SIGSPE-MUS__ as part of the [MUS task](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings/) of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/).
 
 ## Installation
 
@@ -13,17 +13,17 @@ A python package to parse and process the __demixing secrets dataset (DSD)__ as 
 pip install mustools
 ```
 
-## DSD100 Dataset / Subset
+## SIGSEP MUS Dataset / Subset
 
-The complete dataset (~14 GB) can be downloaded [here](http://liutkus.net/DSD100.zip). For testing and development we provide a subset of the DSD100 [for direct download here](https://www.loria.fr/~aliutkus/DSD100subset.zip). It has the same file and folder structure as well as the same audio file formats but consists of only 4 tracks of 30s each.
+t.b.a.
 
 ## Usage
 
-This package should nicely integrate with your existing python code, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings). The core of this package is calling a user-provided function that separates the mixtures from the DSD into several estimated target sources.
+This package should nicely integrate with your existing python code, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings). The core of this package is calling a user-provided function that separates the mixtures from the MUS into several estimated target sources.
 
 ### Providing a compatible function
 
-- The function will take an DSD ```Track``` object which can be used from inside your algorithm.
+- The function will take an MUS ```Track``` object which can be used from inside your algorithm.
 - Participants can access:
 
  - ```Track.audio```, representing the stereo mixture as an ```np.ndarray``` of ```shape=(nun_sampl, 2)```
@@ -60,25 +60,25 @@ Simply import the mustools package in your main python function:
 ```python
 import mustools
 
-dsd = mustools.DB(root_dir='path/to/mustools')
+mus = mustools.DB(root_dir='path/to/mustools')
 ```
 
 The ```root_dir``` is the path to the mustools dataset folder. Instead of ```root_dir``` it can also be set system-wide. Just ```export MUS_PATH=/path/to/mustools``` inside your terminal environment.
 
 #### Test if your separation function generates valid output
 
-Before processing the full DSD100 which might take very long, participants can test their separation function by running:
+Before processing the full MUS which might take very long, participants can test their separation function by running:
 ```python
-dsd.test(my_function)
+mus.test(my_function)
 ```
 This test makes sure the user provided output is compatible to the mustools framework. The function returns `True` if the test succeeds.
 
-#### Processing the full DSD100
+#### Processing the full MUS
 
-To process all 100 DSD tracks and saves the results to the folder ```estimates_dir```:
+To process all 150 MUS tracks and saves the results to the folder ```estimates_dir```:
 
 ```python
-dsd.run(my_function, estimates_dir="path/to/estimates")
+mus.run(my_function, estimates_dir="path/to/estimates")
 ```
 
 #### Processing training and testing subsets separately
@@ -86,8 +86,8 @@ dsd.run(my_function, estimates_dir="path/to/estimates")
 Algorithms which make use of machine learning techniques can use the training subset and then apply the algorithm on the test data. That way it is possible to apply different user functions for both datasets.
 
 ```python
-dsd.run(my_training_function, subsets="Dev")
-dsd.run(my_test_function, subsets="Test")
+mus.run(my_training_function, subsets="Dev")
+mus.run(my_test_function, subsets="Test")
 ```
 
 ##### Access the reference signals / targets
@@ -102,16 +102,6 @@ track.targets['vocals'].audio
 If you want to exclude tracks from the training you can specify track ids as  the `mustools.DB(..., valid_ids=[1, 2]`) object. Those tracks are then not included in `Dev` but are returned for `subsets="Valid"`.
 
 
-#### Processing single or multiple DSD100 tracks
-
-```python
-dsd.run(my_function, ids=30)
-dsd.run(my_function, ids=[1, 2, 3])
-dsd.run(my_function, ids=range(90, 99))
-```
-
-Note, that the provided list of ids can be overridden if the user sets a terminal environment variable ```DSD_ID=1```.
-
 #### Use multiple cores
 
 ##### Python Multiprocessing
@@ -119,25 +109,14 @@ Note, that the provided list of ids can be overridden if the user sets a termina
 To speed up the processing, `run` can make use of multiple CPUs:
 
 ```python
-dsd.run(my_function, parallel=True, cpus=4)
+mus.run(my_function, parallel=True, cpus=4)
 ```
 
 Note: We use the python builtin multiprocessing package, which sometimes is unable to parallelize the user provided function to [PicklingError](http://stackoverflow.com/a/8805244).
 
-##### GNU Parallel
-
-> [GNU parallel](http://www.gnu.org/software/parallel) is a shell tool for executing jobs in parallel using one or more computers. A job can be a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, a list of URLs, or a list of tables. A job can also be a command that reads from a pipe. GNU parallel can then split the input and pipe it into commands in parallel.
-
-By running only one ```id``` in each python process the DSD100 set can easily be processed with GNU parallel using multiple CPUs without any further modifications to your code:
-
-```bash
-parallel --bar 'DSD_ID={0} python main.py' ::: {0..99}  
-```
-
 ## Compute the bss_eval measures
 
-The official SISEC evaluation relies on _MATLAB_ because currently there does not exist a [bss_eval](http://bass-db.gforge.inria.fr/bss_eval/) implementation for python which produces identical results.
-Therefore please run ```dsd100_eval_only.m``` from the [DSD100 Matlab scripts](https://github.com/faroit/dsd100mat) after you have processed and saved your estimates with _mustools_.
+t.b.a.
 
 ## Full code Example
 
@@ -164,14 +143,14 @@ def my_function(track):
     return estimates
 
 # initiate mustools
-dsd = mustools.DB(root_dir="./Volumes/Data/mustools")
+mus = mustools.DB(root_dir="./Volumes/Data/mustools")
 
 # verify if my_function works correctly
-if dsd.test(my_function):
+if mus.test(my_function):
     print "my_function is valid"
 
 # this might take 3 days to finish
-dsd.run(my_function, estimates_dir="path/to/estimates")
+mus.run(my_function, estimates_dir="path/to/estimates")
 
 ```
 
