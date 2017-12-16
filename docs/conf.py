@@ -55,8 +55,8 @@ project = u'mustools'
 copyright = u'2016, Fabian-Robert Stöter'
 author = u'Fabian-Robert Stöter'
 
-version = u'0.1.3'
-release = u'0.1.3'
+version = u'0.2.0'
+release = u'0.2.0'
 
 language = None
 

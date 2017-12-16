@@ -98,7 +98,7 @@ def dsd(request):
 def test_env(path):
 
     if path is not None:
-        os.environ["DSD_PATH"] = path
+        os.environ["MUS_PATH"] = path
 
     assert mustools.DB()
 

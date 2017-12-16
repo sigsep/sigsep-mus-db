@@ -64,13 +64,13 @@ Simply import the mustools package in your main python function:
 
    import mustools
 
-   dsd = mustools.DB(
+   mus = mustools.DB(
        root_dir='path/to/mustools/',
    )
 
 The ``root_dir`` is the path to the mustools dataset folder. Instead of
 ``root_dir`` it can also be set system-wide. Just
-``export DSD_PATH=/path/to/mustools`` inside your terminal environment.
+``export MUS_PATH=/path/to/mustools`` inside your terminal environment.
 
 Test if your separation function generates valid output
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''

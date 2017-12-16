@@ -24,7 +24,7 @@ class DB(object):
     ----------
     root_dir : str, optional
         mustools Root path. If set to `None` it will be read
-        from the `DSD_PATH` environment variable
+        from the `MUS_PATH` environment variable
 
     subsets : str or list, optional
         select a _mustools_ subset `train` or `test` (defaults to both)
@@ -38,7 +38,7 @@ class DB(object):
     setup_file : str
         path to yaml file. default: `setup.yaml`
     root_dir : str
-        mustools Root path. Default is `DSD_PATH` env
+        mustools Root path. Default is `MUS_PATH` env
     mixtures_dir : str
         path to Mixture directory
     sources_dir : str
@@ -52,7 +52,7 @@ class DB(object):
 
     Methods
     -------
-    load_dsd_tracks()
+    load_mus_tracks()
         Iterates through the mustools folder structure and
         returns ``Track`` objects
     test(user_function)
@@ -69,10 +69,10 @@ class DB(object):
         is_wav=False
     ):
         if root_dir is None:
-            if "DSD_PATH" in os.environ:
-                self.root_dir = os.environ["DSD_PATH"]
+            if "MUS_PATH" in os.environ:
+                self.root_dir = os.environ["MUS_PATH"]
             else:
-                raise RuntimeError("Variable `DSD_PATH` has not been set.")
+                raise RuntimeError("Variable `MUS_PATH` has not been set.")
         else:
             self.root_dir = root_dir
 
@@ -89,7 +89,7 @@ class DB(object):
         self.sources_names = list(self.setup['sources'].keys())
         self.targets_names = list(self.setup['targets'].keys())
 
-    def load_dsd_tracks(self, subsets=None):
+    def load_mus_tracks(self, subsets=None):
         """Parses the mustools folder structure, returns list of `Track` objects
 
         Parameters
@@ -126,7 +126,7 @@ class DB(object):
                 for _, track_folders, _ in os.walk(subset_folder):
                     for track_filename in sorted(track_folders):
 
-                        # create new dsd Track
+                        # create new mus Track
                         track = Track(
                             filename=track_filename,
                             path=op.join(
@@ -340,7 +340,7 @@ class DB(object):
             raise RuntimeError("Provide a function!")
 
         # list of tracks to be processed
-        tracks = self.load_dsd_tracks(subsets=subsets)
+        tracks = self.load_mus_tracks(subsets=subsets)
 
         success = False
         if parallel:
