@@ -8,4 +8,3 @@ PySoundFile>=0.8
 sphinx
 sphinx_rtd_theme
 numpydoc
-mir_eval

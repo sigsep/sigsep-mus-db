@@ -1,8 +1,8 @@
-# dsdtools
+# mustools
 
-[![Build Status](https://travis-ci.org/faroit/dsdtools.svg?branch=master)](https://travis-ci.org/faroit/dsdtools)
-[![Coverage Status](https://coveralls.io/repos/github/faroit/dsdtools/badge.svg?branch=master)](https://coveralls.io/github/faroit/dsdtools?branch=master)
-[![Docs Status](https://readthedocs.org/projects/dsdtools/badge/?version=latest)](https://dsdtools.readthedocs.org/en/latest/)
+[![Build Status](https://travis-ci.org/faroit/mustools.svg?branch=master)](https://travis-ci.org/faroit/mustools)
+[![Coverage Status](https://coveralls.io/repos/github/faroit/mustools/badge.svg?branch=master)](https://coveralls.io/github/faroit/mustools?branch=master)
+[![Docs Status](https://readthedocs.org/projects/mustools/badge/?version=latest)](https://mustools.readthedocs.org/en/latest/)
 
 
 A python package to parse and process the __demixing secrets dataset (DSD)__ as part of the [MUS task](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings/) of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/).
@@ -53,17 +53,17 @@ def my_function(track):
 
 ### Creating estimates for SiSEC evaluation
 
-#### Setting up dsdtools
+#### Setting up mustools
 
-Simply import the dsdtools package in your main python function:
+Simply import the mustools package in your main python function:
 
 ```python
-import dsdtools
+import mustools
 
-dsd = dsdtools.DB(root_dir='path/to/dsdtools')
+dsd = mustools.DB(root_dir='path/to/mustools')
 ```
 
-The ```root_dir``` is the path to the dsdtools dataset folder. Instead of ```root_dir``` it can also be set system-wide. Just ```export DSD_PATH=/path/to/dsdtools``` inside your terminal environment.
+The ```root_dir``` is the path to the mustools dataset folder. Instead of ```root_dir``` it can also be set system-wide. Just ```export DSD_PATH=/path/to/mustools``` inside your terminal environment.
 
 #### Test if your separation function generates valid output
 
@@ -71,7 +71,7 @@ Before processing the full DSD100 which might take very long, participants can t
 ```python
 dsd.test(my_function)
 ```
-This test makes sure the user provided output is compatible to the dsdtools framework. The function returns `True` if the test succeeds.
+This test makes sure the user provided output is compatible to the mustools framework. The function returns `True` if the test succeeds.
 
 #### Processing the full DSD100
 
@@ -99,7 +99,7 @@ E.g. to access the vocal reference from a track:
 track.targets['vocals'].audio
 ```
 
-If you want to exclude tracks from the training you can specify track ids as  the `dsdtools.DB(..., valid_ids=[1, 2]`) object. Those tracks are then not included in `Dev` but are returned for `subsets="Valid"`.
+If you want to exclude tracks from the training you can specify track ids as  the `mustools.DB(..., valid_ids=[1, 2]`) object. Those tracks are then not included in `Dev` but are returned for `subsets="Valid"`.
 
 
 #### Processing single or multiple DSD100 tracks
@@ -137,12 +137,12 @@ parallel --bar 'DSD_ID={0} python main.py' ::: {0..99}
 ## Compute the bss_eval measures
 
 The official SISEC evaluation relies on _MATLAB_ because currently there does not exist a [bss_eval](http://bass-db.gforge.inria.fr/bss_eval/) implementation for python which produces identical results.
-Therefore please run ```dsd100_eval_only.m``` from the [DSD100 Matlab scripts](https://github.com/faroit/dsd100mat) after you have processed and saved your estimates with _dsdtools_.
+Therefore please run ```dsd100_eval_only.m``` from the [DSD100 Matlab scripts](https://github.com/faroit/dsd100mat) after you have processed and saved your estimates with _mustools_.
 
 ## Full code Example
 
 ```python
-import dsdtools
+import mustools
 
 def my_function(track):
     '''My fancy BSS algorithm'''
@@ -163,8 +163,8 @@ def my_function(track):
     }
     return estimates
 
-# initiate dsdtools
-dsd = dsdtools.DB(root_dir="./Volumes/Data/dsdtools")
+# initiate mustools
+dsd = mustools.DB(root_dir="./Volumes/Data/mustools")
 
 # verify if my_function works correctly
 if dsd.test(my_function):

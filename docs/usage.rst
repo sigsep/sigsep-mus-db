@@ -13,10 +13,10 @@ Providing a compatible function
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The core of this package consists of calling a user-provided function
-which separates the mixtures from the dsdtools into estimated target
+which separates the mixtures from the mustools into estimated target
 sources.
 
--  The function will take an dsdtools ``Track`` object which can be used
+-  The function will take an mustools ``Track`` object which can be used
    from inside your algorithm.
 -  Participants can access
 -  ``Track.audio``, representing the stereo mixture as an ``np.ndarray``
@@ -55,22 +55,22 @@ Here is an example for such a function separating the mixture into a
 Create estimates for SiSEC evaluation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Setting up dsdtools
+Setting up mustools
 '''''''''''''''''''
 
-Simply import the dsdtools package in your main python function:
+Simply import the mustools package in your main python function:
 
 .. code:: python
 
-   import dsdtools
+   import mustools
 
-   dsd = dsdtools.DB(
-       root_dir='path/to/dsdtools/',
+   dsd = mustools.DB(
+       root_dir='path/to/mustools/',
    )
 
-The ``root_dir`` is the path to the dsdtools dataset folder. Instead of
+The ``root_dir`` is the path to the mustools dataset folder. Instead of
 ``root_dir`` it can also be set system-wide. Just
-``export DSD_PATH=/path/to/dsdtools`` inside your terminal environment.
+``export DSD_PATH=/path/to/mustools`` inside your terminal environment.
 
 Test if your separation function generates valid output
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -83,7 +83,7 @@ can test their separation function by running:
    dsd.test(my_function)
 
 This test makes sure the user provided output is compatible to the
-dsdtools framework. The function returns ``True`` if the test succeeds.
+mustools framework. The function returns ``True`` if the test succeeds.
 
 Processing the full DSD100
 ''''''''''''''''''''''''''
@@ -118,7 +118,7 @@ E.g. to access the vocal reference from a track:
     track.targets['vocals'].audio
 
 If you want to exclude tracks from the training you can specify track ids as
-``dsdtools.DB(..., valid_ids=[1, 2]`` object. Those tracks are then not
+``mustools.DB(..., valid_ids=[1, 2]`` object. Those tracks are then not
 included in ``Dev`` but are returned for ``subsets="Valid"``.
 
 
@@ -162,7 +162,7 @@ GNU Parallel
     parallel can then split the input and pipe it into commands in
     parallel.
 
-By running only one ``id`` in each python process the dsdtools set can
+By running only one ``id`` in each python process the mustools set can
 easily be processed with GNU parallel using multiple CPUs without any
 further modifications to your code:
 

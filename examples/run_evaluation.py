@@ -1,5 +1,5 @@
 from __future__ import print_function
-import dsdtools
+import mustools
 
 
 def my_function(track):
@@ -21,8 +21,8 @@ def my_function(track):
     }
     return estimates
 
-# initiate dsdtools
-dsd = dsdtools.DB()
+# initiate mustools
+dsd = mustools.DB()
 
 # verify if my_function works correctly
 if dsd.test(my_function):

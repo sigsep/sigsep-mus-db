@@ -51,7 +51,7 @@ source_suffix = '.rst'
 
 master_doc = 'index'
 
-project = u'dsdtools'
+project = u'mustools'
 copyright = u'2016, Fabian-Robert Stöter'
 author = u'Fabian-Robert Stöter'
 
@@ -68,23 +68,23 @@ todo_include_todos = False
 
 html_static_path = ['_static']
 
-htmlhelp_basename = 'dsdtoolsdoc'
+htmlhelp_basename = 'mustoolsdoc'
 
 latex_elements = {
 }
 
 latex_documents = [
-  (master_doc, 'dsdtools.tex', u'dsdtools Documentation',
+  (master_doc, 'mustools.tex', u'mustools Documentation',
    u'Fabian-Robert Stöter', 'manual'),
 ]
 
 man_pages = [
-    (master_doc, 'dsdtools', u'dsdtools Documentation',
+    (master_doc, 'mustools', u'mustools Documentation',
      [author], 1)
 ]
 
 texinfo_documents = [
-  (master_doc, 'dsdtools', u'dsdtools Documentation',
-   author, 'dsdtools', 'One line description of project.',
+  (master_doc, 'mustools', u'mustools Documentation',
+   author, 'mustools', 'One line description of project.',
    'Miscellaneous'),
 ]

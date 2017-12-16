@@ -3,14 +3,14 @@ import setuptools
 if __name__ == "__main__":
     setuptools.setup(
         # Name of the project
-        name='dsdtools',
+        name='mustools',
 
         # Version
         version="0.2.0",
 
         # Description
         description='Python tools for the SIGSEP MUS Dataset',
-        url='https://github.com/faroit/dsdtools',
+        url='https://github.com/faroit/mustools',
 
         # Your contact information
         author='Fabian-Robert Stoeter',
@@ -34,7 +34,7 @@ if __name__ == "__main__":
         ],
 
         package_data={
-            'dsdtools': ['configs/mus.yaml'],
+            'mustools': ['configs/mus.yaml'],
         },
 
         extras_require={

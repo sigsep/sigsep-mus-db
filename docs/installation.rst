@@ -3,7 +3,7 @@ Installation
 
 .. code:: bash
 
-    pip install dsdtools
+    pip install mustools
 
 
 DSD100 Dataset / Subset

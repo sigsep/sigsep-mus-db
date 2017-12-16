@@ -13,21 +13,21 @@ import yaml
 import glob
 import tqdm
 import os
-import dsdtools
+import mustools
 
 
 class DB(object):
     """
-    The dsdtools DB Object
+    The mustools DB Object
 
     Parameters
     ----------
     root_dir : str, optional
-        dsdtools Root path. If set to `None` it will be read
+        mustools Root path. If set to `None` it will be read
         from the `DSD_PATH` environment variable
 
     subsets : str or list, optional
-        select a _dsdtools_ subset `train` or `test` (defaults to both)
+        select a _mustools_ subset `train` or `test` (defaults to both)
 
     is_wav : boolean, optional
         expect subfolder with wav files for each source instead of the encoded wav
@@ -38,7 +38,7 @@ class DB(object):
     setup_file : str
         path to yaml file. default: `setup.yaml`
     root_dir : str
-        dsdtools Root path. Default is `DSD_PATH` env
+        mustools Root path. Default is `DSD_PATH` env
     mixtures_dir : str
         path to Mixture directory
     sources_dir : str
@@ -53,12 +53,12 @@ class DB(object):
     Methods
     -------
     load_dsd_tracks()
-        Iterates through the dsdtools folder structure and
+        Iterates through the mustools folder structure and
         returns ``Track`` objects
     test(user_function)
-        Test the dsdtools processing
+        Test the mustools processing
     run(user_function=None, estimates_dir=None)
-        Run the dsdtools processing and saving the estimates
+        Run the mustools processing and saving the estimates
 
     """
     def __init__(
@@ -80,7 +80,7 @@ class DB(object):
             setup_path = op.join(self.root_dir, setup_file)
         else:
             setup_path = os.path.join(
-                dsdtools.__path__[0], 'configs', 'mus.yaml'
+                mustools.__path__[0], 'configs', 'mus.yaml'
             )
 
         with open(setup_path, 'r') as f:
@@ -90,14 +90,14 @@ class DB(object):
         self.targets_names = list(self.setup['targets'].keys())
 
     def load_dsd_tracks(self, subsets=None):
-        """Parses the dsdtools folder structure, returns list of `Track` objects
+        """Parses the mustools folder structure, returns list of `Track` objects
 
         Parameters
         ==========
         subsets : list[str], optional
-            select a _dsdtools_ subset `Dev` or `Test`. Defaults to both
+            select a _mustools_ subset `Dev` or `Test`. Defaults to both
         ids : list[int] or int, optional
-            select single or multiple _dsdtools_ items by ID
+            select single or multiple _mustools_ items by ID
 
         Returns
         -------
@@ -138,15 +138,13 @@ class DB(object):
 
                         # add sources to track
                         sources = {}
-                        for src, rel_path in list(
+                        for src, source_file in list(
                             self.setup['sources'].items()
                         ):
                             # create source object
                             abs_path = op.join(
-                                self.sources_dir,
-                                subset,
-                                track_filename,
-                                rel_path
+                                subset_folder,
+                                source_file
                             )
                             if os.path.exists(abs_path):
                                 sources[src] = Source(
@@ -221,7 +219,7 @@ class DB(object):
                 )
 
     def test(self, user_function):
-        """Test the dsdtools processing
+        """Test the mustools processing
 
         Parameters
         ----------
@@ -240,7 +238,7 @@ class DB(object):
 
         See Also
         --------
-        run : Process the dsdtools
+        run : Process the mustools
         """
         if not hasattr(user_function, '__call__'):
             raise TypeError("Please provide a function.")
@@ -309,7 +307,7 @@ class DB(object):
         parallel=False,
         cpus=4
     ):
-        """Run the dsdtools processing
+        """Run the mustools processing
 
         Parameters
         ----------
@@ -322,7 +320,7 @@ class DB(object):
             created if it does not exist. Default is `none` which means that
             the results are not saved.
         subsets : list[str], optional
-            select a _dsdtools_ subset `Dev` or `Test`. Defaults to both
+            select a _mustools_ subset `Dev` or `Test`. Defaults to both
         parallel: bool, optional
             activate multiprocessing
         cpus: int, optional

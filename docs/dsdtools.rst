@@ -1,16 +1,16 @@
 Modules
 -------
 
-.. automodule:: dsdtools
+.. automodule:: mustools
     :members:
     :undoc-members:
     :show-inheritance:
     :inherited-members:
-.. autoclass: dsdtools.DB
+.. autoclass: mustools.DB
     :members:
 
 .. toctree::
    :maxdepth: 3
 
    self
-   dsdtools.audio_classes
+   mustools.audio_classes
