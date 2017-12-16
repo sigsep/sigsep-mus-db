@@ -1,6 +1,5 @@
 from __future__ import print_function
 from .audio_classes import Track, Source, Target
-from . import evaluate
 from os import path as op
 from six.moves import map
 import multiprocessing
@@ -39,8 +38,6 @@ class DB(object):
         path to yaml file. default: `setup.yaml`
     root_dir : str
         mustools Root path. Default is `MUS_PATH` env
-    mixtures_dir : str
-        path to Mixture directory
     sources_dir : str
         path to Sources directory
     sources_names : list[str]
@@ -65,7 +62,6 @@ class DB(object):
         self,
         root_dir=None,
         setup_file=None,
-        valid_ids=None,
         is_wav=False
     ):
         if root_dir is None:
@@ -96,18 +92,12 @@ class DB(object):
         ==========
         subsets : list[str], optional
             select a _mustools_ subset `Dev` or `Test`. Defaults to both
-        ids : list[int] or int, optional
-            select single or multiple _mustools_ items by ID
 
         Returns
         -------
         list[Track]
             return a list of ``Track`` Objects
         """
-        # parse all the mixtures
-        if ids is not None:
-            if not isinstance(ids, collections.Sequence):
-                ids = [ids]
 
         if subsets is not None:
             if isinstance(subsets, str):
@@ -118,63 +108,61 @@ class DB(object):
             subsets = ['train', 'test']
 
         tracks = []
-        if op.isdir(self.mixtures_dir):
-            for subset in subsets:
+        for subset in subsets:
 
-                subset_folder = op.join(self.root_dir, subset)
+            subset_folder = op.join(self.root_dir, subset)
 
-                for _, track_folders, _ in os.walk(subset_folder):
-                    for track_filename in sorted(track_folders):
+            for _, track_folders, _ in os.walk(subset_folder):
+                for track_filename in sorted(track_folders):
+                    # create new mus Track
+                    track = Track(
+                        filename=track_filename,
+                        path=op.join(
+                            op.join(subset_folder, track_filename),
+                            self.setup['mixture']
+                        ),
+                        subset=subset
+                    )
 
-                        # create new mus Track
-                        track = Track(
-                            filename=track_filename,
-                            path=op.join(
-                                op.join(subset_folder, track_filename),
-                                self.setup['mixture']
-                            ),
-                            subset=subset
+                    # add sources to track
+                    sources = {}
+                    for src, source_file in list(
+                        self.setup['sources'].items()
+                    ):
+                        # create source object
+                        abs_path = op.join(
+                            subset_folder,
+                            source_file
                         )
-
-                        # add sources to track
-                        sources = {}
-                        for src, source_file in list(
-                            self.setup['sources'].items()
-                        ):
-                            # create source object
-                            abs_path = op.join(
-                                subset_folder,
-                                source_file
+                        if os.path.exists(abs_path):
+                            sources[src] = Source(
+                                name=src,
+                                path=abs_path
                             )
-                            if os.path.exists(abs_path):
-                                sources[src] = Source(
-                                    name=src,
-                                    path=abs_path
-                                )
-                        track.sources = sources
+                    track.sources = sources
 
-                        # add targets to track
-                        targets = collections.OrderedDict()
-                        for name, target_srcs in list(
-                            self.setup['targets'].items()
-                        ):
-                            # add a list of target sources
+                    # add targets to track
+                    targets = collections.OrderedDict()
+                    for name, target_srcs in list(
+                        self.setup['targets'].items()
+                    ):
+                        # add a list of target sources
 
-                            target_sources = []
-                            for source, gain in list(target_srcs.items()):
-                                if source in list(track.sources.keys()):
-                                    # add gain to source tracks
-                                    track.sources[source].gain = float(gain)
-                                    # add tracks to components
-                                    target_sources.append(sources[source])
-                            # add sources to target
-                            if target_sources:
-                                targets[name] = Target(sources=target_sources)
-                        # add targets to track
-                        track.targets = targets
+                        target_sources = []
+                        for source, gain in list(target_srcs.items()):
+                            if source in list(track.sources.keys()):
+                                # add gain to source tracks
+                                track.sources[source].gain = float(gain)
+                                # add tracks to components
+                                target_sources.append(sources[source])
+                        # add sources to target
+                        if target_sources:
+                            targets[name] = Target(sources=target_sources)
+                    # add targets to track
+                    track.targets = targets
 
-                        # add track to list of tracks
-                        tracks.append(track)
+                    # add track to list of tracks
+                    tracks.append(track)
 
             return tracks
 
@@ -243,7 +231,7 @@ class DB(object):
         if not hasattr(user_function, '__call__'):
             raise TypeError("Please provide a function.")
 
-        test_track = Track(filename="test")
+        test_track = Track(filename="test - test")
         signal = np.random.random((66000, 2))
         test_track.audio = signal
         test_track.rate = 44100
@@ -303,7 +291,6 @@ class DB(object):
         user_function=None,
         estimates_dir=None,
         subsets=None,
-        ids=None,
         parallel=False,
         cpus=4
     ):

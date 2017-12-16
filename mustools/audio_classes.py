@@ -141,8 +141,8 @@ class Track(object):
         self.filename = filename
         try:
             split_name = filename.split(' - ')
-            self.artist = split_name[1]
-            self.title = split_name[2]
+            self.artist = split_name[0]
+            self.title = split_name[1]
         except ValueError:
             self.artist = track_artist
             self.title = track_title
@@ -199,4 +199,4 @@ class Track(object):
         self._rate = rate
 
     def __repr__(self):
-        return "\n%d >> %s" % (self.path)
+        return "\n>> %s" % (self.filename)
