@@ -32,7 +32,6 @@ class Source(object):
     def audio(self):
         """array_like: [shape=(num_samples, num_channels)]
         """
-
         # return cached audio if explicitly set by setter
         if self._audio is not None:
             return self._audio
@@ -41,7 +40,7 @@ class Source(object):
             if os.path.exists(self.path):
                 if self.stem_id is not None:
                     audio, rate = stempeg.read_stems(
-                        filename=self.path, stem_idx=self.stem_id
+                        filename=self.path, stem_id=self.stem_id
                     )
                 else:
                     audio, rate = sf.read(self.path, always_2d=True)
@@ -62,7 +61,7 @@ class Source(object):
             if os.path.exists(self.path):
                 if self.stem_id is not None:
                     audio, rate = stempeg.read_stems(
-                        filename=self.path, stem_idx=self.stem_id
+                        filename=self.path, stem_id=self.stem_id
                     )
                 else:
                     audio, rate = sf.read(self.path, always_2d=True)
@@ -149,16 +148,16 @@ class Track(object):
     """
     def __init__(
         self,
-        filename,
+        name,
         stem_id=None,
         track_artist=None,
         track_title=None,
         subset=None,
         path=None
     ):
-        self.filename = filename
+        self.name = os.path.splitext(name)[0].split('.stem')[0]
         try:
-            split_name = filename.split(' - ')
+            split_name = name.split(' - ')
             self.artist = split_name[0]
             self.title = split_name[1]
         except ValueError:
@@ -167,9 +166,9 @@ class Track(object):
 
         self.path = path
         self.subset = subset
+        self.stem_id = stem_id
         self.targets = None
         self.sources = None
-        self.stem_id = None
         self._audio = None
         self._stems = None
         self._rate = None
@@ -202,9 +201,7 @@ class Track(object):
         else:
             if os.path.exists(self.path):
                 if self.stem_id is not None:
-                    audio, rate = stempeg.read_stems(
-                        filename=self.path, stem_idx=self.stem_id
-                    )
+                    audio, rate = stempeg.read_stems(filename=self.path, stem_id=self.stem_id)
                 else:
                     audio, rate = sf.read(self.path, always_2d=True)
                 self._rate = rate
@@ -224,7 +221,7 @@ class Track(object):
             if os.path.exists(self.path):
                 if self.stem_id is not None:
                     audio, rate = stempeg.read_stems(
-                        filename=self.path, stem_idx=self.stem_id
+                        filename=self.path, stem_id=self.stem_id
                     )
                 else:
                     audio, rate = sf.read(self.path, always_2d=True)
@@ -245,4 +242,4 @@ class Track(object):
         self._rate = rate
 
     def __repr__(self):
-        return "\n>> %s" % (self.filename)
+        return "\n%s" % (self.name)

@@ -99,9 +99,6 @@ E.g. to access the vocal reference from a track:
 track.targets['vocals'].audio
 ```
 
-If you want to exclude tracks from the training you can specify track ids as  the `mustools.DB(..., valid_ids=[1, 2]`) object. Those tracks are then not included in `Dev` but are returned for `subsets="Valid"`.
-
-
 #### Use multiple cores
 
 ##### Python Multiprocessing

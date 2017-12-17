@@ -30,7 +30,7 @@ if __name__ == "__main__":
             'six',
             'tqdm',
             'pyaml',
-            'soundfile>=0.8',
+            'soundfile>=0.9.0',
             'stempeg==0.1.0'
         ],
 

@@ -11,7 +11,7 @@ sources:
 mixture:
     mixture.wav
 
-stemids:
+stem_ids:
     mixture: 0
     drums: 1
     bass: 2
