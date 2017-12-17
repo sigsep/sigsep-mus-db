@@ -70,7 +70,7 @@ Simply import the musdb package in your main python function:
 
 The ``root_dir`` is the path to the musdb dataset folder. Instead of
 ``root_dir`` it can also be set system-wide. Just
-``export MUS_PATH=/path/to/musdb`` inside your terminal environment.
+``export MUSDB_PATH=/path/to/musdb`` inside your terminal environment.
 
 Test if your separation function generates valid output
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''

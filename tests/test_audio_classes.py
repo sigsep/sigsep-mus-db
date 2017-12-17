@@ -5,14 +5,13 @@ import musdb
 import numpy as np
 
 
-@pytest.fixture(params=['data/DSD100subset'])
-def dsd(request):
+@pytest.fixture(params=['data/MUS-STEMS-SAMPLE'])
+def mus(request):
     return musdb.DB(root_dir=request.param)
 
 
-def test_targets(dsd):
-
-    tracks = dsd.load_dsd_tracks()[0]
+def test_targets(mus):
+    tracks = mus.load_mus_tracks()
 
     for track in tracks:
         for key, target in list(track.targets.items()):
@@ -20,9 +19,8 @@ def test_targets(dsd):
             assert target.audio.shape
 
 
-def test_rates(dsd):
-
-    tracks = dsd.load_dsd_tracks()[0]
+def test_rates(mus):
+    tracks = mus.load_mus_tracks()
 
     for track in tracks:
         assert track.rate == 44100
@@ -32,8 +30,7 @@ def test_rates(dsd):
             assert source.audio.shape
 
 
-def test_source(dsd):
-
+def test_source(mus):
     with pytest.raises(ValueError):
         source = ac.Source(name="test", path="None")
         source.audio
@@ -51,14 +48,13 @@ def test_source(dsd):
     print(source)
 
 
-def test_track(dsd):
-
+def test_track(mus):
     with pytest.raises(ValueError):
-        track = ac.Track(filename="test", path="None")
+        track = ac.Track(name="test - test", path="None")
         track.audio
 
     with pytest.raises(ValueError):
-        track = ac.Track(filename="test", path="None")
+        track = ac.Track(name="test - test", path="None")
         track.rate
 
     track.audio = np.zeros((2, 44100))

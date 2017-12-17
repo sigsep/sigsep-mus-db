@@ -189,7 +189,6 @@ class Track(object):
                 self._rate = rate
                 return S
 
-
     @property
     def audio(self):
         """array_like: [shape=(num_samples, num_channels)]

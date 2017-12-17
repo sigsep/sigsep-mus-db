@@ -23,7 +23,7 @@ class DB(object):
     ----------
     root_dir : str, optional
         musdb Root path. If set to `None` it will be read
-        from the `MUS_PATH` environment variable
+        from the `MUSDB_PATH` environment variable
 
     subsets : str or list, optional
         select a _musdb_ subset `train` or `test` (defaults to both)
@@ -38,7 +38,7 @@ class DB(object):
     setup_file : str
         path to yaml file. default: `setup.yaml`
     root_dir : str
-        musdb Root path. Default is `MUS_PATH` env
+        musdb Root path. Default is `MUSDB_PATH` env
     sources_dir : str
         path to Sources directory
     sources_names : list[str]
@@ -66,10 +66,10 @@ class DB(object):
         is_wav=False
     ):
         if root_dir is None:
-            if "MUS_PATH" in os.environ:
-                self.root_dir = os.environ["MUS_PATH"]
+            if "MUSDB_PATH" in os.environ:
+                self.root_dir = os.environ["MUSDB_PATH"]
             else:
-                raise RuntimeError("Variable `MUS_PATH` has not been set.")
+                raise RuntimeError("Variable `MUSDB_PATH` has not been set.")
         else:
             self.root_dir = root_dir
 
@@ -223,7 +223,7 @@ class DB(object):
                             # add track to list of tracks
                             tracks.append(track)
 
-            return tracks
+        return tracks
 
     def _save_estimates(self, user_estimates, track, estimates_dir):
         track_estimate_dir = op.join(
