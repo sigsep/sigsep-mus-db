@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
         # Your contact information
         author='Fabian-Robert Stoeter',
-        author_email='fabian-robert.stoeter@audiolabs-erlangen.de',
+        author_email='mail@faroit.com',
 
         # License
         license='MIT',
