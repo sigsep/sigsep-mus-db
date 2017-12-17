@@ -1,16 +1,16 @@
 Modules
 -------
 
-.. automodule:: mustools
+.. automodule:: musdb
     :members:
     :undoc-members:
     :show-inheritance:
     :inherited-members:
-.. autoclass: mustools.DB
+.. autoclass: musdb.DB
     :members:
 
 .. toctree::
    :maxdepth: 3
 
    self
-   mustools.audio_classes
+   musdb.audio_classes

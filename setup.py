@@ -3,14 +3,14 @@ import setuptools
 if __name__ == "__main__":
     setuptools.setup(
         # Name of the project
-        name='mustools',
+        name='musdb',
 
         # Version
         version="0.2.0",
 
         # Description
-        description='Python tools for the SIGSEP MUS Dataset',
-        url='https://github.com/faroit/mustools',
+        description='Python parser for the SIGSEP MUS database',
+        url='https://github.com/sigsep/sigsep-mus-db',
 
         # Your contact information
         author='Fabian-Robert Stoeter',
@@ -31,11 +31,11 @@ if __name__ == "__main__":
             'tqdm',
             'pyaml',
             'soundfile>=0.9.0',
-            'stempeg==0.1.0'
+            'stempeg>=0.1.1'
         ],
 
         package_data={
-            'mustools': ['configs/mus.yaml'],
+            'musdb': ['configs/mus.yaml'],
         },
 
         extras_require={

@@ -3,7 +3,7 @@ Example
 
 .. code:: python
 
-    import mustools
+    import musdb
 
     def my_function(track):
         '''My fancy BSS algorithm'''
@@ -25,8 +25,8 @@ Example
         return estimates
 
 
-    # initiate mustools
-    mus = mustools.DB(root_dir="./Volumes/Data/mustools")
+    # initiate musdb
+    mus = musdb.DB(root_dir="./Volumes/Data/musdb")
 
     # verify if my_function works correctly
     if mus.test(my_function):

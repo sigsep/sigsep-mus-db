@@ -1,6 +1,6 @@
 import os
 import pytest
-import mustools
+import musdb
 import numpy as np
 
 
@@ -55,9 +55,9 @@ def user_function5(track):
 
 
 def test_file_loading():
-    # initiate mustools
+    # initiate musdb
 
-    dsd = mustools.DB(root_dir="data/DSD100subset")
+    dsd = musdb.DB(root_dir="data/DSD100subset")
     tracks = dsd.load_dsd_tracks()
 
     assert len(tracks) == 4
@@ -84,7 +84,7 @@ def test_file_loading():
 
 @pytest.fixture(params=['data/DSD100subset'])
 def dsd(request):
-    return mustools.DB(root_dir=request.param)
+    return musdb.DB(root_dir=request.param)
 
 
 @pytest.mark.parametrize(
@@ -100,7 +100,7 @@ def test_env(path):
     if path is not None:
         os.environ["MUS_PATH"] = path
 
-    assert mustools.DB()
+    assert musdb.DB()
 
 
 @pytest.mark.parametrize(

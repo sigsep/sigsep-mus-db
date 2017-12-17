@@ -1,13 +1,13 @@
 from __future__ import print_function
 import pytest
-import mustools.audio_classes as ac
-import mustools
+import musdb.audio_classes as ac
+import musdb
 import numpy as np
 
 
 @pytest.fixture(params=['data/DSD100subset'])
 def dsd(request):
-    return mustools.DB(root_dir=request.param)
+    return musdb.DB(root_dir=request.param)
 
 
 def test_targets(dsd):

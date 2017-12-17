@@ -85,7 +85,7 @@ class Source(object):
         return self.path
 
 
-# Target Track from mustools DB mixed from several DSDSource Tracks
+# Target Track from musdb DB mixed from several DSDSource Tracks
 class Target(object):
     """
     An audio Target which is a linear mixture of several sources
@@ -120,7 +120,7 @@ class Target(object):
         return '+'.join(parts)
 
 
-# mustools Track which has many targets and sources
+# musdb Track which has many targets and sources
 class Track(object):
     """
     An audio Track which is mixture of several sources
@@ -202,7 +202,10 @@ class Track(object):
         else:
             if os.path.exists(self.path):
                 if self.stem_id is not None:
-                    audio, rate = stempeg.read_stems(filename=self.path, stem_id=self.stem_id)
+                    audio, rate = stempeg.read_stems(
+                        filename=self.path,
+                        stem_id=self.stem_id
+                    )
                 else:
                     audio, rate = sf.read(self.path, always_2d=True)
                 self._rate = rate

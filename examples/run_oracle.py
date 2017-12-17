@@ -1,5 +1,5 @@
 from __future__ import print_function
-import mustools
+import musdb
 
 
 def my_function(track):
@@ -21,8 +21,8 @@ def my_function(track):
     }
     return estimates
 
-# initiate mustools
-mus = mustools.DB()
+# initiate musdb
+mus = musdb.DB()
 
 # verify if my_function works correctly
 if mus.test(my_function):

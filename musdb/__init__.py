@@ -12,24 +12,25 @@ import yaml
 import glob
 import tqdm
 import os
-import mustools
+import musdb
 
 
 class DB(object):
     """
-    The mustools DB Object
+    The musdb DB Object
 
     Parameters
     ----------
     root_dir : str, optional
-        mustools Root path. If set to `None` it will be read
+        musdb Root path. If set to `None` it will be read
         from the `MUS_PATH` environment variable
 
     subsets : str or list, optional
-        select a _mustools_ subset `train` or `test` (defaults to both)
+        select a _musdb_ subset `train` or `test` (defaults to both)
 
     is_wav : boolean, optional
-        expect subfolder with wav files for each source instead of the encoded wav
+        expect subfolder with wav files for each source instead stems,
+        defaults to stems
 
 
     Attributes
@@ -37,7 +38,7 @@ class DB(object):
     setup_file : str
         path to yaml file. default: `setup.yaml`
     root_dir : str
-        mustools Root path. Default is `MUS_PATH` env
+        musdb Root path. Default is `MUS_PATH` env
     sources_dir : str
         path to Sources directory
     sources_names : list[str]
@@ -50,12 +51,12 @@ class DB(object):
     Methods
     -------
     load_mus_tracks()
-        Iterates through the mustools folder structure and
+        Iterates through the musdb folder structure and
         returns ``Track`` objects
     test(user_function)
-        Test the mustools processing
+        Test the musdb processing
     run(user_function=None, estimates_dir=None)
-        Run the mustools processing and saving the estimates
+        Run the musdb processing and saving the estimates
 
     """
     def __init__(
@@ -76,7 +77,7 @@ class DB(object):
             setup_path = op.join(self.root_dir, setup_file)
         else:
             setup_path = os.path.join(
-                mustools.__path__[0], 'configs', 'mus.yaml'
+                musdb.__path__[0], 'configs', 'mus.yaml'
             )
 
         with open(setup_path, 'r') as f:
@@ -87,12 +88,12 @@ class DB(object):
         self.is_wav = is_wav
 
     def load_mus_tracks(self, subsets=None):
-        """Parses the mustools folder structure, returns list of `Track` objects
+        """Parses the musdb folder structure, returns list of `Track` objects
 
         Parameters
         ==========
         subsets : list[str], optional
-            select a _mustools_ subset `Dev` or `Test`. Defaults to both
+            select a _musdb_ subset `Dev` or `Test`. Defaults to both
 
         Returns
         -------
@@ -168,7 +169,9 @@ class DB(object):
                 else:
                     # parse stem files
                     for track_name in sorted(track_names):
-                        if 'stem' in track_name and track_name.endswith('.mp4'):
+                        if 'stem' in track_name and track_name.endswith(
+                            '.mp4'
+                        ):
                             # create new mus track
                             track = Track(
                                 name=track_name,
@@ -204,12 +207,16 @@ class DB(object):
                                 for source, gain in list(target_srcs.items()):
                                     if source in list(track.sources.keys()):
                                         # add gain to source tracks
-                                        track.sources[source].gain = float(gain)
+                                        track.sources[source].gain = float(
+                                            gain
+                                        )
                                         # add tracks to components
                                         target_sources.append(sources[source])
                                 # add sources to target
                                 if target_sources:
-                                    targets[name] = Target(sources=target_sources)
+                                    targets[name] = Target(
+                                        sources=target_sources
+                                    )
                             # add targets to track
                             track.targets = targets
 
@@ -232,7 +239,7 @@ class DB(object):
         pass
 
     def test(self, user_function):
-        """Test the mustools processing
+        """Test the musdb processing
 
         Parameters
         ----------
@@ -249,7 +256,7 @@ class DB(object):
 
         See Also
         --------
-        run : Process the mustools
+        run : Process the musdb
         """
         if not hasattr(user_function, '__call__'):
             raise TypeError("Please provide a function.")
@@ -318,7 +325,7 @@ class DB(object):
         parallel=False,
         cpus=4
     ):
-        """Run the mustools processing
+        """Run the musdb processing
 
         Parameters
         ----------
@@ -327,7 +334,7 @@ class DB(object):
         tracks : list[Track], optional
             select a list of tracks
         subsets : list[str], optional
-            select a _mustools_ subset `Dev` or `Test`. Defaults to both
+            select a _musdb_ subset `Dev` or `Test`. Defaults to both
         estimates_dir : str, optional
             path to the user provided estimates. Directory will be
             created if it does not exist. Default is `none` which means that

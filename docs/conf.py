@@ -51,7 +51,7 @@ source_suffix = '.rst'
 
 master_doc = 'index'
 
-project = u'mustools'
+project = u'musdb'
 copyright = u'2016, Fabian-Robert Stöter'
 author = u'Fabian-Robert Stöter'
 
@@ -68,23 +68,23 @@ todo_include_todos = False
 
 html_static_path = ['_static']
 
-htmlhelp_basename = 'mustoolsdoc'
+htmlhelp_basename = 'musdbdoc'
 
 latex_elements = {
 }
 
 latex_documents = [
-  (master_doc, 'mustools.tex', u'mustools Documentation',
+  (master_doc, 'musdb.tex', u'musdb Documentation',
    u'Fabian-Robert Stöter', 'manual'),
 ]
 
 man_pages = [
-    (master_doc, 'mustools', u'mustools Documentation',
+    (master_doc, 'musdb', u'musdb Documentation',
      [author], 1)
 ]
 
 texinfo_documents = [
-  (master_doc, 'mustools', u'mustools Documentation',
-   author, 'mustools', 'One line description of project.',
+  (master_doc, 'musdb', u'musdb Documentation',
+   author, 'musdb', 'One line description of project.',
    'Miscellaneous'),
 ]

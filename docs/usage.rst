@@ -13,10 +13,10 @@ Providing a compatible function
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The core of this package consists of calling a user-provided function
-which separates the mixtures from the mustools into estimated target
+which separates the mixtures from the musdb into estimated target
 sources.
 
--  The function will take an mustools ``Track`` object which can be used
+-  The function will take an musdb ``Track`` object which can be used
    from inside your algorithm.
 -  Participants can access
 -  ``Track.audio``, representing the stereo mixture as an ``np.ndarray``
@@ -55,22 +55,22 @@ Here is an example for such a function separating the mixture into a
 Create estimates for SiSEC evaluation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Setting up mustools
+Setting up musdb
 '''''''''''''''''''
 
-Simply import the mustools package in your main python function:
+Simply import the musdb package in your main python function:
 
 .. code:: python
 
-   import mustools
+   import musdb
 
-   mus = mustools.DB(
-       root_dir='path/to/mustools/',
+   mus = musdb.DB(
+       root_dir='path/to/musdb/',
    )
 
-The ``root_dir`` is the path to the mustools dataset folder. Instead of
+The ``root_dir`` is the path to the musdb dataset folder. Instead of
 ``root_dir`` it can also be set system-wide. Just
-``export MUS_PATH=/path/to/mustools`` inside your terminal environment.
+``export MUS_PATH=/path/to/musdb`` inside your terminal environment.
 
 Test if your separation function generates valid output
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -83,7 +83,7 @@ can test their separation function by running:
    dsd.test(my_function)
 
 This test makes sure the user provided output is compatible to the
-mustools framework. The function returns ``True`` if the test succeeds.
+musdb framework. The function returns ``True`` if the test succeeds.
 
 Processing the full DSD100
 ''''''''''''''''''''''''''
@@ -118,7 +118,7 @@ E.g. to access the vocal reference from a track:
     track.targets['vocals'].audio
 
 If you want to exclude tracks from the training you can specify track ids as
-``mustools.DB(..., valid_ids=[1, 2]`` object. Those tracks are then not
+``musdb.DB(..., valid_ids=[1, 2]`` object. Those tracks are then not
 included in ``Dev`` but are returned for ``subsets="Valid"``.
 
 
@@ -162,7 +162,7 @@ GNU Parallel
     parallel can then split the input and pipe it into commands in
     parallel.
 
-By running only one ``id`` in each python process the mustools set can
+By running only one ``id`` in each python process the musdb set can
 easily be processed with GNU parallel using multiple CPUs without any
 further modifications to your code:
 

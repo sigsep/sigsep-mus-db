@@ -1,7 +1,7 @@
 Audio Classes
 ----------------
 
-.. automodule:: mustools.audio_classes
+.. automodule:: musdb.audio_classes
     :members:
     :undoc-members:
     :show-inheritance:

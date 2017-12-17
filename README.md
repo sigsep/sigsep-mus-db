@@ -1,8 +1,8 @@
-# mustools
+# musdb
 
-[![Build Status](https://travis-ci.org/faroit/mustools.svg?branch=master)](https://travis-ci.org/faroit/mustools)
-[![Coverage Status](https://coveralls.io/repos/github/faroit/mustools/badge.svg?branch=master)](https://coveralls.io/github/faroit/mustools?branch=master)
-[![Docs Status](https://readthedocs.org/projects/mustools/badge/?version=latest)](https://mustools.readthedocs.org/en/latest/)
+[![Build Status](https://travis-ci.org/faroit/musdb.svg?branch=master)](https://travis-ci.org/faroit/musdb)
+[![Coverage Status](https://coveralls.io/repos/github/faroit/musdb/badge.svg?branch=master)](https://coveralls.io/github/faroit/musdb?branch=master)
+[![Docs Status](https://readthedocs.org/projects/musdb/badge/?version=latest)](https://musdb.readthedocs.org/en/latest/)
 
 
 A python package to parse and process the __SIGSPE-MUS__ as part of the [MUS task](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings/) of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/).
@@ -10,7 +10,7 @@ A python package to parse and process the __SIGSPE-MUS__ as part of the [MUS tas
 ## Installation
 
 ```bash
-pip install mustools
+pip install musdb
 ```
 
 ## SIGSEP MUS Dataset / Subset
@@ -53,17 +53,17 @@ def my_function(track):
 
 ### Creating estimates for SiSEC evaluation
 
-#### Setting up mustools
+#### Setting up musdb
 
-Simply import the mustools package in your main python function:
+Simply import the musdb package in your main python function:
 
 ```python
-import mustools
+import musdb
 
-mus = mustools.DB(root_dir='path/to/mustools')
+mus = musdb.DB(root_dir='path/to/musdb')
 ```
 
-The ```root_dir``` is the path to the mustools dataset folder. Instead of ```root_dir``` it can also be set system-wide. Just ```export MUS_PATH=/path/to/mustools``` inside your terminal environment.
+The ```root_dir``` is the path to the musdb dataset folder. Instead of ```root_dir``` it can also be set system-wide. Just ```export MUS_PATH=/path/to/musdb``` inside your terminal environment.
 
 #### Test if your separation function generates valid output
 
@@ -71,7 +71,7 @@ Before processing the full MUS which might take very long, participants can test
 ```python
 mus.test(my_function)
 ```
-This test makes sure the user provided output is compatible to the mustools framework. The function returns `True` if the test succeeds.
+This test makes sure the user provided output is compatible to the musdb framework. The function returns `True` if the test succeeds.
 
 #### Processing the full MUS
 
@@ -118,7 +118,7 @@ t.b.a.
 ## Full code Example
 
 ```python
-import mustools
+import musdb
 
 def my_function(track):
     '''My fancy BSS algorithm'''
@@ -139,8 +139,8 @@ def my_function(track):
     }
     return estimates
 
-# initiate mustools
-mus = mustools.DB(root_dir="./Volumes/Data/mustools")
+# initiate musdb
+mus = musdb.DB(root_dir="./Volumes/Data/musdb")
 
 # verify if my_function works correctly
 if mus.test(my_function):

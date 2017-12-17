@@ -1,1 +1,1 @@
-recursive-include mustools/configs *.yaml
+recursive-include musdb/configs *.yaml

@@ -1,4 +1,4 @@
-mustools
+musdb
 ======
 
 A python package to parse and process the **sigsep mus** dataset as part of the `MUS
@@ -15,7 +15,7 @@ Contents:
    installation
    usage
    example
-   mustools
+   musdb
 
 References
 ~~~~~~~~~~
