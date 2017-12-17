@@ -22,7 +22,9 @@ class Mock(MagicMock):
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
     html_theme = 'default'
-    MOCK_MODULES = ['argparse', 'numpy', 'scipy', 'soundfile', 'matplotlib']
+    MOCK_MODULES = [
+        'argparse', 'numpy', 'scipy', 'soundfile', 'stempeg', 'matplotlib'
+    ]
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 else:
     import sphinx_rtd_theme
@@ -52,7 +54,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 project = u'musdb'
-copyright = u'2016, Fabian-Robert Stöter'
+copyright = u'2017, Fabian-Robert Stöter'
 author = u'Fabian-Robert Stöter'
 
 version = u'0.2.0'

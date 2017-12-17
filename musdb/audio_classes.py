@@ -85,7 +85,7 @@ class Source(object):
         return self.path
 
 
-# Target Track from musdb DB mixed from several DSDSource Tracks
+# Target Track from musdb DB mixed from several musdb Tracks
 class Target(object):
     """
     An audio Target which is a linear mixture of several sources
@@ -96,7 +96,7 @@ class Target(object):
         list of ``Source`` objects for this ``Target``
     """
     def __init__(self, sources):
-        self.sources = sources  # List of DSDSources
+        self.sources = sources  # List of musdb sources
 
     @property
     def audio(self):

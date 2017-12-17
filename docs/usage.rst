@@ -2,10 +2,10 @@ Usage
 =====
 
 This package should nicely integrate with your existing python code,
-thus makes it easy to participate in the `SISEC MUS
-tasks <https://sisec.inria.fr/home/2016-professionally-produced-music-recordings>`__.
+thus makes it easy to participate in the `MUSDB
+tasks <https://sisec.inria.fr/home/2018-professionally-produced-music-recordings>`__.
 The core of this package is calling a user-provided function that
-separates the mixtures from the DSD into several estimated target
+separates the mixtures from the musdb into several estimated target
 sources.
 
 
@@ -75,25 +75,25 @@ The ``root_dir`` is the path to the musdb dataset folder. Instead of
 Test if your separation function generates valid output
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-Before you run the full DSD100, which might take very long, participants
+Before you run the full 150 tracks, which might take very long, participants
 can test their separation function by running:
 
 .. code:: python
 
-   dsd.test(my_function)
+   mus.test(my_function)
 
 This test makes sure the user provided output is compatible to the
 musdb framework. The function returns ``True`` if the test succeeds.
 
-Processing the full DSD100
+Processing the full musdb
 ''''''''''''''''''''''''''
 
-To process all 100 DSD tracks and saves the results to the
+To process all 150 musdb tracks and saves the results to the
 ``estimates_dir``:
 
 .. code:: python
 
-    dsd.run(my_function, estimates_dir="path/to/estimates")
+    mus.run(my_function, estimates_dir="path/to/estimates")
 
 Processing training and testing subsets separately
 ''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -103,8 +103,8 @@ training subset and then apply the algorithm on the test data:
 
 .. code:: python
 
-    dsd.run(my_training_function, subsets="Dev")
-    dsd.run(my_test_function, subsets="Test")
+    mus.run(my_training_function, subsets="Dev")
+    mus.run(my_test_function, subsets="Test")
 
 
 Access the reference signals / targets
@@ -117,22 +117,6 @@ E.g. to access the vocal reference from a track:
 
     track.targets['vocals'].audio
 
-If you want to exclude tracks from the training you can specify track ids as
-``musdb.DB(..., valid_ids=[1, 2]`` object. Those tracks are then not
-included in ``Dev`` but are returned for ``subsets="Valid"``.
-
-
-Processing single or multiple DSD100 tracks
-'''''''''''''''''''''''''''''''''''''''''''
-
-.. code:: python
-
-    dsd.run(my_function, ids=30)
-    dsd.run(my_function, ids=[1, 2, 3])
-    dsd.run(my_function, ids=range(90, 99))
-
-Note, that the provided list of ids can be overridden if the user sets a
-terminal environment variable ``DSD_ID=1``.
 
 Use multiple cores
 ''''''''''''''''''
@@ -144,35 +128,8 @@ To speed up the processing, ``run`` can make use of multiple CPUs:
 
 .. code:: python
 
-    dsd.run(my_function, parallel=True, cpus=4)
+    mus.run(my_function, parallel=True, cpus=4)
 
 Note: We use the python builtin multiprocessing package, which sometimes
 is unable to parallelize the user provided function to
 `PicklingError <http://stackoverflow.com/a/8805244>`__.
-
-GNU Parallel
-""""""""""""
-
-    `GNU parallel <http://www.gnu.org/software/parallel>`__ is a shell
-    tool for executing jobs in parallel using one or more computers. A
-    job can be a single command or a small script that has to be run for
-    each of the lines in the input. The typical input is a list of
-    files, a list of hosts, a list of users, a list of URLs, or a list
-    of tables. A job can also be a command that reads from a pipe. GNU
-    parallel can then split the input and pipe it into commands in
-    parallel.
-
-By running only one ``id`` in each python process the musdb set can
-easily be processed with GNU parallel using multiple CPUs without any
-further modifications to your code:
-
-.. code:: bash
-
-    parallel --bar 'DSD_ID={0} python main.py' ::: {1..100}
-
-
-Compute the bss\_eval measures
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The official SISEC evaluation relies on *mir_eval* and can be run using our
-separate evaluation module.
