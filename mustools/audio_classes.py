@@ -106,9 +106,10 @@ class Target(object):
         """
         mix_list = []*len(self.sources)
         for source in self.sources:
-            if source.audio is not None:
+            audio = source.audio
+            if audio is not None:
                 mix_list.append(
-                    source.gain * source.audio
+                    source.gain * audio
                 )
         return np.sum(np.array(mix_list), axis=0)
 
