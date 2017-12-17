@@ -9,10 +9,10 @@ python:
     - 3.6
 
 before_install:
-    - sudo apt-get update -qq
-    - if [[ $TRAVIS_PYTHON_VERSION == *"2."* ]]; then sudo apt-get install python-numpy; fi
-    - if [[ $TRAVIS_PYTHON_VERSION == *"3."* ]]; then sudo apt-get install python3-numpy; fi
-    - sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran
+    - bash .travis_dependencies.sh
+    - export PATH="$HOME/env/miniconda$TRAVIS_PYTHON_VERSION/bin:$PATH";
+    - hash -r
+    - source activate test-environment
     - cd data
     - sh fetch.sh
     - cd ..
