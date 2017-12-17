@@ -1,11 +1,11 @@
 # musdb
 
-[![Build Status](https://travis-ci.org/faroit/musdb.svg?branch=master)](https://travis-ci.org/faroit/musdb)
-[![Coverage Status](https://coveralls.io/repos/github/faroit/musdb/badge.svg?branch=master)](https://coveralls.io/github/faroit/musdb?branch=master)
+[![Build Status](https://travis-ci.org/sigsep/musdb.svg?branch=master)](https://travis-ci.org/sigsep/musdb)
+[![Coverage Status](https://coveralls.io/repos/github/sigsep/musdb/badge.svg?branch=master)](https://coveralls.io/github/sigsep/musdb?branch=master)
 [![Docs Status](https://readthedocs.org/projects/musdb/badge/?version=latest)](https://musdb.readthedocs.org/en/latest/)
 
 
-A python package to parse and process the __SIGSPE-MUS__ as part of the [MUS task](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings/) of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/).
+A python package to parse and process the __SIGSEP-MUSDB__ as part of the [MUS task](https://sisec.inria.fr/home/2018-professionally-produced-music-recordings/) of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/).
 
 ## Installation
 
