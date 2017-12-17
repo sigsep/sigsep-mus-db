@@ -1,7 +1,7 @@
 # musdb
 
-[![Build Status](https://travis-ci.org/sigsep/musdb.svg?branch=master)](https://travis-ci.org/sigsep/musdb)
-[![Coverage Status](https://coveralls.io/repos/github/sigsep/musdb/badge.svg?branch=master)](https://coveralls.io/github/sigsep/musdb?branch=master)
+[![Build Status](https://travis-ci.org/sigsep/sigsep-mus-db.svg?branch=master)](https://travis-ci.org/sigsep/sigsep-mus-db)
+[![Coverage Status](https://coveralls.io/repos/github/sigsep/sigsep-mus-db/badge.svg?branch=master)](https://coveralls.io/github/sigsep/sigsep-mus-db?branch=master)
 [![Docs Status](https://readthedocs.org/projects/musdb/badge/?version=latest)](https://musdb.readthedocs.org/en/latest/)
 
 
