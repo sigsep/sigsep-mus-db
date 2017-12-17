@@ -36,6 +36,7 @@ if [ ! -d "$src" ]; then
         conda install -c conda-forge ffmpeg
 
         pip install python-coveralls
+        pip install mock
 
         source deactivate
     popd
