@@ -26,11 +26,10 @@ conda install -c conda-forge ffmpeg
 ```
 
 Alternatively you can install ffmpeg manually as follows:
+* Mac: use homebrew: `brew install ffmpeg`
+* Ubuntu Linux: `sudo apt-get install ffmpeg `
 
-    Mac: use homebrew: `brew install ffmpeg`
-    Ubuntu Linux: `sudo apt-get install ffmpeg `
-
-#### Use a decoded
+#### Use a decoded version
 
 If you have trouble installing stempeg or ffmpeg we also support parse and process the pre-decoded PCM/wav files. We provide [docker based scripts](https://github.com/sigsep/sigsep-mus-io) to decode the dataset to wav files.
 If you want to use the decoded musdb dataset, use the `is_wav` parameter when initialsing the dataset.
