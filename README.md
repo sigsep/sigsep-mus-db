@@ -5,17 +5,52 @@
 [![Docs Status](https://readthedocs.org/projects/musdb/badge/?version=latest)](https://musdb.readthedocs.org/en/latest/)
 
 
-A python package to parse and process the __SIGSEP-MUSDB__ as part of the [MUS task](https://sisec.inria.fr/home/2018-professionally-produced-music-recordings/) of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/).
+A python package to parse and process the [MUSDB18 dataset](https://sigsep.github.io/musdb) as part of the [MUS task](https://sisec.inria.fr/home/2018-professionally-produced-music-recordings/) of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/).
+
+## Related tools
+
+* https://github.com/sigsep/sigsep-mus-io
+
+## Download Dataset
+
+* https://github.com/faroit/stempeg
+The dataset can be downloaded [here](https://sigsep.github.io/musdb)
 
 ## Installation
+
+### Decoding
+
+As the _MUSDB18_ is encoded as [STEMS](http://www.stems-music.com/), it
+relies on ffmpeg to read the multi-stream files. We provide a python wrapper called [stempeg](https://github.com/faroit/stempeg) that allows to easily parse the dataset and decode the stem tracks on-the-fly.
+Before you install _musdb_ (that includes the stempeg requirement), it is therefore required to install ffmpeg. The installation differ among operating systems.
+
+E.g. if you use Anaconda you can install ffmpeg on Windows/Mac/Linux using the following command:
+
+```
+conda install -c conda-forge ffmpeg
+```
+
+Alternatively you can install ffmpeg manually as follows:
+
+    Mac: use homebrew: `brew install ffmpeg`
+    Ubuntu Linux: `sudo apt-get install ffmpeg `
+
+#### Use a decoded
+
+If you have trouble installing stempeg or ffmpeg we also support parse and process the pre-decoded PCM/wav files. We provide [docker based scripts](https://github.com/sigsep/sigsep-mus-io) to decode the dataset to wav files.
+If you want to use the decoded musdb dataset, use the `is_wav` parameter when initialsing the dataset.
+
+```python
+musdb.DB(is_wav=True)
+```
+
+### Package installation
+
+You can install the `musdb` parsing package using pip:
 
 ```bash
 pip install musdb
 ```
-
-## SIGSEP MUS Dataset / Subset
-
-t.b.a.
 
 ## Usage
 
@@ -111,9 +146,6 @@ mus.run(my_function, parallel=True, cpus=4)
 
 Note: We use the python builtin multiprocessing package, which sometimes is unable to parallelize the user provided function to [PicklingError](http://stackoverflow.com/a/8805244).
 
-## Compute the bss_eval measures
-
-t.b.a.
 
 ## Full code Example
 
@@ -151,8 +183,11 @@ mus.run(my_function, estimates_dir="path/to/estimates")
 
 ```
 
+## Evaluation and Submission
+
+Please refer to our [Submission site](https://sigsep.github.io/musdb).
+
+
 ## References
 
 LVA/ICA 2018 publication t.b.a
-
-```
