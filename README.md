@@ -179,7 +179,7 @@ mus.run(my_function, estimates_dir="path/to/estimates")
 
 ## Evaluation and Submission
 
-Please refer to our [Submission site](https://sigsep.github.io/musdb).
+Please refer to our [Submission site](https://github.com/sigsep/sigsep-mus-2018).
 
 
 ## References
