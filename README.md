@@ -7,14 +7,9 @@
 
 A python package to parse and process the [MUSDB18 dataset](https://sigsep.github.io/musdb) as part of the [MUS task](https://sisec.inria.fr/home/2018-professionally-produced-music-recordings/) of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/).
 
-## Related tools
-
-* https://github.com/sigsep/sigsep-mus-io
-
 ## Download Dataset
 
-* https://github.com/faroit/stempeg
-The dataset can be downloaded [here](https://sigsep.github.io/musdb)
+The dataset can be downloaded [here](https://sigsep.github.io/musdb).
 
 ## Installation
 
