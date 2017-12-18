@@ -176,8 +176,11 @@ if mus.test(my_function):
 mus.run(my_function, estimates_dir="path/to/estimates")
 
 ```
+## Baselines
 
-Feel free to also check [examples of oracle separation methods](https://github.com/sigsep/sigsep-mus-oracle). 
+Please check [examples of oracle separation methods](https://github.com/sigsep/sigsep-mus-oracle). 
+This will show you how oracle performance is computed, i.e. an upper bound for the quality of the separtion.
+
 ## Evaluation and Submission
 
 Please refer to our [Submission site](https://github.com/sigsep/sigsep-mus-2018).
