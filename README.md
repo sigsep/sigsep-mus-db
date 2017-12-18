@@ -177,6 +177,7 @@ mus.run(my_function, estimates_dir="path/to/estimates")
 
 ```
 
+Feel free to also check [examples of oracle separation methods](https://github.com/sigsep/sigsep-mus-oracle). 
 ## Evaluation and Submission
 
 Please refer to our [Submission site](https://github.com/sigsep/sigsep-mus-2018).
