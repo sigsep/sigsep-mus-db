@@ -93,7 +93,7 @@ class DB(object):
         Parameters
         ==========
         subsets : list[str], optional
-            select a _musdb_ subset `Dev` or `Test`. Defaults to both
+            select a _musdb_ subset `train` or `test`. Defaults to both
 
         Returns
         -------
@@ -334,7 +334,7 @@ class DB(object):
         tracks : list[Track], optional
             select a list of tracks
         subsets : list[str], optional
-            select a _musdb_ subset `Dev` or `Test`. Defaults to both
+            select a _musdb_ subset `train` or `test`. Defaults to both
         estimates_dir : str, optional
             path to the user provided estimates. Directory will be
             created if it does not exist. Default is `none` which means that
