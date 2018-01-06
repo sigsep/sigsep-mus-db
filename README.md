@@ -115,8 +115,8 @@ mus.run(my_function, estimates_dir="path/to/estimates")
 Algorithms which make use of machine learning techniques can use the training subset and then apply the algorithm on the test data. That way it is possible to apply different user functions for both datasets.
 
 ```python
-mus.run(my_training_function, subsets="Dev")
-mus.run(my_test_function, subsets="Test")
+mus.run(my_training_function, subsets="train")
+mus.run(my_test_function, subsets="test")
 ```
 
 ##### Access the reference signals / targets
@@ -178,7 +178,7 @@ mus.run(my_function, estimates_dir="path/to/estimates")
 ```
 ## Baselines
 
-Please check [examples of oracle separation methods](https://github.com/sigsep/sigsep-mus-oracle). 
+Please check [examples of oracle separation methods](https://github.com/sigsep/sigsep-mus-oracle).
 This will show you how oracle performance is computed, i.e. an upper bound for the quality of the separtion.
 
 ## Evaluation and Submission

@@ -65,12 +65,12 @@ def test_file_loading():
     for track in tracks:
         assert track.audio.shape[1] > 0
 
-    # load only the dev set
+    # loads only the train set
     tracks = mus.load_mus_tracks(subsets='train')
 
     assert len(tracks) == 1
 
-    # load only the dev set
+    # load train and test set
     tracks = mus.load_mus_tracks(subsets=['train', 'test'])
 
     assert len(tracks) == 2

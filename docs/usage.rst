@@ -103,8 +103,8 @@ training subset and then apply the algorithm on the test data:
 
 .. code:: python
 
-    mus.run(my_training_function, subsets="Dev")
-    mus.run(my_test_function, subsets="Test")
+    mus.run(my_training_function, subsets="train")
+    mus.run(my_test_function, subsets="test")
 
 
 Access the reference signals / targets
