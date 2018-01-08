@@ -70,6 +70,11 @@ def test_file_loading():
 
     assert len(tracks) == 1
 
+    # load a single named track
+    tracks = mus.load_mus_tracks(tracknames=['PR - Oh No'])
+
+    assert len(tracks) == 1
+
     # load train and test set
     tracks = mus.load_mus_tracks(subsets=['train', 'test'])
 

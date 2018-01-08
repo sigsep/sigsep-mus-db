@@ -87,13 +87,16 @@ class DB(object):
         self.targets_names = list(self.setup['targets'].keys())
         self.is_wav = is_wav
 
-    def load_mus_tracks(self, subsets=None):
+    def load_mus_tracks(self, subsets=None, tracknames=None):
         """Parses the musdb folder structure, returns list of `Track` objects
 
         Parameters
         ==========
         subsets : list[str], optional
             select a _musdb_ subset `train` or `test`. Defaults to both
+
+        tracknames : list[str], optional
+            select musdb track names, defaults to all tracks
 
         Returns
         -------
@@ -114,15 +117,19 @@ class DB(object):
 
             subset_folder = op.join(self.root_dir, subset)
 
-            for _, track_folders, track_names in os.walk(subset_folder):
+            for _, folders, files in os.walk(subset_folder):
                 if self.is_wav:
                     # parse pcm tracks
-                    for track_filename in sorted(track_folders):
+                    for track_name in sorted(folders):
+                        if tracknames is not None and \
+                        track_name not in tracknames:
+                            continue
+
                         # create new mus track
                         track = Track(
-                            name=track_filename,
+                            name=track_name,
                             path=op.join(
-                                op.join(subset_folder, track_filename),
+                                op.join(subset_folder, track_name),
                                 self.setup['mixture']
                             ),
                             subset=subset
@@ -168,10 +175,14 @@ class DB(object):
                         tracks.append(track)
                 else:
                     # parse stem files
-                    for track_name in sorted(track_names):
+                    for track_name in sorted(files):
                         if 'stem' in track_name and track_name.endswith(
                             '.mp4'
                         ):
+                            if tracknames is not None and \
+                            track_name.split('.stem.mp4')[0] not in tracknames:
+                                continue
+
                             # create new mus track
                             track = Track(
                                 name=track_name,
