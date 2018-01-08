@@ -6,7 +6,7 @@ if __name__ == "__main__":
         name='musdb',
 
         # Version
-        version="0.2.0",
+        version="0.2.1",
 
         # Description
         description='Python parser for the SIGSEP MUS database',
