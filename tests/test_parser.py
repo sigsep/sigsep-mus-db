@@ -4,6 +4,18 @@ import musdb
 import numpy as np
 
 
+@pytest.fixture(params=[True, False])
+def mus(request):
+    return musdb.DB(root_dir='data/MUS-STEMS-SAMPLE', is_wav=request.param)
+
+
+def user_function0(track):
+    '''pass because output is none. Useful for training'''
+
+    # return any number of targets
+    return None
+
+
 def user_function1(track):
     '''Pass'''
 
@@ -81,11 +93,6 @@ def test_file_loading():
     assert len(tracks) == 2
 
 
-@pytest.fixture(params=['data/MUS-STEMS-SAMPLE'])
-def mus(request):
-    return musdb.DB(root_dir=request.param)
-
-
 @pytest.mark.parametrize(
     "path",
     [
@@ -120,6 +127,7 @@ def test_user_functions_test(func, mus):
 @pytest.mark.parametrize(
     "func",
     [
+        user_function0,
         user_function1,
         pytest.mark.xfail(user_function2, raises=ValueError),
         pytest.mark.xfail(user_function3, raises=ValueError),
@@ -130,9 +138,22 @@ def test_run(func, mus):
 
     # process mus but do not save the results
     assert mus.run(
-        user_function=func
+        user_function=func,
+        estimates_dir=None
     )
 
+
+@pytest.mark.parametrize(
+    "func",
+    [
+        pytest.mark.xfail(user_function0, raises=ValueError),
+        user_function1,
+        pytest.mark.xfail(user_function2, raises=ValueError),
+        pytest.mark.xfail(user_function3, raises=ValueError),
+        pytest.mark.xfail(user_function4, raises=ValueError),
+    ]
+)
+def test_run_estimates(func, mus):
     assert mus.run(
         user_function=func,
         estimates_dir='./Estimates'

@@ -9,7 +9,6 @@ import numpy as np
 import functools
 import signal
 import yaml
-import glob
 import tqdm
 import os
 import musdb
@@ -121,8 +120,11 @@ class DB(object):
                 if self.is_wav:
                     # parse pcm tracks
                     for track_name in sorted(folders):
-                        if tracknames is not None and \
-                        track_name not in tracknames:
+                        if (
+                            tracknames is not None
+                        ) and (
+                            track_name not in tracknames
+                        ):
                             continue
 
                         # create new mus track
@@ -179,8 +181,12 @@ class DB(object):
                         if 'stem' in track_name and track_name.endswith(
                             '.mp4'
                         ):
-                            if tracknames is not None and \
-                            track_name.split('.stem.mp4')[0] not in tracknames:
+                            if (
+                                tracknames is not None
+                            ) and (
+                                track_name.split('.stem.mp4')[0] not in
+                                tracknames
+                            ):
                                 continue
 
                             # create new mus track
@@ -250,7 +256,7 @@ class DB(object):
         pass
 
     def test(self, user_function):
-        """Test the musdb processing
+        """Test the musdb user_function output
 
         Parameters
         ----------
@@ -301,31 +307,13 @@ class DB(object):
         return True
 
     def _process_function(self, track, user_function, estimates_dir):
-        # load estimates from disk instead of processing
-        if user_function is None:
-            track_estimate_dir = op.join(
-                estimates_dir,
-                track.subset,
-                track.name
-            )
-            user_results = {}
-            for target_path in glob.glob(track_estimate_dir + '/*.wav'):
-                target_name = op.splitext(
-                    os.path.basename(target_path)
-                )[0]
-                try:
-                    target_audio, rate = sf.read(
-                        target_path,
-                        always_2d=True
-                    )
-                    user_results[target_name] = target_audio
-                except RuntimeError:
-                    pass
-        else:
-            # call the user provided function
-            user_results = user_function(track)
-        if estimates_dir and user_function is not None:
-            self._save_estimates(user_results, track, estimates_dir)
+        user_results = user_function(track)
+        if estimates_dir is not None:
+            if user_results is None:
+                raise ValueError("Processing did not yield any results, " +
+                                 "please set estimate_dir to None")
+            else:
+                self._save_estimates(user_results, track, estimates_dir)
 
     def run(
         self,
@@ -365,7 +353,7 @@ class DB(object):
         test : Test the user provided function
         """
 
-        if user_function is None and estimates_dir:
+        if user_function is None:
             raise RuntimeError("Provide a function!")
 
         # list of tracks to be processed
