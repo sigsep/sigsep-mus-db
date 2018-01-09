@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd "data/MUS-STEMS-SAMPLE"
+cd "./MUS-STEMS-SAMPLE"
 
 subsets=( "test" "train" )
 
