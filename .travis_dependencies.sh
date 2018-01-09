@@ -22,9 +22,14 @@ if [ ! -d "$src" ]; then
     mkdir -p $HOME/env
     pushd $HOME/env
 
-        # Download miniconda packages
-        wget http://repo.continuum.io/miniconda/Miniconda-3.16.0-Linux-x86_64.sh -O miniconda.sh;
-
+        # code below is taken from http://conda.pydata.org/docs/travis.html
+        # We do this conditionally because it saves us some downloading if the
+        # version is the same.
+        if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+          wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
+        else
+          wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+        fi
         # Install both environments
         bash miniconda.sh -b -p $src
 
