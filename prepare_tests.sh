@@ -1,6 +1,6 @@
 #!/bin/sh
 
 cd data
-sh fetch.sh
-sh decode.sh
+bash fetch.sh
+bash decode.sh
 cd ..
