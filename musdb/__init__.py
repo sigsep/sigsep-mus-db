@@ -242,7 +242,13 @@ class DB(object):
 
         return tracks
 
-    def _save_estimates(self, user_estimates, track, estimates_dir):
+    def _save_estimates(
+        self,
+        user_estimates,
+        track,
+        estimates_dir,
+        write_stems=False
+    ):
         track_estimate_dir = op.join(
             estimates_dir, track.subset, track.name
         )
@@ -348,6 +354,11 @@ class DB(object):
         RuntimeError
             If the provided function handle is not callable.
 
+        Returns
+        -------
+        results : Dict
+            returns the return value of the user_function
+
         See Also
         --------
         test : Test the user provided function
@@ -360,10 +371,10 @@ class DB(object):
         if tracks is None:
             tracks = self.load_mus_tracks(subsets=subsets)
 
-        success = False
+        results = False
         if parallel:
             pool = multiprocessing.Pool(cpus, initializer=init_worker)
-            success = list(
+            results = list(
                 tqdm.tqdm(
                     pool.imap_unordered(
                         func=functools.partial(
@@ -383,7 +394,7 @@ class DB(object):
             pool.join()
 
         else:
-            success = list(
+            results = list(
                 tqdm.tqdm(
                     map(
                         lambda x: self._process_function(
@@ -396,7 +407,7 @@ class DB(object):
                     total=len(tracks)
                 )
             )
-        return success
+        return results
 
 
 def process_function_alias(obj, *args, **kwargs):
