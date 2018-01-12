@@ -66,16 +66,17 @@ def user_function5(track):
     return track.audio
 
 
-def test_file_loading():
+def test_file_loading(mus):
     # initiate musdb
 
-    mus = musdb.DB(root_dir='data/MUS-STEMS-SAMPLE')
     tracks = mus.load_mus_tracks()
 
     assert len(tracks) == 2
 
     for track in tracks:
         assert track.audio.shape[1] > 0
+        assert track.audio.shape[-1] == 2
+        assert track.stems.shape[0] == 5
 
     # loads only the train set
     tracks = mus.load_mus_tracks(subsets='train')
