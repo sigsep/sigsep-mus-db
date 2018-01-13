@@ -127,11 +127,12 @@ class DB(object):
                         ):
                             continue
 
+                        track_folder = op.join(subset_folder, track_name)
                         # create new mus track
                         track = Track(
                             name=track_name,
                             path=op.join(
-                                op.join(subset_folder, track_name),
+                                track_folder,
                                 self.setup['mixture']
                             ),
                             subset=subset
@@ -144,7 +145,7 @@ class DB(object):
                         ):
                             # create source object
                             abs_path = op.join(
-                                subset_folder,
+                                track_folder,
                                 source_file
                             )
                             if os.path.exists(abs_path):

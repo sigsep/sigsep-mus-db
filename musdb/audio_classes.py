@@ -135,7 +135,7 @@ class Track(object):
         Absolute path of mixture audio file
 
     stem_id : int
-        If part of a stem file, the stem/substream ID is set here.
+        Mixture stem id/substream ID if part of a stem file.
 
     subset : {'train', 'test'}
         belongs to subset
@@ -184,10 +184,19 @@ class Track(object):
             return self._stems
         # read from disk to save RAM otherwise
         else:
-            if os.path.exists(self.path):
+            if self.stem_id is not None and os.path.exists(self.path):
                 S, rate = stempeg.read_stems(filename=self.path)
-                self._rate = rate
-                return S
+            else:
+                rate = self.rate
+                S = []
+                S.append(self.audio)
+                for source_name, source in list(
+                    self.sources.items()
+                ):
+                    S.append(source.audio)
+                S = np.array(S)
+            self._rate = rate
+            return S
 
     @property
     def audio(self):
