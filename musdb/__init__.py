@@ -92,7 +92,8 @@ class DB(object):
         Parameters
         ==========
         subsets : list[str], optional
-            select a _musdb_ subset `train` or `test`. Defaults to both
+            select a _musdb_ subset `train` or `test`.
+            Default `None` loads both sets.
 
         tracknames : list[str], optional
             select musdb track names, defaults to all tracks
@@ -135,7 +136,9 @@ class DB(object):
                                 track_folder,
                                 self.setup['mixture']
                             ),
-                            subset=subset
+                            subset=subset,
+                            stem_id=self.setup['stem_ids']['mixture'],
+                            is_wav=self.is_wav
                         )
 
                         # add sources to track
@@ -151,7 +154,9 @@ class DB(object):
                             if os.path.exists(abs_path):
                                 sources[src] = Source(
                                     name=src,
-                                    path=abs_path
+                                    path=abs_path,
+                                    stem_id=self.setup['stem_ids'][src],
+                                    is_wav=self.is_wav
                                 )
                         track.sources = sources
 
@@ -195,7 +200,8 @@ class DB(object):
                                 name=track_name,
                                 path=op.join(subset_folder, track_name),
                                 subset=subset,
-                                stem_id=self.setup['stem_ids']['mixture']
+                                stem_id=self.setup['stem_ids']['mixture'],
+                                is_wav=self.is_wav
                             )
                             # add sources to track
                             sources = {}
@@ -211,7 +217,8 @@ class DB(object):
                                     sources[src] = Source(
                                         name=src,
                                         path=abs_path,
-                                        stem_id=self.setup['stem_ids'][src]
+                                        stem_id=self.setup['stem_ids'][src],
+                                        is_wav=self.is_wav
                                     )
                             track.sources = sources
 

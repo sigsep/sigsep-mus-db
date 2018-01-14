@@ -14,16 +14,19 @@ class Source(object):
     name : str
         Name of this source
     stem_id : int
-        If part of a stem file, the stem/substream ID is set here.
+        stem/substream ID is set here.
+    is_wav : boolean
+        If stem is read from wav or mp4 stem
     path : str
         Absolute path to audio file
     gain : float
         Mixing weight for this source
     """
-    def __init__(self, name=None, path=None, stem_id=None):
+    def __init__(self, name=None, path=None, stem_id=None, is_wav=False):
         self.name = name
         self.path = path
         self.stem_id = stem_id
+        self.is_wav = is_wav
         self.gain = 1.0
         self._audio = None
         self._rate = None
@@ -38,7 +41,7 @@ class Source(object):
         # read from disk to save RAM otherwise
         else:
             if os.path.exists(self.path):
-                if self.stem_id is not None:
+                if not self.is_wav:
                     audio, rate = stempeg.read_stems(
                         filename=self.path, stem_id=self.stem_id
                     )
@@ -59,7 +62,7 @@ class Source(object):
         # load audio to set rate
         if self._rate is None:
             if os.path.exists(self.path):
-                if self.stem_id is not None:
+                if not self.is_wav:
                     audio, rate = stempeg.read_stems(
                         filename=self.path, stem_id=self.stem_id
                     )
@@ -130,27 +133,24 @@ class Track(object):
     ----------
     name : str
         Track name
-
     path : str
         Absolute path of mixture audio file
-
     stem_id : int
-        Mixture stem id/substream ID if part of a stem file.
-
+        stem/substream ID
+    is_wav : boolean
+        If stem is read from wav or mp4 stem
     subset : {'train', 'test'}
         belongs to subset
-
     targets : OrderedDict
         OrderedDict of mixted Targets for this Track
-
     sources : Dict
         Dict of ``Source`` objects for this ``Track``
-
     """
     def __init__(
         self,
         name,
         stem_id=None,
+        is_wav=False,
         track_artist=None,
         track_title=None,
         subset=None,
@@ -168,6 +168,7 @@ class Track(object):
         self.path = path
         self.subset = subset
         self.stem_id = stem_id
+        self.is_wav = is_wav
         self.targets = None
         self.sources = None
         self._audio = None
@@ -184,16 +185,18 @@ class Track(object):
             return self._stems
         # read from disk to save RAM otherwise
         else:
-            if self.stem_id is not None and os.path.exists(self.path):
+            if not self.is_wav and os.path.exists(self.path):
                 S, rate = stempeg.read_stems(filename=self.path)
             else:
                 rate = self.rate
                 S = []
                 S.append(self.audio)
-                for source_name, source in list(
-                    self.sources.items()
+                # append sources in order of stem_ids
+                for k, v in sorted(
+                    self.sources.items(),
+                    key=lambda x: x[1].stem_id
                 ):
-                    S.append(source.audio)
+                    S.append(v.audio)
                 S = np.array(S)
             self._rate = rate
             return S

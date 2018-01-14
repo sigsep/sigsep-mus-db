@@ -15,7 +15,6 @@ def test_targets(mus):
 
     for track in tracks:
         for key, target in list(track.targets.items()):
-            print(target)
             assert target.audio.shape
 
 
@@ -45,8 +44,6 @@ def test_source(mus):
     source.rate = 44100
     assert source.rate == 44100
 
-    print(source)
-
 
 def test_track(mus):
     with pytest.raises(ValueError):
@@ -62,5 +59,3 @@ def test_track(mus):
 
     track.rate = 44100
     assert track.rate == 44100
-
-    print(track)

@@ -2,6 +2,7 @@ import os
 import pytest
 import musdb
 import numpy as np
+import yaml
 
 
 @pytest.fixture(params=[True, False])
@@ -66,6 +67,30 @@ def user_function5(track):
     return track.audio
 
 
+def test_stems(mus):
+    tracks = mus.load_mus_tracks()
+
+    setup_path = os.path.join(
+        musdb.__path__[0], 'configs', 'mus.yaml'
+    )
+
+    with open(setup_path, 'r') as f:
+        setup = yaml.load(f)
+
+    for track in tracks:
+        for k, v in setup['stem_ids'].items():
+            if k == 'mixture':
+                assert np.allclose(
+                    track.audio,
+                    track.stems[v]
+                )
+            else:
+                assert np.allclose(
+                    track.sources[k].audio,
+                    track.stems[v]
+                )
+
+
 def test_file_loading(mus):
     # initiate musdb
 
@@ -90,6 +115,11 @@ def test_file_loading(mus):
 
     # load train and test set
     tracks = mus.load_mus_tracks(subsets=['train', 'test'])
+
+    assert len(tracks) == 2
+
+    # load train and test set
+    tracks = mus.load_mus_tracks(subsets=None)
 
     assert len(tracks) == 2
 
