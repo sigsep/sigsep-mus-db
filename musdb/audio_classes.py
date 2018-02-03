@@ -1,4 +1,5 @@
 from __future__ import print_function
+from __future__ import division
 import os
 import soundfile as sf
 import numpy as np
@@ -200,6 +201,11 @@ class Track(object):
                 S = np.array(S)
             self._rate = rate
             return S
+
+    @property
+    def duration(self):
+        """return track duration in seconds"""
+        return self.audio.shape[0] / self.rate
 
     @property
     def audio(self):
