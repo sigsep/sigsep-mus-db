@@ -162,7 +162,7 @@ class Track(object):
             split_name = name.split(' - ')
             self.artist = split_name[0]
             self.title = split_name[1]
-        except ValueError:
+        except IndexError:
             self.artist = track_artist
             self.title = track_title
 
