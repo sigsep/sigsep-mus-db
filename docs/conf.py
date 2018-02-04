@@ -57,8 +57,8 @@ project = u'musdb'
 copyright = u'2017, Fabian-Robert Stöter'
 author = u'Fabian-Robert Stöter'
 
-version = u'0.2.0'
-release = u'0.2.0'
+version = u'0.2.1'
+release = u'0.2.1'
 
 language = None
 
