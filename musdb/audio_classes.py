@@ -157,7 +157,7 @@ class Track(object):
         subset=None,
         path=None
     ):
-        self.name = os.path.splitext(name)[0].split('.stem')[0]
+        self.name = name.split('.stem.mp4')[0]
         try:
             split_name = name.split(' - ')
             self.artist = split_name[0]
