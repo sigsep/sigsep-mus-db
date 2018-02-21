@@ -14,6 +14,9 @@ import os
 import musdb
 
 
+__version__ = "0.2.2"
+
+
 class DB(object):
     """
     The musdb DB Object
@@ -296,6 +299,36 @@ class DB(object):
         signal = np.random.random((66000, 2))
         test_track.audio = signal
         test_track.rate = 44100
+
+        sources = {}
+        for src, source_file in list(
+            self.setup['sources'].items()
+        ):
+            source = Source(name=src)
+            source.audio = signal
+            source.rate = test_track.rate
+            sources[src] = source
+        test_track.sources = sources
+
+        # add targets to track
+        targets = collections.OrderedDict()
+        for name, target_srcs in list(
+            self.setup['targets'].items()
+        ):
+            # add a list of target sources
+            target_sources = []
+            for source, gain in list(target_srcs.items()):
+                if source in list(test_track.sources.keys()):
+                    # add gain to source tracks
+                    test_track.sources[source].gain = float(gain)
+                    # add tracks to components
+                    target_sources.append(sources[source])
+            # add sources to target
+            if target_sources:
+                targets[name] = Target(sources=target_sources)
+
+        # add targets to track
+        test_track.targets = targets
 
         user_results = user_function(test_track)
 
