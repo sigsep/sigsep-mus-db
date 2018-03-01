@@ -14,7 +14,7 @@ import os
 import musdb
 
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 
 class DB(object):
@@ -299,6 +299,7 @@ class DB(object):
         signal = np.random.random((66000, 2))
         test_track.audio = signal
         test_track.rate = 44100
+        test_track.subset = 'test'
 
         sources = {}
         for src, source_file in list(
@@ -338,7 +339,7 @@ class DB(object):
                     raise ValueError("Target '%s' not supported!" % target)
 
                 d = audio.dtype
-                if not np.issubdtype(d, float):
+                if not np.issubdtype(d, np.dtype(float).type):
                     raise ValueError(
                         "Estimate is not of type numpy.float_"
                     )
