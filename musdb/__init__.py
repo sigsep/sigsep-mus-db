@@ -339,9 +339,12 @@ class DB(object):
                     raise ValueError("Target '%s' not supported!" % target)
 
                 d = audio.dtype
-                if not np.issubdtype(d, np.dtype(float).type):
+                if not (
+                    np.issubdtype(d, np.float32) or
+                    np.issubdtype(d, np.float64)
+                ):
                     raise ValueError(
-                        "Estimate is not of type numpy.float_"
+                        "Estimate is not of type numpy.float32 or float64"
                     )
 
                 if audio.shape != signal.shape:

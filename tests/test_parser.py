@@ -67,6 +67,16 @@ def user_function5(track):
     return track.audio
 
 
+def user_function6(track):
+    '''fails because of wrong type'''
+
+    # return any number of targets
+    estimates = {
+        'vocals': track.audio.astype(np.float32),
+    }
+    return estimates
+
+
 def test_stems(mus):
     tracks = mus.load_mus_tracks()
 
@@ -149,6 +159,7 @@ def test_env(path):
         pytest.mark.xfail(user_function4, raises=ValueError),
         pytest.mark.xfail(user_function5, raises=ValueError),
         pytest.mark.xfail("not_a_function", raises=TypeError),
+        user_function6,
     ]
 )
 def test_user_functions_test(func, mus):
