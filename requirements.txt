@@ -6,5 +6,5 @@ tqdm==4.19.8
 pyaml==17.12.1
 PySoundFile>=0.8
 sphinx==1.7.2
-sphinx_rtd_theme
+sphinx_rtd_theme==0.2.4
 numpydoc
