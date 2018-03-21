@@ -1,7 +1,7 @@
 pip >= 8.0.0
 wheel==0.30.0
 numpy>=1.7
-six
+six==1.11.0
 tqdm
 pyaml
 PySoundFile>=0.8
