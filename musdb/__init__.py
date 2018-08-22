@@ -357,14 +357,26 @@ class DB(object):
 
         return True
 
-    def _process_function(self, track, user_function, estimates_dir):
-        user_results = user_function(track)
-        if estimates_dir is not None:
-            if user_results is None:
-                raise ValueError("Processing did not yield any results, " +
-                                 "please set estimate_dir to None")
-            else:
-                self._save_estimates(user_results, track, estimates_dir)
+    def _process_function(
+        self,
+        track,
+        user_function,
+        estimates_dir,
+        skip_existing=False
+    ):
+        track_estimate_dir = op.join(
+            estimates_dir, track.subset, track.name
+        )
+        if os.path.exists(track_estimate_dir) and skip_existing:
+            pass
+        else:
+            user_results = user_function(track)
+            if estimates_dir is not None:
+                if user_results is None:
+                    raise ValueError("Processing did not yield any results, " +
+                                     "please set estimate_dir to None")
+                else:
+                    self._save_estimates(user_results, track, estimates_dir)
 
     def run(
         self,
@@ -373,7 +385,8 @@ class DB(object):
         estimates_dir=None,
         subsets=None,
         parallel=False,
-        cpus=4
+        cpus=4,
+        skip_existing=False
     ):
         """Run the musdb processing
 
@@ -393,6 +406,9 @@ class DB(object):
             activate multiprocessing
         cpus: int, optional
             set number of cores if `parallel` mode is active, defaults to 4
+        skip_existing: bool, optional
+            skips tracks if track already exists in `estimates_dir`,
+            defaults to false
 
         Raises
         ------
@@ -426,7 +442,8 @@ class DB(object):
                             process_function_alias,
                             self,
                             user_function=user_function,
-                            estimates_dir=estimates_dir
+                            estimates_dir=estimates_dir,
+                            skip_existing=skip_existing
                         ),
                         iterable=tracks,
                         chunksize=1
@@ -445,7 +462,8 @@ class DB(object):
                         lambda x: self._process_function(
                             x,
                             user_function,
-                            estimates_dir
+                            estimates_dir,
+                            skip_existing
                         ),
                         tracks
                     ),
