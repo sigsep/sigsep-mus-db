@@ -121,6 +121,26 @@ mus.run(my_training_function, subsets="train")
 mus.run(my_test_function, subsets="test")
 ```
 
+#### Processing individual tracks
+
+If you want to access individual tracks, e.g. to specify a validation dataset. You can manually load the track array before running your separation function.
+
+```python
+# load the training tracks
+tracks = mus.load_mus_tracks(subsets=['train'])
+for track in tracks:
+  print(track.name)
+
+# use run with a subset of tracks
+mus.run(my_validation_function, tracks=tracks[:10])
+```
+
+Instead of parsing the track list, `musdb` supports loading tracks by track name, as well:
+
+```python
+tracks = mus.load_mus_tracks(tracknames=["PR - Oh No", "Angels In Amplifiers - I'm Alright"])
+```
+
 ##### Access the reference signals / targets
 
 For supervised learning you can use the provided reference sources by loading the `track.targets` dictionary.
@@ -181,12 +201,17 @@ mus.run(my_function, estimates_dir="path/to/estimates")
 ## Baselines
 
 Please check [examples of oracle separation methods](https://github.com/sigsep/sigsep-mus-oracle).
-This will show you how oracle performance is computed, i.e. an upper bound for the quality of the separtion.
+This will show you how oracle performance is computed, i.e. an upper bound for the quality of the separtion.cancel-led
 
 ## Evaluation and Submission
 
 Please refer to our [Submission site](https://github.com/sigsep/sigsep-mus-2018).
 
+## Frequently Asked Questions
+
+##### The mixture is not exactly the sum of its sources, is that intended?
+
+This is not a bug. Since we adopted the STEMS format, we used AAC compression. Here the residual noise of the mixture is different from the sum of the residual noises of the sources. This difference does not significantly affect separation performance.
 
 ## References
 
