@@ -5,6 +5,6 @@ six
 tqdm
 pyaml
 PySoundFile>=0.8
-sphinx
+sphinx==1.8.0
 sphinx_rtd_theme
 numpydoc
