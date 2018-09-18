@@ -27,6 +27,7 @@ if __name__ == "__main__":
         # computations stack
         install_requires=[
             'numpy>=1.7',
+            'scipy',
             'six',
             'tqdm',
             'pyaml',
