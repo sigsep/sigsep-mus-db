@@ -40,8 +40,8 @@ if [ ! -d "$src" ]; then
 
         conda install -c conda-forge ffmpeg
 
-        pip install python-coveralls
-        pip install mock
+        pip install python-coveralls pytest-cov mock
+        pip install
 
         source deactivate
     popd
