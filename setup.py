@@ -43,6 +43,7 @@ if __name__ == "__main__":
                 'pytest',
                 'pytest-cov',
                 'pytest-pep8',
+                'coverage>=4.4'
             ],
             'docs': [
                 'sphinx',
@@ -55,6 +56,7 @@ if __name__ == "__main__":
             'pytest',
             'pytest-cov',
             'pytest-pep8',
+            'coverage>=4.4'
         ],
 
         classifiers=[
