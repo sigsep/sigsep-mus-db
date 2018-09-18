@@ -12,9 +12,10 @@ import yaml
 import tqdm
 import os
 import musdb
+import errno
 
 
-__version__ = "0.2.3"
+__version__ = "0.3.0"
 
 
 class DB(object):
@@ -32,15 +33,20 @@ class DB(object):
 
     is_wav : boolean, optional
         expect subfolder with wav files for each source instead stems,
-        defaults to stems
+        defaults to `False`
 
+    download : boolean, optional
+        download sample version of MUSDB18 which includes 7s excerpts,
+        defaults to `False`
 
     Attributes
     ----------
     setup_file : str
         path to yaml file. default: `setup.yaml`
     root_dir : str
-        musdb Root path. Default is `MUSDB_PATH` env
+        musdb Root path. Default is `MUSDB_PATH`. In combination with
+        `download`, this path will set the download destination and set to
+        '~/musdb/' by default.
     sources_dir : str
         path to Sources directory
     sources_names : list[str]
@@ -65,15 +71,26 @@ class DB(object):
         self,
         root_dir=None,
         setup_file=None,
-        is_wav=False
+        is_wav=False,
+        download=False
     ):
         if root_dir is None:
-            if "MUSDB_PATH" in os.environ:
-                self.root_dir = os.environ["MUSDB_PATH"]
+            if download:
+                self.root_dir = os.path.expanduser("~/MUSDB18")
             else:
-                raise RuntimeError("Variable `MUSDB_PATH` has not been set.")
+                if "MUSDB_PATH" in os.environ:
+                    self.root_dir = os.environ["MUSDB_PATH"]
+                else:
+                    raise RuntimeError("Variable `MUSDB_PATH` has not been set.")
         else:
             self.root_dir = root_dir
+
+        if download:
+            self.url = "https://s3.eu-west-3.amazonaws.com/sisec18.unmix.app/dataset/MUSDB18-7-STEMS.zip"
+            self.download()
+            if not self._check_exists():
+                raise RuntimeError('Dataset not found.' +
+                                   'You can use download=True to download a sample version of the dataset')
 
         if setup_file is not None:
             setup_path = op.join(self.root_dir, setup_file)
@@ -453,6 +470,39 @@ class DB(object):
                 )
             )
         return results
+
+    def _check_exists(self):
+        return os.path.exists(os.path.join(self.root_dir, "train"))
+
+    def download(self):
+        """Download the MUSDB Sample data"""
+        from six.moves import urllib
+        import zipfile
+
+        if self._check_exists():
+            return
+
+        # download files
+        try:
+            os.makedirs(os.path.join(self.root_dir))
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                pass
+            else:
+                raise
+
+        print('Downloading MUSDB Sample Dataset to %s...' % self.root_dir)
+        data = urllib.request.urlopen(self.url)
+        filename = 'MUSDB18-7-STEMS.zip'
+        file_path = os.path.join(self.root_dir, filename)
+        with open(file_path, 'wb') as f:
+            f.write(data.read())
+        zip_ref = zipfile.ZipFile(file_path, 'r')
+        zip_ref.extractall(os.path.join(self.root_dir))
+        zip_ref.close()
+        os.unlink(file_path)
+
+        print('Done!')
 
 
 def process_function_alias(obj, *args, **kwargs):
