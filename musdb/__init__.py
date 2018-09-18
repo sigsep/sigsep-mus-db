@@ -11,6 +11,7 @@ import signal
 import yaml
 import tqdm
 import os
+from .img import MAG
 import musdb
 import errno
 
@@ -76,7 +77,7 @@ class DB(object):
     ):
         if root_dir is None:
             if download:
-                self.root_dir = os.path.expanduser("~/MUSDB18")
+                self.root_dir = os.path.expanduser("~/MUSDB18/MUSDB18-7")
             else:
                 if "MUSDB_PATH" in os.environ:
                     self.root_dir = os.environ["MUSDB_PATH"]

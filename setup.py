@@ -31,7 +31,9 @@ if __name__ == "__main__":
             'tqdm',
             'pyaml',
             'soundfile>=0.9.0',
-            'stempeg>=0.1.1'
+            'stempeg>=0.1.1',
+            'Pillow',
+            'sklearn',
         ],
 
         package_data={
