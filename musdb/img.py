@@ -79,6 +79,9 @@ class MAG(object):
 
             for idx in range(len(self)):
                 X, Y = self[idx]
+                if data_type == '.jpg':
+                    X = dequantize(X)
+                    Y = dequantize(Y)
                 self.input_scaler.partial_fit(np.squeeze(X))
                 self.output_scaler.partial_fit(np.squeeze(Y))
 
@@ -196,7 +199,7 @@ class MAG(object):
 
         print('Downloading MUSMAG...')
         data = urllib.request.urlopen(self.url)
-        filename = 'MUSMAG-JPG.zip'
+        filename = 'MUSMAG.zip'
         file_path = os.path.join(self.root_dir, filename)
         with open(file_path, 'wb') as f:
             f.write(data.read())
@@ -209,4 +212,4 @@ class MAG(object):
 
 
 def dequantize(X):
-    return np.exp(X.astype(np.float) / (2 ** 8 - 1))
+    return np.exp(X.astype(np.float) / (2 ** 8 - 1))-1
