@@ -79,7 +79,7 @@ class MAG(object):
 
             for idx in range(len(self)):
                 X, Y = self[idx]
-                if data_type == '.jpg':
+                if self.data_type == '.jpg':
                     X = dequantize(X)
                     Y = dequantize(Y)
                 self.input_scaler.partial_fit(np.squeeze(X))
