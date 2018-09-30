@@ -1,5 +1,5 @@
 pip >= 8.0.0
-wheel
+wheel==0.32.0
 numpy>=1.7
 six
 tqdm
