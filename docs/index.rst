@@ -20,6 +20,6 @@ Contents:
 References
 ~~~~~~~~~~
 
-If you use this package, please reference the following paper
+If you use this package, please reference the following paper: https://arxiv.org/abs/1804.06267
 
 .. code:: tex
