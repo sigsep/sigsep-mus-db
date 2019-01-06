@@ -2,7 +2,7 @@ pip >= 8.0.0
 wheel==0.32.2
 numpy>=1.7
 six
-tqdm==4.28.1
+tqdm==4.29.0
 pyaml
 PySoundFile>=0.8
 sphinx
