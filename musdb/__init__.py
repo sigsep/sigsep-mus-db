@@ -108,7 +108,6 @@ class DB(object):
         self.is_wav = is_wav
         self.load_mus_tracks(subsets=subsets)
 
-        
     def __getitem__(self, index):
         return self.tracks[index]
 
