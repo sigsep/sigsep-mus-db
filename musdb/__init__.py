@@ -1,20 +1,19 @@
-from __future__ import print_function
 from .audio_classes import Track, Source, Target
 from os import path as op
-from six.moves import map
 import multiprocessing
 import soundfile as sf
+import urllib.request
+from .img import MAG
 import collections
 import numpy as np
-import functools
 import signal
+import functools
+import zipfile
 import yaml
 import tqdm
-import os
-from .img import MAG
 import musdb
 import errno
-
+import os
 
 __version__ = "0.3.0"
 
@@ -73,7 +72,8 @@ class DB(object):
         root_dir=None,
         setup_file=None,
         is_wav=False,
-        download=False
+        download=False,
+        subsets=None
     ):
         if root_dir is None:
             if download:
@@ -106,8 +106,19 @@ class DB(object):
         self.sources_names = list(self.setup['sources'].keys())
         self.targets_names = list(self.setup['targets'].keys())
         self.is_wav = is_wav
+        self.load_mus_tracks(subsets=subsets)
 
-    def load_mus_tracks(self, subsets=None, tracknames=None):
+        
+    def __getitem__(self, index):
+        return self.tracks[index]
+
+    def __len__(self):
+        return len(self.tracks)
+
+    def get_track_by_name(self, name):
+        pass
+
+    def load_mus_tracks(self, subsets=None):
         """Parses the musdb folder structure, returns list of `Track` objects
 
         Parameters
@@ -115,9 +126,6 @@ class DB(object):
         subsets : list[str], optional
             select a _musdb_ subset `train` or `test`.
             Default `None` loads both sets.
-
-        tracknames : list[str], optional
-            select musdb track names, defaults to all tracks
 
         Returns
         -------
@@ -142,12 +150,6 @@ class DB(object):
                 if self.is_wav:
                     # parse pcm tracks
                     for track_name in sorted(folders):
-                        if (
-                            tracknames is not None
-                        ) and (
-                            track_name not in tracknames
-                        ):
-                            continue
 
                         track_folder = op.join(subset_folder, track_name)
                         # create new mus track
@@ -208,14 +210,6 @@ class DB(object):
                         if 'stem' in track_name and track_name.endswith(
                             '.mp4'
                         ):
-                            if (
-                                tracknames is not None
-                            ) and (
-                                track_name.split('.stem.mp4')[0] not in
-                                tracknames
-                            ):
-                                continue
-
                             # create new mus track
                             track = Track(
                                 name=track_name,
@@ -269,7 +263,7 @@ class DB(object):
                             # add track to list of tracks
                             tracks.append(track)
 
-        return tracks
+        self.tracks = tracks
 
     def _save_estimates(
         self,
@@ -320,7 +314,7 @@ class DB(object):
         test_track.subset = 'test'
 
         sources = {}
-        for src, source_file in list(
+        for src, _ in list(
             self.setup['sources'].items()
         ):
             source = Source(name=src)
@@ -387,11 +381,11 @@ class DB(object):
     def run(
         self,
         user_function,
-        tracks=None,
         estimates_dir=None,
         subsets=None,
         parallel=False,
-        cpus=4
+        cpus=4,
+        progress=True
     ):
         """Run the musdb processing
 
@@ -430,10 +424,6 @@ class DB(object):
         if user_function is None:
             raise RuntimeError("Provide a function!")
 
-        # list of tracks to be processed
-        if tracks is None:
-            tracks = self.load_mus_tracks(subsets=subsets)
-
         results = False
         if parallel:
             pool = multiprocessing.Pool(cpus, initializer=init_worker)
@@ -446,10 +436,11 @@ class DB(object):
                             user_function=user_function,
                             estimates_dir=estimates_dir
                         ),
-                        iterable=tracks,
+                        iterable=self.tracks,
                         chunksize=1
                     ),
-                    total=len(tracks)
+                    total=len(self),
+                    disable=not progress
                 )
             )
 
@@ -465,9 +456,10 @@ class DB(object):
                             user_function,
                             estimates_dir
                         ),
-                        tracks
+                        self.tracks
                     ),
-                    total=len(tracks)
+                    total=len(self),
+                    disable=not progress
                 )
             )
         return results
@@ -477,9 +469,6 @@ class DB(object):
 
     def download(self):
         """Download the MUSDB Sample data"""
-        from six.moves import urllib
-        import zipfile
-
         if self._check_exists():
             return
 
@@ -504,7 +493,6 @@ class DB(object):
         os.unlink(file_path)
 
         print('Done!')
-
 
 def process_function_alias(obj, *args, **kwargs):
     return obj._process_function(*args, **kwargs)

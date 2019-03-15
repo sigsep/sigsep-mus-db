@@ -1,5 +1,3 @@
-from __future__ import print_function
-from __future__ import division
 import os
 import soundfile as sf
 import numpy as np
@@ -263,4 +261,4 @@ class Track(object):
         self._rate = rate
 
     def __repr__(self):
-        return "\n%s" % (self.name)
+        return "%s" % (self.name)

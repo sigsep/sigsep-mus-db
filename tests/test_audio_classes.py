@@ -1,5 +1,3 @@
-from __future__ import print_function
-from __future__ import division
 import pytest
 import musdb.audio_classes as ac
 import musdb
@@ -12,17 +10,13 @@ def mus(request):
 
 
 def test_targets(mus):
-    tracks = mus.load_mus_tracks()
-
-    for track in tracks:
+    for track in mus:
         for key, target in list(track.targets.items()):
             assert target.audio.shape
 
 
 def test_rates(mus):
-    tracks = mus.load_mus_tracks()
-
-    for track in tracks:
+    for track in mus:
         assert track.rate == 44100
         assert track.audio.shape
         for key, source in list(track.sources.items()):
@@ -31,9 +25,7 @@ def test_rates(mus):
 
 
 def test_durations(mus):
-    tracks = mus.load_mus_tracks()
-
-    for track in tracks:
+    for track in mus:
         assert track.duration > 0
         assert np.allclose(track.audio.shape[0], track.duration * track.rate)
 

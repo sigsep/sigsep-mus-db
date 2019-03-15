@@ -28,11 +28,10 @@ if __name__ == "__main__":
         install_requires=[
             'numpy>=1.7',
             'scipy',
-            'six',
             'tqdm',
             'pyaml',
             'soundfile>=0.9.0',
-            'stempeg>=0.1.1',
+            'stempeg>=0.1.6',
             'Pillow',
             'sklearn',
         ],
@@ -71,6 +70,7 @@ if __name__ == "__main__":
             'Programming Language :: Python :: 3.4',
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6',
+            'Programming Language :: Python :: 3.7',
             'Topic :: Multimedia :: Sound/Audio :: Analysis',
             'Topic :: Multimedia :: Sound/Audio :: Sound Synthesis'
         ],

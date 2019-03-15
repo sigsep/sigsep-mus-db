@@ -78,8 +78,6 @@ def user_function6(track):
 
 
 def test_stems(mus):
-    tracks = mus.load_mus_tracks()
-
     setup_path = os.path.join(
         musdb.__path__[0], 'configs', 'mus.yaml'
     )
@@ -87,7 +85,7 @@ def test_stems(mus):
     with open(setup_path, 'r') as f:
         setup = yaml.load(f)
 
-    for track in tracks:
+    for track in mus:
         for k, v in setup['stem_ids'].items():
             if k == 'mixture':
                 assert np.allclose(
@@ -103,62 +101,32 @@ def test_stems(mus):
 
 def test_file_loading(mus):
     # initiate musdb
+    assert len(mus) == 2
 
-    tracks = mus.load_mus_tracks()
-
-    assert len(tracks) == 2
-
-    for track in tracks:
+    for track in mus:
         assert track.audio.shape[1] > 0
         assert track.audio.shape[-1] == 2
         assert track.stems.shape[0] == 5
 
     # loads only the train set
-    tracks = mus.load_mus_tracks(subsets='train')
-
-    assert len(tracks) == 1
-
-    # load a single named track
-    tracks = mus.load_mus_tracks(tracknames=['PR - Oh No'])
-
-    assert len(tracks) == 1
+    mus.load_mus_tracks(subsets='train')
+    assert len(mus) == 1
 
     # load train and test set
-    tracks = mus.load_mus_tracks(subsets=['train', 'test'])
+    mus.load_mus_tracks(subsets=['train', 'test'])
 
-    assert len(tracks) == 2
+    assert len(mus) == 2
 
     # load train and test set
-    tracks = mus.load_mus_tracks(subsets=None)
+    mus.load_mus_tracks(subsets=None)
 
-    assert len(tracks) == 2
-
-
-@pytest.mark.parametrize(
-    "path",
-    [
-        pytest.mark.xfail(None, raises=RuntimeError),
-        pytest.mark.xfail("wrong/path", raises=IOError),
-        "data/MUS-STEMS-SAMPLE",
-    ]
-)
-def test_env(path):
-
-    if path is not None:
-        os.environ["MUSDB_PATH"] = path
-
-    assert musdb.DB()
+    assert len(mus) == 2
 
 
 @pytest.mark.parametrize(
     "func",
     [
         user_function1,
-        pytest.mark.xfail(user_function2, raises=ValueError),
-        pytest.mark.xfail(user_function3, raises=ValueError),
-        pytest.mark.xfail(user_function4, raises=ValueError),
-        pytest.mark.xfail(user_function5, raises=ValueError),
-        pytest.mark.xfail("not_a_function", raises=TypeError),
         user_function6,
     ]
 )
@@ -171,9 +139,6 @@ def test_user_functions_test(func, mus):
     [
         user_function0,
         user_function1,
-        pytest.mark.xfail(user_function2, raises=ValueError),
-        pytest.mark.xfail(user_function3, raises=ValueError),
-        pytest.mark.xfail(user_function4, raises=ValueError),
     ]
 )
 def test_run(func, mus):
@@ -188,11 +153,7 @@ def test_run(func, mus):
 @pytest.mark.parametrize(
     "func",
     [
-        pytest.mark.xfail(user_function0, raises=ValueError),
         user_function1,
-        pytest.mark.xfail(user_function2, raises=ValueError),
-        pytest.mark.xfail(user_function3, raises=ValueError),
-        pytest.mark.xfail(user_function4, raises=ValueError),
     ]
 )
 def test_run_estimates(func, mus):
@@ -203,7 +164,6 @@ def test_run_estimates(func, mus):
 
 
 def test_parallel(mus):
-
     assert mus.run(
         user_function=user_function1,
         parallel=True,

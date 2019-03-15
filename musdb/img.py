@@ -33,7 +33,6 @@ class MAG(object):
         self.data_type = data_type
         if data_type == '.jpg':
             self.url = 'https://s3.eu-west-3.amazonaws.com/sisec18.unmix.app/dataset/MUSMAG.zip'
-        # add raw musdb18 reader here
 
         if root_dir is None:
             if download:
@@ -118,7 +117,7 @@ class MAG(object):
                 img = img.swapaxes(0, 1)
                 # select only red and blue channels
                 M = img[:, :, [0, 1]]
-        else:
+        elif self.data_type == '.npy':
             M = np.load(path, mmap_mode='c')
         return M
 
