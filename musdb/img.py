@@ -72,18 +72,6 @@ class MAG(object):
             self.X = np.array(self.X)
             self.Y = np.array(self.Y)
 
-        if scale:
-            self.input_scaler = sklearn.preprocessing.StandardScaler()
-            self.output_scaler = sklearn.preprocessing.StandardScaler()
-
-            for idx in range(len(self)):
-                X, Y = self[idx]
-                if self.data_type == '.jpg':
-                    X = dequantize(X)
-                    Y = dequantize(Y)
-                self.input_scaler.partial_fit(np.squeeze(X))
-                self.output_scaler.partial_fit(np.squeeze(Y))
-
     def __len__(self):
         return len(self.tracks)
 
@@ -145,11 +133,11 @@ class MAG(object):
                 subsets = subsets
         else:
             subsets = ['train', 'test']
-
+ 
         tracks = []
         for subset in subsets:
             subset_folder = os.path.join(self.root_dir, subset)
-            _, folders, files = next(os.walk(subset_folder))
+            _, folders, _ = next(os.walk(subset_folder))
 
             if subset == 'train' and not valid:
                 track_list = [x for x in sorted(folders) if x not in tracknames]

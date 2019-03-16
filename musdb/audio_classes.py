@@ -55,7 +55,7 @@ class Source(object):
                         filename=self.path, stem_id=self.stem_id
                     )
                 else:
-                    audio, rate = sf.read(self.path, always_2d=True)
+                    _, rate = sf.read(self.path, always_2d=True)
                 self._rate = rate
                 return rate
             else:
