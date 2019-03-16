@@ -191,6 +191,7 @@ class DB(object):
                                     name=src,
                                     path=abs_path,
                                     is_wav=self.is_wav,
+                                    dur=self.dur,
                                     stem_id=self.setup['stem_ids'][src],
                                 )
                         track.sources = sources
@@ -228,7 +229,8 @@ class DB(object):
                                         name=src,
                                         path=abs_path,
                                         stem_id=self.setup['stem_ids'][src],
-                                        is_wav=self.is_wav
+                                        is_wav=self.is_wav,
+                                        dur=self.dur,
                                     )
                             track.sources = sources
 

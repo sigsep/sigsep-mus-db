@@ -21,7 +21,14 @@ class Source(object):
     gain : float
         Mixing weight for this source
     """
-    def __init__(self, name=None, path=None, stem_id=None, is_wav=False):
+    def __init__(
+        self, name=None, 
+        path=None, 
+        stem_id=None, 
+        is_wav=False,
+        start=0,
+        dur=None
+    ):
         self.name = name
         self.path = path
         self.stem_id = stem_id
@@ -29,29 +36,11 @@ class Source(object):
         self.gain = 1.0
         self._audio = None
         self._rate = None
-
-    @property
-    def audio(self):
-        """array_like: [shape=(num_samples, num_channels)]
-        """
-        # return cached audio if explicitly set by setter
-        if self._audio is not None:
-            return self._audio
-        # read from disk to save RAM otherwise
-        else:
-            if os.path.exists(self.path):
-                if not self.is_wav:
-                    audio, rate = stempeg.read_stems(
-                        filename=self.path, stem_id=self.stem_id
-                    )
-                else:
-                    audio, rate = sf.read(self.path, always_2d=True)
-                self._rate = rate
-                return audio
-            else:
-                self._rate = None
-                self._audio = None
-                raise ValueError("Oops! %s cannot be loaded" % self.path)
+        self.start = start
+        self.dur = dur
+        # have the ability to cache stemoeg  stream_info objects
+        # this significantly improves loading time on the second run
+        self._stream_info = None
 
     @property
     def rate(self):
@@ -62,7 +51,7 @@ class Source(object):
         if self._rate is None:
             if os.path.exists(self.path):
                 if not self.is_wav:
-                    audio, rate = stempeg.read_stems(
+                    _, rate = stempeg.read_stems(
                         filename=self.path, stem_id=self.stem_id
                     )
                 else:
@@ -75,6 +64,10 @@ class Source(object):
                 raise ValueError("Oops! %s cannot be loaded" % self.path)
         return self._rate
 
+    @property
+    def audio(self):
+        return self.load(self.start, self.dur)
+
     @audio.setter
     def audio(self, array):
         self._audio = array
@@ -82,6 +75,47 @@ class Source(object):
     @rate.setter
     def rate(self, rate):
         self._rate = rate
+
+    def load(self, start=0, dur=None):
+        """array_like: [shape=(num_samples, num_channels)]
+        """
+        # return cached audio if explicitly set by setter
+        if self._audio is not None:
+            return self._audio
+        # read from disk to save RAM otherwise
+        else:
+            if os.path.exists(self.path):
+                if not self.is_wav:
+                    if self._stream_info is None:
+                        self._stream_info = stempeg.Info(self.path)
+                    # read using stempeg
+                    audio, rate = stempeg.read_stems(
+                        filename=self.path,
+                        stem_id=self.stem_id,
+                        start=start,
+                        duration=dur,
+                        info=self._stream_info
+                    )
+                else:
+                    # check if dur is none
+                    if dur:
+                        # stop in soundfile is calc in samples, not seconds
+                        stop = int(dur * self.rate)
+                    else:
+                        stop = dur
+                    audio, rate = sf.read(
+                        self.path,
+                        always_2d=True,
+                        start=int(start * self.rate),
+                        stop=stop
+                    )
+                self._rate = rate
+                return audio
+            else:
+                self._rate = None
+                self._audio = None
+                raise ValueError("Oops! %s cannot be loaded" % self.path)
+
 
     def __repr__(self):
         return self.path
@@ -161,7 +195,11 @@ class Track(object):
         start=0,
         dur=None
     ):
-        self.name = name.split('.stem.mp4')[0]
+        if not is_wav:
+            self.name = name.split('.stem.mp4')[0]
+        else:
+            self.name = name
+
         try:
             split_name = name.split(' - ')
             self.artist = split_name[0]
@@ -220,46 +258,8 @@ class Track(object):
         return self.audio.shape[0] / self.rate
 
     @property
-    def audio(self, start=0, duration=0.1):
-        """array_like: [shape=(num_samples, num_channels)]
-        """
-
-        # return cached audio if explicitly set by setter
-        if self._audio is not None:
-            return self._audio
-        # read from disk to save RAM otherwise
-        else:
-            if os.path.exists(self.path):
-                if not self.is_wav:
-                    if self._stream_info is None:
-                        self._stream_info = stempeg.Info(self.path)
-                    # read using stempeg
-                    audio, rate = stempeg.read_stems(
-                        filename=self.path,
-                        stem_id=self.stem_id,
-                        start=self.start,
-                        duration=self.dur,
-                        info=self._stream_info
-                    )
-                else:
-                    # check if dur is none
-                    if self.dur:
-                        # stop in soundfile is calc in samples, not seconds
-                        stop = self.dur // self.rate
-                    else:
-                        stop = self.dur
-                    audio, rate = sf.read(
-                        self.path, 
-                        always_2d=True,
-                        start=self.start // self.rate,
-                        stop=stop
-                        )
-                self._rate = rate
-                return audio
-            else:
-                self._rate = None
-                self._audio = None
-                raise ValueError("Oops! %s cannot be loaded" % self.path)
+    def audio(self):
+        return self.load(self.start, self.dur)
 
     @property
     def rate(self):
@@ -289,6 +289,46 @@ class Track(object):
     @rate.setter
     def rate(self, rate):
         self._rate = rate
+
+    def load(self, start=0, dur=None):
+        """array_like: [shape=(num_samples, num_channels)]
+        """
+        # return cached audio if explicitly set by setter
+        if self._audio is not None:
+            return self._audio
+        # read from disk to save RAM otherwise
+        else:
+            if os.path.exists(self.path):
+                if not self.is_wav:
+                    if self._stream_info is None:
+                        self._stream_info = stempeg.Info(self.path)
+                    # read using stempeg
+                    audio, rate = stempeg.read_stems(
+                        filename=self.path,
+                        stem_id=self.stem_id,
+                        start=start,
+                        duration=dur,
+                        info=self._stream_info
+                    )
+                else:
+                    # check if dur is none
+                    if dur:
+                        # stop in soundfile is calc in samples, not seconds
+                        stop = int(dur * self.rate)
+                    else:
+                        stop = dur
+                    audio, rate = sf.read(
+                        self.path,
+                        always_2d=True,
+                        start=int(start * self.rate),
+                        stop=stop
+                    )
+                self._rate = rate
+                return audio
+            else:
+                self._rate = None
+                self._audio = None
+                raise ValueError("Oops! %s cannot be loaded" % self.path)
 
     def __repr__(self):
         return "%s" % (self.name)
