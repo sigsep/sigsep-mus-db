@@ -39,6 +39,16 @@ class DB(object):
         download sample version of MUSDB18 which includes 7s excerpts,
         defaults to `False`
 
+    subsets : list[str], optional
+        select a _musdb_ subset `train` or `test`.
+        Default `None` loads both sets.
+    
+    dur : float, optional
+        set the read duration of the tracks, defaults to `None` (all)
+
+    random_start : boolean, optional
+        selects a random start/seek position of the file. Works together with `dur not None`
+
     Attributes
     ----------
     setup_file : str
@@ -73,7 +83,8 @@ class DB(object):
         setup_file=None,
         is_wav=False,
         download=False,
-        subsets=None
+        subsets=None,
+        dur=None
     ):
         if root_dir is None:
             if download:
@@ -101,11 +112,12 @@ class DB(object):
             )
 
         with open(setup_path, 'r') as f:
-            self.setup = yaml.load(f)
+            self.setup = yaml.safe_load(f)
 
         self.sources_names = list(self.setup['sources'].keys())
         self.targets_names = list(self.setup['targets'].keys())
         self.is_wav = is_wav
+        self.dur = dur
         self.load_mus_tracks(subsets=subsets)
 
     def __getitem__(self, index):
@@ -159,8 +171,9 @@ class DB(object):
                                 self.setup['mixture']
                             ),
                             subset=subset,
-                            stem_id=self.setup['stem_ids']['mixture'],
-                            is_wav=self.is_wav
+                            is_wav=self.is_wav,
+                            dur=self.dur,
+                            stem_id=self.setup['stem_ids']['mixture']
                         )
 
                         # add sources to track
@@ -177,29 +190,11 @@ class DB(object):
                                 sources[src] = Source(
                                     name=src,
                                     path=abs_path,
+                                    is_wav=self.is_wav,
                                     stem_id=self.setup['stem_ids'][src],
-                                    is_wav=self.is_wav
                                 )
                         track.sources = sources
-
-                        # add targets to track
-                        targets = collections.OrderedDict()
-                        for name, target_srcs in list(
-                            self.setup['targets'].items()
-                        ):
-                            # add a list of target sources
-                            target_sources = []
-                            for source, gain in list(target_srcs.items()):
-                                if source in list(track.sources.keys()):
-                                    # add gain to source tracks
-                                    track.sources[source].gain = float(gain)
-                                    # add tracks to components
-                                    target_sources.append(sources[source])
-                            # add sources to target
-                            if target_sources:
-                                targets[name] = Target(sources=target_sources)
-                        # add targets to track
-                        track.targets = targets
+                        track.targets = self.create_targets(track)
 
                         # add track to list of tracks
                         tracks.append(track)
@@ -215,7 +210,8 @@ class DB(object):
                                 path=op.join(subset_folder, track_name),
                                 subset=subset,
                                 stem_id=self.setup['stem_ids']['mixture'],
-                                is_wav=self.is_wav
+                                is_wav=self.is_wav,
+                                dur=self.dur
                             )
                             # add sources to track
                             sources = {}
@@ -237,34 +233,32 @@ class DB(object):
                             track.sources = sources
 
                             # add targets to track
-                            targets = collections.OrderedDict()
-                            for name, target_srcs in list(
-                                self.setup['targets'].items()
-                            ):
-                                # add a list of target sources
-                                target_sources = []
-                                for source, gain in list(target_srcs.items()):
-                                    if source in list(track.sources.keys()):
-                                        # add gain to source tracks
-                                        track.sources[source].gain = float(
-                                            gain
-                                        )
-                                        # add tracks to components
-                                        target_sources.append(sources[source])
-                                # add sources to target
-                                if target_sources:
-                                    targets[name] = Target(
-                                        sources=target_sources
-                                    )
-                            # add targets to track
-                            track.targets = targets
-
-                            # add track to list of tracks
+                            track.targets = self.create_targets(track)
                             tracks.append(track)
 
         self.tracks = tracks
 
-    def _save_estimates(
+    def create_targets(self, track):
+        # add targets to track
+        targets=collections.OrderedDict()
+        for name, target_srcs in list(
+            self.setup['targets'].items()
+        ):
+            # add a list of target sources
+            target_sources = []
+            for source, gain in list(target_srcs.items()):
+                if source in list(track.sources.keys()):
+                    # add gain to source tracks
+                    track.sources[source].gain = float(gain)
+                    # add tracks to components
+                    target_sources.append(track.sources[source])
+                    # add sources to target
+            if target_sources:
+                targets[name] = Target(sources=target_sources)
+
+        return targets
+
+    def save_estimates(
         self,
         user_estimates,
         track,
@@ -375,7 +369,7 @@ class DB(object):
                 raise ValueError("Processing did not yield any results, " +
                                  "please set estimate_dir to None")
             else:
-                self._save_estimates(user_results, track, estimates_dir)
+                self.save_estimates(user_results, track, estimates_dir)
 
     def run(
         self,

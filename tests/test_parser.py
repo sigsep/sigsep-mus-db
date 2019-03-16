@@ -83,7 +83,7 @@ def test_stems(mus):
     )
 
     with open(setup_path, 'r') as f:
-        setup = yaml.load(f)
+        setup = yaml.safe_load(f)
 
     for track in mus:
         for k, v in setup['stem_ids'].items():

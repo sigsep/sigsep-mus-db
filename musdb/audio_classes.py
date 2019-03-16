@@ -144,6 +144,10 @@ class Track(object):
         OrderedDict of mixted Targets for this Track
     sources : Dict
         Dict of ``Source`` objects for this ``Track``
+    start : float
+        start offset when loading the file, defaults to 0 (beginning)
+    dur : float
+        set duration of audio file when loading, defaults to `None` (end)
     """
     def __init__(
         self,
@@ -153,7 +157,9 @@ class Track(object):
         track_artist=None,
         track_title=None,
         subset=None,
-        path=None
+        path=None,
+        start=0,
+        dur=None
     ):
         self.name = name.split('.stem.mp4')[0]
         try:
@@ -170,9 +176,16 @@ class Track(object):
         self.is_wav = is_wav
         self.targets = None
         self.sources = None
+
+        self.start = start
+        self.dur = dur
+
         self._audio = None
         self._stems = None
         self._rate = None
+        # have the ability to cache stemoeg  stream_info objects
+        # this significantly improves loading time on the second run
+        self._stream_info = None
 
     @property
     def stems(self):
@@ -185,16 +198,17 @@ class Track(object):
         # read from disk to save RAM otherwise
         else:
             if not self.is_wav and os.path.exists(self.path):
-                S, rate = stempeg.read_stems(filename=self.path)
+                S, rate = stempeg.read_stems(
+                    filename=self.path, 
+                    start=self.start,
+                    duration=self.dur
+                )
             else:
                 rate = self.rate
                 S = []
                 S.append(self.audio)
                 # append sources in order of stem_ids
-                for k, v in sorted(
-                    self.sources.items(),
-                    key=lambda x: x[1].stem_id
-                ):
+                for k, v in sorted(self.sources.items(), key=lambda x: x[1].stem_id):
                     S.append(v.audio)
                 S = np.array(S)
             self._rate = rate
@@ -206,23 +220,40 @@ class Track(object):
         return self.audio.shape[0] / self.rate
 
     @property
-    def audio(self):
+    def audio(self, start=0, duration=0.1):
         """array_like: [shape=(num_samples, num_channels)]
         """
 
-        # return cached audio it explicitly set by setter
+        # return cached audio if explicitly set by setter
         if self._audio is not None:
             return self._audio
         # read from disk to save RAM otherwise
         else:
             if os.path.exists(self.path):
-                if self.stem_id is not None:
+                if not self.is_wav:
+                    if self._stream_info is None:
+                        self._stream_info = stempeg.Info(self.path)
+                    # read using stempeg
                     audio, rate = stempeg.read_stems(
                         filename=self.path,
-                        stem_id=self.stem_id
+                        stem_id=self.stem_id,
+                        start=self.start,
+                        duration=self.dur,
+                        info=self._stream_info
                     )
                 else:
-                    audio, rate = sf.read(self.path, always_2d=True)
+                    # check if dur is none
+                    if self.dur:
+                        # stop in soundfile is calc in samples, not seconds
+                        stop = self.dur // self.rate
+                    else:
+                        stop = self.dur
+                    audio, rate = sf.read(
+                        self.path, 
+                        always_2d=True,
+                        start=self.start // self.rate,
+                        stop=stop
+                        )
                 self._rate = rate
                 return audio
             else:
@@ -238,12 +269,11 @@ class Track(object):
         # load audio to set rate
         if self._rate is None:
             if os.path.exists(self.path):
-                if self.stem_id is not None:
-                    audio, rate = stempeg.read_stems(
-                        filename=self.path, stem_id=self.stem_id
-                    )
+                if not self.is_wav:
+                    info = stempeg.Info(self.path)
+                    rate = info.rate(self.stem_id)
                 else:
-                    audio, rate = sf.read(self.path, always_2d=True)
+                    rate = sf.info(self.path).samplerate
                 self._rate = rate
                 return rate
             else:
