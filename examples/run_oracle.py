@@ -1,13 +1,8 @@
-from __future__ import print_function
 import musdb
+import museval
 
 
-def my_function(track):
-    '''My fancy BSS algorithm'''
-
-    # get the audio mixture as numpy array shape=(nun_sampl, 2)
-    track.audio
-
+def mix_as_estimate(track):
     # get the mixture path for external processing
     track.path
 
@@ -19,16 +14,14 @@ def my_function(track):
         'vocals': track.audio,
         'accompaniment': track.audio,
     }
+
     return estimates
 
+
 # initiate musdb
-mus = musdb.DB()
+mus = musdb.DB(download=True)
 
-# verify if my_function works correctly
-if mus.test(my_function):
-    print("my_function is valid")
-
-mus.run(
-    my_function,
-    estimates_dir='./Estimates',
-)
+for track in mus:
+    estimates = mix_as_estimate(track)
+    scores = museval.eval_mus_track(track, estimates)
+    print(scores)
