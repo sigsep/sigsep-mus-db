@@ -66,7 +66,7 @@ class Source(object):
 
     @property
     def audio(self):
-        return self.load(self.start, self.dur)
+        return self.load_audio(self.start, self.dur)
 
     @audio.setter
     def audio(self, array):
@@ -76,7 +76,7 @@ class Source(object):
     def rate(self, rate):
         self._rate = rate
 
-    def load(self, start=0, dur=None):
+    def load_audio(self, start=0, dur=None):
         """array_like: [shape=(num_samples, num_channels)]
         """
         # return cached audio if explicitly set by setter
@@ -259,7 +259,7 @@ class Track(object):
 
     @property
     def audio(self):
-        return self.load(self.start, self.dur)
+        return self.load_audio(self.start, self.dur)
 
     @property
     def rate(self):
@@ -290,7 +290,7 @@ class Track(object):
     def rate(self, rate):
         self._rate = rate
 
-    def load(self, start=0, dur=None):
+    def load_audio(self, start=0, dur=None):
         """array_like: [shape=(num_samples, num_channels)]
         """
         # return cached audio if explicitly set by setter
