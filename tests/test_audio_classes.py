@@ -9,6 +9,11 @@ def mus(request):
     return musdb.DB(root_dir='data/MUS-STEMS-SAMPLE', is_wav=request.param)
 
 
+@pytest.fixture(params=[0, 1, 2, 11.1, None])
+def durs(request):
+    return request.param
+
+
 def test_targets(mus):
     for track in mus:
         for key, target in list(track.targets.items()):
@@ -28,6 +33,13 @@ def test_durations(mus):
     for track in mus:
         assert track.duration > 0
         assert np.allclose(track.audio.shape[0], track.duration * track.rate)
+
+
+def test_dur(mus, durs):
+    for track in mus:
+        track.dur = durs
+        if durs:
+            assert np.allclose(track.audio.shape[0], durs * track.rate)
 
 
 def test_track_artisttitle(mus):
