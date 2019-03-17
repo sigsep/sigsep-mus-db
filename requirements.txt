@@ -3,7 +3,7 @@ wheel==0.32.2
 numpy>=1.7
 six
 tqdm==4.28.1
-pyaml
+pyaml==18.11.0
 PySoundFile>=0.8
 sphinx
 sphinx_rtd_theme
