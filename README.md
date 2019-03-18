@@ -53,25 +53,7 @@ pip install musdb
 
 This package should nicely integrate with your existing python code, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings).
 
-### MUSDB tracks
-
-a MUS ```Track``` object is an object storage
-
- - ```Track.name```
- - ```Track.audio```, representing the stereo mixture as an ```np.ndarray``` of ```shape=(nun_sampl, 2)```
- - ```Track.rate```, the sample rate
- - ```Track.path```, the absolute path of the mixture which might be handy to process with external applications
- - ```Track.sources```, 
- - ```Track.targets```
-
-
-- It is the users choice which target sources they want to provide for a given mixture. Supported targets are ```['vocals', 'accompaniment', 'drums', 'bass', 'other']```.
-- Please make sure that the returned estimates do have the same sample rate as the mixture track.
-
-
-### Creating estimates for SiSEC evaluation
-
-#### Setting up musdb
+### Setting up musdb
 
 Simply import the musdb package in your main python function:
 
@@ -83,12 +65,29 @@ mus = musdb.DB(root_dir='path/to/musdb')
 
 The ```root_dir``` is the path to the musdb dataset folder. Instead of ```root_dir``` it can also be set system-wide. Just ```export MUSDB_PATH=/path/to/musdb``` inside your terminal environment.
 
-To process all 150 MUS tracks and saves the results to the folder ```estimates_dir```:
 
 ```python
 for track in mus:
     process(track.audio)
 ```
+
+### MUSDB tracks
+
+a MUS ```Track``` object is an object storage that makes it easy to parse the multitrack dataset.
+
+ - ```Track.name```, the track name, consisting of `Track.artist` and `Track.title`.
+ - ```Track.path```, the absolute path of the mixture which might be handy to process with external applications.
+ - ```Track.audio```, representing the stereo mixture as an `np.ndarray` of `shape=(nun_sampl, 2)`
+ - ```Track.rate```, the sample rate of the mixture.
+ - ```Track.sources```, a dictionary of sources used for this track.
+ - ```Track.targets```, a dictionary of targets used for this track.
+
+
+Note that for MUSDB, the sources and targets differ only in the existance of an `accompaniment` target, which is the sum of all sources, except for the vocals. MUSDB supports the following targets:
+
+* `vocals`, `accompaniment`, `drums`, `bass`, `other`.
+
+
 
 #### Processing training and testing subsets separately
 
@@ -124,12 +123,32 @@ E.g. to access the vocal reference from a track:
 track.targets['vocals'].audio
 ```
 
+#### Save and evaluate results
+
+To process all 150 MUS tracks and saves the results to the folder ```estimates_dir```:
+
+## Use MUSDB ML Libraries 
+
+t.b.a.
+
+#### Pytorch 1.0
+
+t.b.a.
+
+#### Tensorflow
+
+t.b.a.
+
+#### Pescador
+
+t.b.a.
+
 ## Baselines
 
 Please check [examples of oracle separation methods](https://github.com/sigsep/sigsep-mus-oracle).
 This will show you how oracle performance is computed, i.e. an upper bound for the quality of the separtion.
 
-## Evaluation and Submission for SiSEC
+## Compare your Results
 
 - 2018: Please refer to our [Submission site](https://github.com/sigsep/sigsep-mus-2018).
 - 2019: t.b.a
