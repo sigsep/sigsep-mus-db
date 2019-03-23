@@ -1,4 +1,4 @@
-from .audio_classes import Track, Source, Target
+from .audio_classes import MultiTrack, Source, Target
 from os import path as op
 import multiprocessing
 import soundfile as sf
@@ -177,7 +177,7 @@ class DB(object):
 
                         track_folder = op.join(subset_folder, track_name)
                         # create new mus track
-                        track = Track(
+                        track = MultiTrack(
                             name=track_name,
                             path=op.join(
                                 track_folder,
@@ -200,9 +200,9 @@ class DB(object):
                             )
                             if os.path.exists(abs_path):
                                 sources[src] = Source(
+                                    track,
                                     name=src,
                                     path=abs_path,
-                                    is_wav=self.is_wav,
                                     stem_id=self.setup['stem_ids'][src],
                                 )
                         track.sources = sources
@@ -217,7 +217,7 @@ class DB(object):
                             '.mp4'
                         ):
                             # create new mus track
-                            track = Track(
+                            track = MultiTrack(
                                 name=track_name,
                                 path=op.join(subset_folder, track_name),
                                 subset=subset,
@@ -236,10 +236,10 @@ class DB(object):
                                 )
                                 if os.path.exists(abs_path):
                                     sources[src] = Source(
+                                        track,
                                         name=src,
                                         path=abs_path,
                                         stem_id=self.setup['stem_ids'][src],
-                                        is_wav=self.is_wav,
                                     )
                             track.sources = sources
 
@@ -265,7 +265,7 @@ class DB(object):
                     target_sources.append(track.sources[source])
                     # add sources to target
             if target_sources:
-                targets[name] = Target(sources=target_sources)
+                targets[name] = Target(track, name=name)
 
         return targets
 
@@ -276,6 +276,17 @@ class DB(object):
         estimates_dir,
         write_stems=False
     ):
+        """Writes `user_estimates` to disk while recreating the musdb file structure in that folder.
+
+        Parameters
+        ==========
+        user_estimates : Dict[np.array]
+            the target estimates.
+        track : Track,
+            musdb track object
+        estimates_dir : str,
+            output folder name where to save the estimates.
+        """
         track_estimate_dir = op.join(
             estimates_dir, track.subset, track.name
         )
@@ -283,10 +294,13 @@ class DB(object):
             os.makedirs(track_estimate_dir)
 
         # write out tracks to disk
-        for target, estimate in list(user_estimates.items()):
-            target_path = op.join(track_estimate_dir, target + '.wav')
-            sf.write(target_path, estimate, track.rate)
-        pass
+        if write_stems:
+            pass
+            # to be implemented
+        else:            
+            for target, estimate in list(user_estimates.items()):
+                target_path = op.join(track_estimate_dir, target + '.wav')
+                sf.write(target_path, estimate, track.rate)
 
     def _check_exists(self):
         return os.path.exists(os.path.join(self.root_dir, "train"))

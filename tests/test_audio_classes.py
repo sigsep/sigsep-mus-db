@@ -32,7 +32,10 @@ def test_rates(mus):
 def test_durations(mus):
     for track in mus:
         assert track.duration > 0
-        assert np.allclose(track.audio.shape[0], track.duration * track.rate)
+        # check if duration is with zero pad range of mp4 files
+        # (one frame is typically 1024 samples)
+        assert track.audio.shape[0] > (track.duration * track.rate - 1024) \
+            and track.audio.shape[0] < (track.duration * track.rate + 1024)
 
 
 def test_dur(mus, durs):
@@ -40,42 +43,33 @@ def test_dur(mus, durs):
         track.dur = durs
         if durs:
             assert np.allclose(track.audio.shape[0], durs * track.rate)
+            for _, target in track.sources.items():
+                assert np.allclose(target.audio.shape[0], durs * track.rate)
+            for _, target in track.targets.items():
+                assert np.allclose(target.audio.shape[0], durs * track.rate)
 
 
 def test_track_artisttitle(mus):
-    source = ac.Track(name="abc123", path="None")
+    track = ac.MultiTrack(name="None", path="None")
 
-    assert source.artist is None
-    assert source.title is None
+    assert track.artist is None
+    assert track.title is None
 
 
 def test_source(mus):
+    mtrack = ac.MultiTrack(name="abc123", path="None")
     with pytest.raises(ValueError):
-        source = ac.Source(name="test", path="None")
+        source = ac.Source(mtrack, name="test", path="None")
         source.audio
-
-    with pytest.raises(ValueError):
-        source = ac.Source(name="test", path="None")
-        source.rate
 
     source.audio = np.zeros((2, 44100))
     assert source.audio.shape == (2, 44100)
 
-    source.rate = 44100
-    assert source.rate == 44100
-
 
 def test_track(mus):
     with pytest.raises(ValueError):
-        track = ac.Track(name="test - test", path="None")
+        track = ac.Track(path="None")
         track.audio
-
-    with pytest.raises(ValueError):
-        track = ac.Track(name="test - test", path="None")
-        track.rate
 
     track.audio = np.zeros((2, 44100))
     assert track.audio.shape == (2, 44100)
-
-    track.rate = 44100
-    assert track.rate == 44100

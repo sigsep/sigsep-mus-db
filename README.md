@@ -12,34 +12,9 @@ A python package to parse and process the [MUSDB18 dataset](https://sigsep.githu
 ## Download Dataset
 
 _MUSDB18_ can automatically download and use 7 seconds previews for easy and quick access or prototyping. 
-However, the full dataset need to be downloaded [from our website](https://sigsep.github.io/musdb).
+However, the full dataset need to be downloaded [via Zenodo](https://sigsep.github.io/musdb).
 
 ## Installation
-
-### Decoding
-
-As the _MUSDB18_ is encoded as [STEMS](http://www.stems-music.com/), it
-relies on ffmpeg to read the multi-stream files. We provide a python wrapper called [stempeg](https://github.com/faroit/stempeg) that allows to easily parse the dataset and decode the stem tracks on-the-fly.
-Before you install _musdb_ (that includes the stempeg requirement), it is therefore required to install ffmpeg. The installation differ among operating systems.
-
-E.g. if you use Anaconda you can install ffmpeg on Windows/Mac/Linux using the following command:
-
-```
-conda install -c conda-forge ffmpeg
-```
-
-Alternatively you can install ffmpeg manually as follows:
-* Mac: use homebrew: `brew install ffmpeg`
-* Ubuntu Linux: `sudo apt-get install ffmpeg `
-
-#### Use a decoded version
-
-If you have trouble installing stempeg or ffmpeg we also support parse and process the pre-decoded PCM/wav files. We provide [docker based scripts](https://github.com/sigsep/sigsep-mus-io) to decode the dataset to wav files.
-If you want to use the decoded musdb dataset, use the `is_wav` parameter when initialsing the dataset.
-
-```python
-musdb.DB(is_wav=True)
-```
 
 ### Package installation
 
@@ -48,6 +23,25 @@ You can install the `musdb` parsing package using pip:
 ```bash
 pip install musdb
 ```
+
+### Using STEMs (Default)
+
+<img src="https://sigsep.github.io/assets/img/stems.a411b49d.png" width="300"/>
+
+_MUSDB18_ is encoded as [STEMS](http://www.stems-music.com/) which is a multitrack audio format that uses _lossy compression_. The `musdb` package relies on FFMPEG to decode the multi-stream files. For convenience, we developed a python package called [stempeg](https://github.com/faroit/stempeg) that allows to easily parse the stem files and decode them on-the-fly.
+When you install _musdb_ (which depends on _stempeg_), it is therefore necessary to also install the FFMPEG library. The installation may differ among operating systems and python distributions:
+
+* On [Anaconda](https://anaconda.org), you can install FFMPEG using `conda install -c conda-forge ffmpeg`
+
+Alternatively you can install FFMPEG manually as follows:
+
+* macOS, using homebrew: `brew install ffmpeg`
+* Ubuntu/Debian: `sudo apt-get install ffmpeg `
+
+#### Load Wav files (Optional)
+
+If you have trouble installing _stempeg_ or FFMPEG, `musdb` also supports parsing and processing pre-decoded PCM/wav files. We provide [docker based scripts](https://github.com/sigsep/sigsep-mus-io) to decode the dataset to wav files.
+If you want to use the decoded musdb dataset, use the `is_wav` parameter when initializing the dataset.
 
 ## Usage
 
@@ -59,39 +53,36 @@ Simply import the musdb package in your main python function:
 
 ```python
 import musdb
-
-mus = musdb.DB(root_dir='path/to/musdb')
+mus = musdb.DB(root_dir='path/to/musdb', is_wav=False)
 ```
 
-The ```root_dir``` is the path to the musdb dataset folder. Instead of ```root_dir``` it can also be set system-wide. Just ```export MUSDB_PATH=/path/to/musdb``` inside your terminal environment.
-
-
-```python
-for track in mus:
-    process(track.audio)
-```
+The ```root_dir``` is the path to the musdb dataset folder. Instead of ```root_dir``` it can also be set system-wide. Just ```export MUSDB_PATH=/path/to/musdb``` inside your bash environment.
 
 ### MUSDB tracks
 
-a MUS ```Track``` object is an object storage that makes it easy to parse the multitrack dataset.
+The `mus` object consists of a list of musdb ```Track``` objects which makes it easy to parse the multitrack dataset in a pythonic way.
 
  - ```Track.name```, the track name, consisting of `Track.artist` and `Track.title`.
  - ```Track.path```, the absolute path of the mixture which might be handy to process with external applications.
- - ```Track.audio```, representing the stereo mixture as an `np.ndarray` of `shape=(nun_sampl, 2)`
+ - ```Track.audio```, stereo mixture as an numpy array of shape `(nb_samples, 2)`
  - ```Track.rate```, the sample rate of the mixture.
  - ```Track.sources```, a dictionary of sources used for this track.
+  - ```Track.stems```, an numpy tensor of all stereo sources of shape `(stem_id, nb_samples, 2)`. The stems are always in the following order: `['mixture', 'drums', 'bass', 'other', 'vocals', 'accompaniment']`,
  - ```Track.targets```, a dictionary of targets used for this track.
+Note that for MUSDB, the sources and targets differ only in the existence of the `accompaniment`, which is the sum of all sources, except for the vocals. MUSDB supports the following targets: `drums`, `bass`, `other`, `vocals` and `accompaniment`.
 
+### Iterate over MUSDB18 tracks
 
-Note that for MUSDB, the sources and targets differ only in the existance of an `accompaniment` target, which is the sum of all sources, except for the vocals. MUSDB supports the following targets:
+Thus, iterating over all musdb tracks, and accessing the audio data of the mixture and of an target sources, is as simple as...
 
-* `vocals`, `accompaniment`, `drums`, `bass`, `other`.
-
-
+```python
+for track in mus:
+    train(track.audio, track.targets['vocals'].audio)
+```
 
 #### Processing training and testing subsets separately
 
-Algorithms which make use of machine learning techniques can use the training subset and then apply the algorithm on the test data. That way it is possible to apply different user functions for both datasets.
+Supervised separation methods leveraging machine learning could use the training subset and then apply the algorithm on the test data:
 
 ```python
 mus = musdb.DB(subsets="train")
@@ -100,30 +91,44 @@ mus = musdb.DB(subsets="test")
 
 #### Processing individual tracks
 
-If you want to access individual tracks, e.g. to specify a validation dataset. You can manually load the track array before running your separation function.
+If you want to access individual tracks, e.g. to specify a validation dataset. You can manually access and modify the track list before starting your separation method.
 
 ```python
-# load the training tracks
-mus[0].name
+mus = musdb.DB(subsets="train")
+
+train_tracks = mus[2:]
+valid_tracks = mus[:2]
 ```
 
 Instead of parsing the track list, `musdb` supports loading tracks by track name, as well:
 
 ```python
-mus.tracks = mus.get_tracks_by_name(["PR - Oh No", "Angels In Amplifiers - I'm Alright"])
-len(mus)  # outputs 2
+two_tracks = mus.get_tracks_by_name(["PR - Oh No", "Angels In Amplifiers - I'm Alright"])
 ```
 
-##### Access the reference signals / targets
+#### Save results
 
-For supervised learning you can use the provided reference sources by loading the `track.targets` dictionary.
-E.g. to access the vocal reference from a track:
+#### Evaluation
+
+To Evaluate a musdb track using the popular BSSEval metrics, you can install our [museval](https://github.com/sigsep/sigsep-mus-eval) package.
+To evaluate a single `track`, all you need, is to provide a track estimate Dict:
 
 ```python
-track.targets['vocals'].audio
-```
+import museval
+# provide an estimate
+estimates = {
+    'vocals': np.random.random(track.audio.shape),
+    'accompaniment': np.random.random(track.audio.shape)
+}
 
-#### Save and evaluate results
+# evaluates using BSSEval v4, and writes results to `./eval`
+scores = museval.eval_mus_track(
+    track, estimates, output_dir="./eval"
+)
+
+# print nicely formatted mean scores
+print(scores)
+```
 
 To process all 150 MUS tracks and saves the results to the folder ```estimates_dir```:
 
