@@ -32,3 +32,13 @@ targets:
         bass: 1
         drums: 1
         other: 1
+
+validation_tracks:
+    - 'Aimee Norwich - Child'
+    - 'BigTroubles - Phantom'
+    - 'Hollow Ground - Left Blind'
+    - 'Music Delta - Disco'
+    - 'Music Delta - Beatles'
+    - 'The So So Glos - Emergency'
+    - 'Port St Willow - Stay Even'
+    - 'Voelund - Comfort Lives In Belief'

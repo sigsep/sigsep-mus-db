@@ -36,14 +36,12 @@ class DB(object):
         defaults to `False`
 
     subsets : list[str], optional
-        select a _musdb_ subset `train` or `test`.
-        Default `None` loads both sets.
-    
-    dur : float, optional
-        set the read duration of the tracks, defaults to `None` (all)
+        select a _musdb_ subset `train`, `valid` or `test`.
+        Default `None` loads the full dataset.
 
-    random_start : boolean, optional
-        selects a random start/seek position of the file. Works together with `dur not None`
+    validation_split : boolean, optional
+        when subset `train` is loaded, validation tracks are removed from the list.
+        Defaults to `True`.
 
     Attributes
     ----------
@@ -56,9 +54,9 @@ class DB(object):
     sources_dir : str
         path to Sources directory
     sources_names : list[str]
-        list of names of sources
+        list of names of available sources
     targets_names : list[str]
-        list of names of targets
+        list of names of available targets
     setup : Dict
         loaded yaml configuration
 
@@ -79,7 +77,8 @@ class DB(object):
         setup_file=None,
         is_wav=False,
         download=False,
-        subsets=None
+        subsets=None,
+        validation_split=None
     ):
         if root_dir is None:
             if download:
@@ -112,7 +111,7 @@ class DB(object):
         self.sources_names = list(self.setup['sources'].keys())
         self.targets_names = list(self.setup['targets'].keys())
         self.is_wav = is_wav
-        self.load_mus_tracks(subsets=subsets)
+        self.tracks = self.load_mus_tracks(subsets=subsets, validation_split=validation_split)
 
     def __getitem__(self, index):
         return self.tracks[index]
@@ -120,34 +119,56 @@ class DB(object):
     def __len__(self):
         return len(self.tracks)
 
-    def get_tracks_by_names(self, track_names):
-        """Returns musdb track objects by track name
+    def get_validation_track_indices(self, validation_track_names=None):
+        """Returns validation track indices by a given list of track names
+
+        Defaults to the builtin selection 8 validation tracks, defined in
+        `mus.yaml`.
+
+        Parameters
+        == == == == ==
+        validation_track_names : list[str], optional
+            validation track names by a given `str` or list of tracknames
+
+        Returns
+        -------
+        list[int]
+            return a list of validation track indices
+        """
+        if validation_track_names is None:
+            validation_track_names = self.setup['validation_tracks']
+        
+        return self.get_track_indices_by_names(validation_track_names)
+
+    def get_track_indices_by_names(self, names):
+        """Returns musdb track indices by track name
 
         Can be used to filter the musdb tracks for 
         a validation subset by trackname
 
         Parameters
         == == == == ==
-        track_names : list[str], optional
+        names : list[str], optional
             select tracks by a given `str` or list of tracknames
 
         Returns
         -------
-        list[Track]
+        list[int]
             return a list of ``Track`` Objects
         """
         if isinstance(names, str):
             names = [names]
-        return [t for t in self.tracks if t.name in names]
+        
+        return [[t.name for t in self.tracks].index(name) for name in names]
 
-    def load_mus_tracks(self, subsets=None):
+    def load_mus_tracks(self, subsets=None, validation_split=None):
         """Parses the musdb folder structure, returns list of `Track` objects
 
         Parameters
         ==========
         subsets : list[str], optional
-            select a _musdb_ subset `train` or `test`.
-            Default `None` loads both sets.
+            select a _musdb_ subset `train`, `valid` or `test`.
+            Default `None` loads the full dataset.
 
         Returns
         -------
@@ -164,14 +185,18 @@ class DB(object):
             subsets = ['train', 'test']
 
         tracks = []
-        for subset in subsets:
-
+        for subset in subsets:            
             subset_folder = op.join(self.root_dir, subset)
 
             for _, folders, files in os.walk(subset_folder):
                 if self.is_wav:
                     # parse pcm tracks and sort by name
                     for track_name in sorted(folders):
+                        if subset == 'train':
+                            if validation_split == 'train' and track_name in self.setup['validation_tracks']:
+                                continue
+                            elif validation_split == 'valid' and track_name not in self.setup['validation_tracks']:
+                                continue
 
                         track_folder = op.join(subset_folder, track_name)
                         # create new mus track
@@ -211,41 +236,44 @@ class DB(object):
                 else:
                     # parse stem files
                     for track_name in sorted(files):
-                        if 'stem' in track_name and track_name.endswith(
-                            '.mp4'
+                        if subset == 'train':
+                            if validation_split == 'train' and track_name.split('.stem.mp4')[0] in self.setup['validation_tracks']:
+                                continue
+                            elif validation_split == 'valid' and track_name.split('.stem.mp4')[0] not in self.setup['validation_tracks']:
+                                continue
+
+                        # create new mus track
+                        track = MultiTrack(
+                            name=track_name.split('.stem.mp4')[0],
+                            path=op.join(subset_folder, track_name),
+                            subset=subset,
+                            stem_id=self.setup['stem_ids']['mixture'],
+                            is_wav=self.is_wav,
+                        )
+                        # add sources to track
+                        sources = {}
+                        for src, source_file in list(
+                            self.setup['sources'].items()
                         ):
-                            # create new mus track
-                            track = MultiTrack(
-                                name=track_name,
-                                path=op.join(subset_folder, track_name),
-                                subset=subset,
-                                stem_id=self.setup['stem_ids']['mixture'],
-                                is_wav=self.is_wav,
+                            # create source object
+                            abs_path = op.join(
+                                subset_folder,
+                                track_name
                             )
-                            # add sources to track
-                            sources = {}
-                            for src, source_file in list(
-                                self.setup['sources'].items()
-                            ):
-                                # create source object
-                                abs_path = op.join(
-                                    subset_folder,
-                                    track_name
+                            if os.path.exists(abs_path):
+                                sources[src] = Source(
+                                    track,
+                                    name=src,
+                                    path=abs_path,
+                                    stem_id=self.setup['stem_ids'][src],
                                 )
-                                if os.path.exists(abs_path):
-                                    sources[src] = Source(
-                                        track,
-                                        name=src,
-                                        path=abs_path,
-                                        stem_id=self.setup['stem_ids'][src],
-                                    )
-                            track.sources = sources
+                        track.sources = sources
 
-                            # add targets to track
-                            track.targets = self.create_targets(track)
-                            tracks.append(track)
+                        # add targets to track
+                        track.targets = self.create_targets(track)
+                        tracks.append(track)
 
-        self.tracks = tracks
+        return tracks
 
     def create_targets(self, track):
         # add targets to track
