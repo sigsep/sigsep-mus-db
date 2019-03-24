@@ -1,11 +1,9 @@
 from .audio_classes import MultiTrack, Source, Target
 from os import path as op
-import multiprocessing
 import soundfile as sf
 import urllib.request
 import collections
 import numpy as np
-import signal
 import functools
 import zipfile
 import yaml
@@ -92,7 +90,7 @@ class DB(object):
                 else:
                     raise RuntimeError("Variable `MUSDB_PATH` has not been set.")
         else:
-            self.root_dir = root_dir
+            self.root_dir = os.path.expanduser(root_dir)
 
         if download:
             self.url = "https://s3.eu-west-3.amazonaws.com/sisec18.unmix.app/dataset/MUSDB18-7-STEMS.zip"

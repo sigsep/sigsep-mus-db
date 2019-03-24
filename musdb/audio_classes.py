@@ -182,6 +182,8 @@ class MultiTrack(Track):
             self._rate = rate
             return S
 
+    def __repr__(self):
+        return "%s" % (self.name)
 
 class Source(Track):
     """
