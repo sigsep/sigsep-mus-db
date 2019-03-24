@@ -55,4 +55,4 @@ def test_file_loading(mus):
     # load train and test set
     mus.load_mus_tracks(subsets=None)
 
-    assert len(mus) == 2
+    assert len(mus) == 2    

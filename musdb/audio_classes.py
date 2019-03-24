@@ -248,13 +248,17 @@ class Target(Track):
     ----------
     multitrack : Track
         Track object
+    sources : list[Source]
+        list of ``Source`` objects for this ``Target``
     """
     def __init__(
         self, 
-        multitrack,  # belongs to a multitrack
+        multitrack,
+        sources,
         name=None,  # has its own name
     ):
         self.multitrack = multitrack
+        self.sources = sources
         self.name = name
 
     @property
@@ -263,8 +267,8 @@ class Target(Track):
 
         mixes audio for targets on the fly
         """
-        mix_list = []*len(self.multitrack.sources)
-        for _, source in self.multitrack.sources.items():
+        mix_list = []*len(self.sources)
+        for source in self.sources:
             audio = source.audio
             if audio is not None:
                 mix_list.append(

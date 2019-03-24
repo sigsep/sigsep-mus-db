@@ -265,7 +265,7 @@ class DB(object):
                     target_sources.append(track.sources[source])
                     # add sources to target
             if target_sources:
-                targets[name] = Target(track, name=name)
+                targets[name] = Target(track, sources=target_sources, name=name)
 
         return targets
 
