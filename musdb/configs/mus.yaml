@@ -1,5 +1,3 @@
-# SISEC MUS 2018 Configuration
-
 # Define the Input sources for each track
 sources:
     vocals: vocals.wav
@@ -34,11 +32,17 @@ targets:
         other: 1
 
 validation_tracks:
-    - 'Aimee Norwich - Child'
-    - 'BigTroubles - Phantom'
-    - 'Hollow Ground - Left Blind'
-    - 'Music Delta - Disco'
-    - 'Music Delta - Beatles'
-    - 'The So So Glos - Emergency'
-    - 'Port St Willow - Stay Even'
-    - 'Voelund - Comfort Lives In Belief'
+    - 'Actions - One Minute Smile'
+    - 'Clara Berry And Wooldog - Waltz For My Victims'
+    - 'Johnny Lokke - Promises & Lies'
+    - 'Patrick Talbot - A Reason To Leave'
+    - 'Triviul - Angelsaint'
+    - 'Alexander Ross - Goodbye Bolero'
+    - 'Fergessen - Nos Palpitants'
+    - 'Leaf - Summerghost'
+    - 'Skelpolu - Human Mistakes'
+    - 'Young Griffo - Pennies'
+    - 'ANiMAL - Rockshow'
+    - 'James May - On The Line'
+    - 'Meaxic - Take A Step'
+    - 'Traffic Experiment - Sirens'
