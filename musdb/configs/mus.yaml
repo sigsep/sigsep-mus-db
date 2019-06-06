@@ -30,6 +30,11 @@ targets:
         bass: 1
         drums: 1
         other: 1
+    linear_mix:
+        vocals: 1
+        bass: 1
+        drums: 1
+        other: 1
 
 validation_tracks:
     - 'Actions - One Minute Smile'
