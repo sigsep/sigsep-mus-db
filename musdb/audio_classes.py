@@ -284,6 +284,6 @@ class Target(Track):
 
     def __repr__(self):
         parts = []
-        for source in self.multitrack.sources.keys():
-            parts.append(source)
+        for source in self.sources:
+            parts.append(source.name)
         return '+'.join(parts)
