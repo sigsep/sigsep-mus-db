@@ -67,9 +67,9 @@ The `mus` object consists of a list of musdb ```Track``` objects which makes it 
  - ```Track.audio```, stereo mixture as an numpy array of shape `(nb_samples, 2)`
  - ```Track.rate```, the sample rate of the mixture.
  - ```Track.sources```, a dictionary of sources used for this track.
-  - ```Track.stems```, an numpy tensor of all stereo sources of shape `(stem_id, nb_samples, 2)`. The stems are always in the following order: `['mixture', 'drums', 'bass', 'other', 'vocals', 'accompaniment']`,
+ - ```Track.stems```, an numpy tensor of all five stereo sources of shape `(5, nb_samples, 2)`. The stems are always in the following order: `['mixture', 'drums', 'bass', 'other', 'vocals']`,
  - ```Track.targets```, a dictionary of targets used for this track.
-Note that for MUSDB, the sources and targets differ only in the existence of the `accompaniment`, which is the sum of all sources, except for the vocals. MUSDB supports the following targets: `drums`, `bass`, `other`, `vocals` and `accompaniment`.
+Note that for MUSDB, the sources and targets differ only in the existence of the `accompaniment`, which is the sum of all sources, except for the vocals. MUSDB supports the following targets: `['mixture', 'drums', 'bass', 'other', 'vocals', 'accompaniment']`.
 
 ### Iterate over MUSDB18 tracks
 
