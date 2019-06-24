@@ -91,7 +91,7 @@ class DB(object):
             self.root = os.path.expanduser(root)
 
         if download:
-            self.url = "https://s3.eu-west-3.amazonaws.com/sisec18.unmix.app/dataset/MUSDB18-7-STEMS.zip"
+            self.url = "https://open-unmix.s3.eu-west-3.amazonaws.com/data/MUSDB18-7-STEMS.zip"
             self.download()
             if not self._check_exists():
                 raise RuntimeError('Dataset not found.' +

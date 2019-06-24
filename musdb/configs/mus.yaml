@@ -1,3 +1,5 @@
+sample-url: https://open-unmix.s3.eu-west-3.amazonaws.com/data/MUSDB18-7-STEMS.zip
+
 # Define the Input sources for each track
 sources:
     vocals: vocals.wav
