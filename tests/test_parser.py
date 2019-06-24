@@ -68,11 +68,11 @@ def test_download_and_validation():
         assert track.audio.shape[-1] == 2
         assert track.stems.shape[0] == 5
 
-    mus_test = musdb.DB(download=True, subsets='test', split='valid')
+    mus_test = musdb.DB(download=True, subsets='test', split=None)
     assert len(mus_test) == 50
 
     mus_train = musdb.DB(download=True, subsets='train', split='train')
-    assert len(mus_train) == 94
+    assert len(mus_train) == 80
     # test validation set
     mus_valid = musdb.DB(download=True, subsets='train', split='valid')
     assert len(mus_valid) == 14
