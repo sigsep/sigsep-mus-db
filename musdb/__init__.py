@@ -90,13 +90,6 @@ class DB(object):
         else:
             self.root = os.path.expanduser(root)
 
-        if download:
-            self.url = "https://open-unmix.s3.eu-west-3.amazonaws.com/data/MUSDB18-7-STEMS.zip"
-            self.download()
-            if not self._check_exists():
-                raise RuntimeError('Dataset not found.' +
-                                   'You can use download=True to download a sample version of the dataset')
-
         if setup_file is not None:
             setup_path = op.join(self.root, setup_file)
         else:
@@ -106,6 +99,14 @@ class DB(object):
 
         with open(setup_path, 'r') as f:
             self.setup = yaml.safe_load(f)
+
+        if download:
+            self.url = self.setup['sample-url']
+            self.download()
+            if not self._check_exists():
+                raise RuntimeError('Dataset not found.' +
+                                   'You can use download=True to download a sample version of the dataset')
+
 
         self.sources_names = list(self.setup['sources'].keys())
         self.targets_names = list(self.setup['targets'].keys())
