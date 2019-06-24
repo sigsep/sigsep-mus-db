@@ -1,3 +1,8 @@
+"""
+script that demonstrate the use of musdb for evaluating separation results of musdb
+
+"""
+
 import musdb
 import museval
 

@@ -11,7 +11,7 @@ import musdb
 import errno
 import os
 
-__version__ = "0.3.1"
+version = "0.3.1"
 
 
 class DB(object):
@@ -20,7 +20,7 @@ class DB(object):
 
     Parameters
     ----------
-    root_dir : str, optional
+    root : str, optional
         musdb Root path. If set to `None` it will be read
         from the `MUSDB_PATH` environment variable
 
@@ -48,7 +48,7 @@ class DB(object):
     ----------
     setup_file : str
         path to yaml file. default: `setup.yaml`
-    root_dir : str
+    root : str
         musdb Root path. Default is `MUSDB_PATH`. In combination with
         `download`, this path will set the download destination and set to
         '~/musdb/' by default.
@@ -74,23 +74,23 @@ class DB(object):
     """
     def __init__(
         self,
-        root_dir=None,
+        root=None,
         setup_file=None,
         is_wav=False,
         download=False,
         subsets=['train', 'test'],
         split=None
     ):
-        if root_dir is None:
+        if root is None:
             if download:
-                self.root_dir = os.path.expanduser("~/MUSDB18/MUSDB18-7")
+                self.root = os.path.expanduser("~/MUSDB18/MUSDB18-7")
             else:
                 if "MUSDB_PATH" in os.environ:
-                    self.root_dir = os.environ["MUSDB_PATH"]
+                    self.root = os.environ["MUSDB_PATH"]
                 else:
                     raise RuntimeError("Variable `MUSDB_PATH` has not been set.")
         else:
-            self.root_dir = os.path.expanduser(root_dir)
+            self.root = os.path.expanduser(root)
 
         if download:
             self.url = "https://s3.eu-west-3.amazonaws.com/sisec18.unmix.app/dataset/MUSDB18-7-STEMS.zip"
@@ -100,7 +100,7 @@ class DB(object):
                                    'You can use download=True to download a sample version of the dataset')
 
         if setup_file is not None:
-            setup_path = op.join(self.root_dir, setup_file)
+            setup_path = op.join(self.root, setup_file)
         else:
             setup_path = os.path.join(
                 musdb.__path__[0], 'configs', 'mus.yaml'
@@ -191,7 +191,7 @@ class DB(object):
 
         tracks = []
         for subset in subsets:            
-            subset_folder = op.join(self.root_dir, subset)
+            subset_folder = op.join(self.root, subset)
 
             for _, folders, files in os.walk(subset_folder):
                 if self.is_wav:
@@ -336,7 +336,7 @@ class DB(object):
                 sf.write(target_path, estimate, track.rate)
 
     def _check_exists(self):
-        return os.path.exists(os.path.join(self.root_dir, "train"))
+        return os.path.exists(os.path.join(self.root, "train"))
 
     def download(self):
         """Download the MUSDB Sample data"""
@@ -345,21 +345,21 @@ class DB(object):
 
         # download files
         try:
-            os.makedirs(os.path.join(self.root_dir))
+            os.makedirs(os.path.join(self.root))
         except OSError as e:
             if e.errno == errno.EEXIST:
                 pass
             else:
                 raise
 
-        print('Downloading MUSDB 7s Sample Dataset to %s...' % self.root_dir)
+        print('Downloading MUSDB 7s Sample Dataset to %s...' % self.root)
         data = urllib.request.urlopen(self.url)
         filename = 'MUSDB18-7-STEMS.zip'
-        file_path = os.path.join(self.root_dir, filename)
+        file_path = os.path.join(self.root, filename)
         with open(file_path, 'wb') as f:
             f.write(data.read())
         zip_ref = zipfile.ZipFile(file_path, 'r')
-        zip_ref.extractall(os.path.join(self.root_dir))
+        zip_ref.extractall(os.path.join(self.root))
         zip_ref.close()
         os.unlink(file_path)
 

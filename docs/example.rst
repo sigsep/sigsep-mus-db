@@ -26,7 +26,7 @@ Example
 
 
     # initiate musdb
-    mus = musdb.DB(root_dir="./Volumes/Data/musdb")
+    mus = musdb.DB(root="./Volumes/Data/musdb")
 
     # verify if my_function works correctly
     if mus.test(my_function):

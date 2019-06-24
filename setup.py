@@ -1,4 +1,14 @@
 import setuptools
+from importlib.machinery import SourceFileLoader
+
+
+version = SourceFileLoader(
+    'musdb', 'musdb/__init__.py'
+).load_module()
+
+with open('README.md', 'r') as fdesc:
+    long_description = fdesc.read()
+
 
 if __name__ == "__main__":
     setuptools.setup(
@@ -6,10 +16,10 @@ if __name__ == "__main__":
         name='musdb',
 
         # Version
-        version="0.3.0",
+        version=version.version,
 
         # Description
-        description='Python parser for the SIGSEP MUS database',
+        description='Python parser for the SIGSEP MUSDB18 dataset',
         url='https://github.com/sigsep/sigsep-mus-db',
 
         # Your contact information
@@ -22,6 +32,9 @@ if __name__ == "__main__":
         # Packages in this project
         # find_packages() finds all these automatically for you
         packages=setuptools.find_packages(),
+
+        long_description=long_description,
+        long_description_content_type='text/markdown',
 
         # Dependencies, this installs the entire Python scientific
         # computations stack

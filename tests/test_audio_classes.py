@@ -6,7 +6,7 @@ import numpy as np
 
 @pytest.fixture(params=[True, False])
 def mus(request):
-    return musdb.DB(root_dir='data/MUS-STEMS-SAMPLE', is_wav=request.param)
+    return musdb.DB(root='data/MUS-STEMS-SAMPLE', is_wav=request.param)
 
 
 @pytest.fixture(params=[0, 1, 2, 11.1, None])

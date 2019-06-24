@@ -1,17 +1,20 @@
 """
-Benachmark Script that yields small excerpts from the musdb train subset
+script that yields small excerpts from the musdb train subset to benchmark the loading performance
+For the stem dataset, the decoding is the main bottleneck which is why it is quite slow to load
+User can excpect performance of about:
 
-For stem dataset, the decoding is the main bottleneck which is why it is quite slow to load
+    * stem.mp4: 20 excerpts per second (without multithreading)
+    * wav: 1000 excerpts per second 
+
+
 """
 
-from __future__ import print_function
 import musdb
-import museval
 import tqdm
 import numpy as np
 
 # initiate musdb
-mus = musdb.DB(download=True, subsets="train")
+mus = musdb.DB(download=True, is_wav=False)
 
 def excerpt_gen(
     mus, 

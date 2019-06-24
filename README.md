@@ -11,8 +11,7 @@ A python package to parse and process the [MUSDB18 dataset](https://sigsep.githu
 
 ## Download Dataset
 
-_MUSDB18_ can automatically download and use 7 seconds previews for easy and quick access or prototyping. 
-However, the full dataset need to be downloaded [via Zenodo](https://sigsep.github.io/musdb).
+_MUSDB18_ automatically downloads and use 7 seconds previews for easy and quick access or prototyping. The full dataset, however need to be downloaded [via Zenodo](https://sigsep.github.io/musdb).
 
 ## Installation
 
@@ -40,23 +39,25 @@ Alternatively you can install FFMPEG manually as follows:
 
 #### Load Wav files (Optional)
 
-If you have trouble installing _stempeg_ or FFMPEG, `musdb` also supports parsing and processing pre-decoded PCM/wav files. We provide [docker based scripts](https://github.com/sigsep/sigsep-mus-io) to decode the dataset to wav files.
+If you have trouble installing _stempeg_ and its dependencies or want to use WAV files for faster data loading, `musdb` also supports parsing and processing pre-decoded PCM/wav files. `musdb.decode(mus, path='MUSDB18-WAV')` decodes the stem dataset into a another folder. We also provide [docker based scripts](https://github.com/sigsep/sigsep-mus-io) to decode the dataset to wav files for non python users.
+
 If you want to use the decoded musdb dataset, use the `is_wav` parameter when initializing the dataset.
 
 ## Usage
 
-This package should nicely integrate with your existing python code, thus makes it easy to participate in the [SISEC MUS tasks](https://sisec.inria.fr/home/2016-professionally-produced-music-recordings).
+This package should nicely integrate with your existing python numpy, tensorflow or pytorch code.
 
 ### Setting up musdb
 
-Simply import the musdb package in your main python function:
+Import the musdb package in your main python function and iterate over the musdb tracks:
 
 ```python
 import musdb
-mus = musdb.DB(root_dir='path/to/musdb', is_wav=False)
+mus = musdb.DB(root='path/to/musdb', download=True)
+mus[0].audio
 ```
 
-The ```root_dir``` is the path to the musdb dataset folder. Instead of ```root_dir``` it can also be set system-wide. Just ```export MUSDB_PATH=/path/to/musdb``` inside your bash environment.
+The ```root``` is the path to the musdb dataset folder. Instead of ```root``` it can also be set system-wide. Just ```export MUSDB_PATH=/path/to/musdb``` inside your bash environment.
 
 ### MUSDB tracks
 
@@ -100,39 +101,7 @@ train_tracks = mus[2:]
 valid_tracks = mus[:2]
 ```
 
-Instead of parsing the track list, `musdb` supports loading tracks by track name, as well:
-
-```python
-two_tracks = mus.get_tracks_by_name(["PR - Oh No", "Angels In Amplifiers - I'm Alright"])
-```
-
-#### Save results
-
-#### Evaluation
-
-To Evaluate a musdb track using the popular BSSEval metrics, you can install our [museval](https://github.com/sigsep/sigsep-mus-eval) package.
-To evaluate a single `track`, all you need, is to provide a track estimate Dict:
-
-```python
-import museval
-# provide an estimate
-estimates = {
-    'vocals': np.random.random(track.audio.shape),
-    'accompaniment': np.random.random(track.audio.shape)
-}
-
-# evaluates using BSSEval v4, and writes results to `./eval`
-scores = museval.eval_mus_track(
-    track, estimates, output_dir="./eval"
-)
-
-# print nicely formatted mean scores
-print(scores)
-```
-
-To process all 150 MUS tracks and saves the results to the folder ```estimates_dir```:
-
-## Use MUSDB ML Libraries 
+## Training Deep Neural Networks with `musdb`
 
 t.b.a.
 
@@ -144,19 +113,33 @@ t.b.a.
 
 t.b.a.
 
-#### Pescador
 
-t.b.a.
+#### Evaluation
 
-## Baselines
+To Evaluate a musdb track using the popular BSSEval metrics, you can use our [museval](https://github.com/sigsep/sigsep-mus-eval) package. After `pip install musdb` evaluation of a single `track`, can be done by
 
-Please check [examples of oracle separation methods](https://github.com/sigsep/sigsep-mus-oracle).
+```python
+import museval
+# provide an estimate
+estimates = {
+    'vocals': np.random.random(track.audio.shape),
+    'accompaniment': np.random.random(track.audio.shape)
+}
+# evaluates using BSSEval v4, and writes results to `./eval`
+print(museval.eval_mus_track(track, estimates, output_dir="./eval")
+```
+
+To process all 150 MUS tracks and saves the results to the folder ```estimates_dir```:
+
+
+## Open Unmix
+
+Please check out our [open unmix oracle separation methods](https://github.com/sigsep/sigsep-mus-oracle).
 This will show you how oracle performance is computed, i.e. an upper bound for the quality of the separtion.
 
 ## Compare your Results
 
-- 2018: Please refer to our [Submission site](https://github.com/sigsep/sigsep-mus-2018).
-- 2019: t.b.a
+Refer to the SiSEC 2018 Challenge 
 
 ## Frequently Asked Questions
 
@@ -164,6 +147,32 @@ This will show you how oracle performance is computed, i.e. an upper bound for t
 
 This is not a bug. Since we adopted the STEMS format, we used AAC compression. Here the residual noise of the mixture is different from the sum of the residual noises of the sources. This difference does not significantly affect separation performance.
 
+```python
+track.targets['linear_sum'].audio
+```
+
 ## References
 
-LVA/ICA 2018 publication t.b.a
+If you use the MUSDB dataset
+
+<details><summary>Cite the MUSDB18 Dataset</summary>
+<p>
+
+```latex
+@misc{musdb18,
+  author       = {Rafii, Zafar and
+                  Liutkus, Antoine and
+                  Fabian-Robert St{\"o}ter and
+                  Mimilakis, Stylianos Ioannis and
+                  Bittner, Rachel},
+  title        = {The {MUSDB18} corpus for music separation},
+  month        = dec,
+  year         = 2017,
+  doi          = {10.5281/zenodo.1117372},
+  url          = {https://doi.org/10.5281/zenodo.1117372}
+}
+```
+
+</p>
+</details>
+

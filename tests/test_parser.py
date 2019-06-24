@@ -13,7 +13,7 @@ def subset(request):
 @pytest.fixture(params=[True, False])
 def mus(request, subset):
     return musdb.DB(
-        root_dir='data/MUS-STEMS-SAMPLE', is_wav=request.param, subsets=subset
+        root='data/MUS-STEMS-SAMPLE', is_wav=request.param, subsets=subset
     )
 
 
@@ -58,5 +58,23 @@ def test_file_loading(mus, subset):
         assert len(mus) == 2
 
 
-def test_download():
-    pass
+def test_download_and_validation():
+    mus_all = musdb.DB(download=True)
+
+    assert len(mus_all) == 144
+
+    for track in mus_all:
+        assert track.audio.shape[1] > 0
+        assert track.audio.shape[-1] == 2
+        assert track.stems.shape[0] == 5
+
+    mus_test = musdb.DB(download=True, subsets='test', split='valid')
+    assert len(mus_test) == 50
+
+    mus_train = musdb.DB(download=True, subsets='train', split='train')
+    assert len(mus_train) == 94
+    # test validation set
+    mus_valid = musdb.DB(download=True, subsets='train', split='valid')
+    assert len(mus_valid) == 14
+
+    assert len(mus_train) == len(mus_all) - len(mus_test) - len(mus_valid)
