@@ -5,10 +5,15 @@ import numpy as np
 import yaml
 
 
+@pytest.fixture(params=['train', 'test', ['train', 'test'], None])
+def subset(request):
+    return request.param
+
+
 @pytest.fixture(params=[True, False])
-def mus(request):
+def mus(request, subset):
     return musdb.DB(
-        root_dir='data/MUS-STEMS-SAMPLE', is_wav=request.param
+        root_dir='data/MUS-STEMS-SAMPLE', is_wav=request.param, subsets=subset
     )
 
 
@@ -34,22 +39,24 @@ def test_stems(mus):
                 )
 
 
-def test_file_loading(mus):
-    # initiate musdb
-    assert len(mus) == 2
-
+def test_file_loading(mus, subset):
     for track in mus:
         assert track.audio.shape[1] > 0
         assert track.audio.shape[-1] == 2
         assert track.stems.shape[0] == 5
 
     # loads only the train set
-    mus.load_mus_tracks(subsets='train')
-    assert len(mus) == 1
+    if subset == 'train':
+        assert len(mus) == 1
 
     # load train and test set
-    mus.load_mus_tracks(subsets=['train', 'test'])
-    assert len(mus) == 2
+    if subset == ['train', 'test']:
+        assert len(mus) == 2
+
     # load train and test set
-    mus.load_mus_tracks(subsets=None)
-    assert len(mus) == 2
+    if subset is None:
+        assert len(mus) == 2
+
+
+def test_download():
+    pass

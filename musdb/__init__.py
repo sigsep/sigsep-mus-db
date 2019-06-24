@@ -11,7 +11,7 @@ import musdb
 import errno
 import os
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 
 class DB(object):
@@ -36,12 +36,13 @@ class DB(object):
         defaults to `False`
 
     subsets : list[str], optional
-        select a _musdb_ subset `train`, `valid` or `test`.
-        Default `None` loads the full dataset.
+        select a _musdb_ subset `train` or `test`.
+        Default `None` loads `['train', 'test']`
 
-    validation_split : boolean, optional
-        when subset `train` is loaded, validation tracks are removed from the list.
-        Defaults to `True`.
+    split : str, optional
+        when subset `train` is loaded, split selects the train/validation split.
+        `split='train' loads the training split, `split='valid'` loads the validation
+        split. `split=None` applies no splitting.
 
     Attributes
     ----------
@@ -77,8 +78,8 @@ class DB(object):
         setup_file=None,
         is_wav=False,
         download=False,
-        subsets=None,
-        validation_split=None
+        subsets=['train', 'test'],
+        split=None
     ):
         if root_dir is None:
             if download:
@@ -111,7 +112,7 @@ class DB(object):
         self.sources_names = list(self.setup['sources'].keys())
         self.targets_names = list(self.setup['targets'].keys())
         self.is_wav = is_wav
-        self.tracks = self.load_mus_tracks(subsets=subsets, validation_split=validation_split)
+        self.tracks = self.load_mus_tracks(subsets=subsets, split=split)
 
     def __getitem__(self, index):
         return self.tracks[index]
@@ -161,14 +162,18 @@ class DB(object):
         
         return [[t.name for t in self.tracks].index(name) for name in names]
 
-    def load_mus_tracks(self, subsets=None, validation_split=None):
+    def load_mus_tracks(self, subsets=None, split=None):
         """Parses the musdb folder structure, returns list of `Track` objects
 
         Parameters
         ==========
         subsets : list[str], optional
-            select a _musdb_ subset `train`, `valid` or `test`.
-            Default `None` loads the full dataset.
+            select a _musdb_ subset `train` or `test`.
+            Default `None` loads [`train, test`].
+        split : str
+            for subsets='train', `split='train` applies a train/validation split.
+            if `split='valid`' the validation split of the training subset will be used
+
 
         Returns
         -------
@@ -193,9 +198,9 @@ class DB(object):
                     # parse pcm tracks and sort by name
                     for track_name in sorted(folders):
                         if subset == 'train':
-                            if validation_split == 'train' and track_name in self.setup['validation_tracks']:
+                            if split == 'train' and track_name in self.setup['validation_tracks']:
                                 continue
-                            elif validation_split == 'valid' and track_name not in self.setup['validation_tracks']:
+                            elif split == 'valid' and track_name not in self.setup['validation_tracks']:
                                 continue
 
                         track_folder = op.join(subset_folder, track_name)
@@ -236,10 +241,12 @@ class DB(object):
                 else:
                     # parse stem files
                     for track_name in sorted(files):
+                        if not track_name.endswith('.stem.mp4'):
+                            continue
                         if subset == 'train':
-                            if validation_split == 'train' and track_name.split('.stem.mp4')[0] in self.setup['validation_tracks']:
+                            if split == 'train' and track_name.split('.stem.mp4')[0] in self.setup['validation_tracks']:
                                 continue
-                            elif validation_split == 'valid' and track_name.split('.stem.mp4')[0] not in self.setup['validation_tracks']:
+                            elif split == 'valid' and track_name.split('.stem.mp4')[0] not in self.setup['validation_tracks']:
                                 continue
 
                         # create new mus track

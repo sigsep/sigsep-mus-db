@@ -26,7 +26,7 @@ class Track(object):
         Dict of ``Source`` objects for this ``Track``
     start : float
         start offset when loading the file, defaults to 0 (beginning)
-    dur : float
+    duration : float
         set duration of audio file when loading, defaults to `None` (end)
     """
 
@@ -37,7 +37,7 @@ class Track(object):
         stem_id=None,
         subset=None,
         start=0,
-        dur=None
+        duration=None
     ):
         self.path = path
         self.subset = subset
@@ -45,7 +45,6 @@ class Track(object):
         self.is_wav = is_wav
 
         self.start = start
-        self.dur = dur
 
         # get and store metdata
         if os.path.exists(self.path):
@@ -79,14 +78,14 @@ class Track(object):
         # read from disk to save RAM otherwise
         else:
             return self.load_audio(
-                self.path, self.stem_id, self.start, self.dur
+                self.path, self.stem_id, self.start, self.duration
             )
 
     @audio.setter
     def audio(self, array):
         self._audio = array
 
-    def load_audio(self, path, stem_id, start=0, dur=None):
+    def load_audio(self, path, stem_id, start=0, duration=None):
         """array_like: [shape=(num_samples, num_channels)]
         """
         if os.path.exists(self.path):
@@ -96,18 +95,18 @@ class Track(object):
                     filename=path,
                     stem_id=stem_id,
                     start=start,
-                    duration=dur,
+                    duration=duration,
                     info=self.info
                 )
             else:
                 start = int(start * self.rate)
 
                 # check if dur is none
-                if dur:
+                if duration:
                     # stop in soundfile is calc in samples, not seconds
-                    stop = start + int(dur * self.rate)
+                    stop = start + int(duration * self.rate)
                 else:
-                    stop = dur
+                    stop = duration
 
                 audio, rate = sf.read(
                     path,
@@ -168,7 +167,7 @@ class MultiTrack(Track):
                 S, rate = stempeg.read_stems(
                     filename=self.path,
                     start=self.start,
-                    duration=self.dur,
+                    duration=self.duration,
                     info=self.info
                 )
             else:
@@ -230,7 +229,7 @@ class Source(Track):
         # read from disk to save RAM otherwise
         else:
             return self.multitrack.load_audio(
-                self.path, self.stem_id, self.multitrack.start, self.multitrack.dur
+                self.path, self.stem_id, self.multitrack.start, self.multitrack.duration
             )
 
     @audio.setter

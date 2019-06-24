@@ -10,7 +10,7 @@ def mus(request):
 
 
 @pytest.fixture(params=[0, 1, 2, 11.1, None])
-def durs(request):
+def duration(request):
     return request.param
 
 
@@ -38,15 +38,17 @@ def test_durations(mus):
             and track.audio.shape[0] < (track.duration * track.rate + 1024)
 
 
-def test_dur(mus, durs):
+def test_dur(mus, duration):
     for track in mus:
-        track.dur = durs
-        if durs:
-            assert np.allclose(track.audio.shape[0], durs * track.rate)
+        track.duration = duration
+        if duration:
+            assert np.allclose(track.audio.shape[0], duration * track.rate)
             for _, target in track.sources.items():
-                assert np.allclose(target.audio.shape[0], durs * track.rate)
+                assert np.allclose(
+                    target.audio.shape[0], duration * track.rate)
             for _, target in track.targets.items():
-                assert np.allclose(target.audio.shape[0], durs * track.rate)
+                assert np.allclose(
+                    target.audio.shape[0], duration * track.rate)
 
 
 def test_track_artisttitle(mus):
