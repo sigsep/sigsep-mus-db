@@ -3,7 +3,7 @@ from importlib.machinery import SourceFileLoader
 
 
 version = SourceFileLoader(
-    'musdb', 'musdb/__init__.py'
+    'musdb.version', 'musdb/version.py'
 ).load_module()
 
 with open('README.md', 'r') as fdesc:

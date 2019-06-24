@@ -11,8 +11,6 @@ import musdb
 import errno
 import os
 
-version = "0.3.1"
-
 
 class DB(object):
     """
