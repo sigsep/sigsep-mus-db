@@ -10,7 +10,7 @@ def mus(request):
 
 
 @pytest.fixture(params=[0, 1, 2, 11.1, None])
-def duration(request):
+def chunk_duration(request):
     return request.param
 
 
@@ -38,17 +38,18 @@ def test_durations(mus):
             and track.audio.shape[0] < (track.duration * track.rate + 1024)
 
 
-def test_dur(mus, duration):
+def test_chunking(mus, chunk_duration):
     for track in mus:
-        track.duration = duration
-        if duration:
-            assert np.allclose(track.audio.shape[0], duration * track.rate)
+        track.chunk_duration = chunk_duration
+        if chunk_duration:
+            assert np.allclose(
+                track.audio.shape[0], chunk_duration * track.rate)
             for _, target in track.sources.items():
                 assert np.allclose(
-                    target.audio.shape[0], duration * track.rate)
+                    target.audio.shape[0], chunk_duration * track.rate)
             for _, target in track.targets.items():
                 assert np.allclose(
-                    target.audio.shape[0], duration * track.rate)
+                    target.audio.shape[0], chunk_duration * track.rate)
 
 
 def test_track_artisttitle(mus):

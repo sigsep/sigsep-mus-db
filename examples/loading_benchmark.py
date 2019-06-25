@@ -18,17 +18,19 @@ mus = musdb.DB(download=True, is_wav=False)
 
 def excerpt_gen(
     mus, 
-    excerpt_dur=1.0, 
-    excerpt_hop=1.0
+    chunk_duration=1.0,
+    chunk_hop=1.0
 ):
     """yield non overlapping segments from audio without loading tracks to memory
     """
     for track in mus:
-        for pos in np.arange(0, track.duration - excerpt_dur, excerpt_hop):
-            track.start = pos
-            track.duration = excerpt_dur
+        for pos in np.arange(0, track.duration - chunk_duration, chunk_hop):
+            # set chunk start
+            track.chunk_start = pos
+            # set chunk duration
+            track.chunk_duration = chunk_duration
+            # load chunk
             audio = track.targets['drums'].audio
-            # audio = track.audio
             yield audio
 
 

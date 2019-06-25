@@ -24,10 +24,10 @@ class Track(object):
         OrderedDict of mixted Targets for this Track
     sources : Dict
         Dict of ``Source`` objects for this ``Track``
-    start : float
-        start offset when loading the file, defaults to 0 (beginning)
-    duration : float
-        set duration of audio file when loading, defaults to `None` (end)
+    chunk_start : float
+        chunk_start offset when loading the file, defaults to 0 (beginning)
+    chunk_duration : float
+        set chunk_duration of audio file when loading, defaults to `None` (end)
     """
 
     def __init__(
@@ -36,17 +36,18 @@ class Track(object):
         is_wav=False,
         stem_id=None,
         subset=None,
-        start=0,
-        duration=None
+        chunk_start=0,
+        chunk_duration=None
     ):
         self.path = path
         self.subset = subset
         self.stem_id = stem_id
         self.is_wav = is_wav
 
-        self.start = start
+        self.chunk_start = chunk_start
+        self.chunk_duration = chunk_duration
 
-        # get and store metdata
+        # load and store metadata
         if os.path.exists(self.path):
             if not self.is_wav:
                 self.info = stempeg.Info(self.path)
@@ -78,14 +79,14 @@ class Track(object):
         # read from disk to save RAM otherwise
         else:
             return self.load_audio(
-                self.path, self.stem_id, self.start, self.duration
+                self.path, self.stem_id, self.chunk_start, self.chunk_duration
             )
 
     @audio.setter
     def audio(self, array):
         self._audio = array
 
-    def load_audio(self, path, stem_id, start=0, duration=None):
+    def load_audio(self, path, stem_id, chunk_start=0, chunk_duration=None):
         """array_like: [shape=(num_samples, num_channels)]
         """
         if os.path.exists(self.path):
@@ -94,24 +95,24 @@ class Track(object):
                 audio, rate = stempeg.read_stems(
                     filename=path,
                     stem_id=stem_id,
-                    start=start,
-                    duration=duration,
+                    start=chunk_start,
+                    duration=chunk_duration,
                     info=self.info
                 )
             else:
-                start = int(start * self.rate)
+                chunk_start = int(chunk_start * self.rate)
 
                 # check if dur is none
-                if duration:
+                if chunk_duration:
                     # stop in soundfile is calc in samples, not seconds
-                    stop = start + int(duration * self.rate)
+                    stop = chunk_start + int(chunk_duration * self.rate)
                 else:
-                    stop = duration
+                    stop = chunk_duration
 
                 audio, rate = sf.read(
                     path,
                     always_2d=True,
-                    start=start,
+                    start=chunk_start,
                     stop=stop
                 )
             self._rate = rate
@@ -166,8 +167,8 @@ class MultiTrack(Track):
             if not self.is_wav and os.path.exists(self.path):
                 S, rate = stempeg.read_stems(
                     filename=self.path,
-                    start=self.start,
-                    duration=self.duration,
+                    start=self.chunk_start,
+                    duration=self.chunk_duration,
                     info=self.info
                 )
             else:
@@ -229,7 +230,7 @@ class Source(Track):
         # read from disk to save RAM otherwise
         else:
             return self.multitrack.load_audio(
-                self.path, self.stem_id, self.multitrack.start, self.multitrack.duration
+                self.path, self.stem_id, self.multitrack.chunk_start, self.multitrack.chunk_duration
             )
 
     @audio.setter
