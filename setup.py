@@ -1,4 +1,14 @@
 import setuptools
+from importlib.machinery import SourceFileLoader
+
+
+version = SourceFileLoader(
+    'musdb.version', 'musdb/version.py'
+).load_module()
+
+with open('README.md', 'r') as fdesc:
+    long_description = fdesc.read()
+
 
 if __name__ == "__main__":
     setuptools.setup(
@@ -6,10 +16,10 @@ if __name__ == "__main__":
         name='musdb',
 
         # Version
-        version="0.3.0",
+        version=version.version,
 
         # Description
-        description='Python parser for the SIGSEP MUS database',
+        description='Python parser for the SIGSEP MUSDB18 dataset',
         url='https://github.com/sigsep/sigsep-mus-db',
 
         # Your contact information
@@ -23,16 +33,17 @@ if __name__ == "__main__":
         # find_packages() finds all these automatically for you
         packages=setuptools.find_packages(),
 
+        long_description=long_description,
+        long_description_content_type='text/markdown',
+
         # Dependencies, this installs the entire Python scientific
         # computations stack
         install_requires=[
             'numpy>=1.7',
             'scipy',
-            'six',
-            'tqdm',
             'pyaml',
             'soundfile>=0.9.0',
-            'stempeg>=0.1.1',
+            'stempeg>=0.1.6',
             'Pillow',
             'sklearn',
         ],
@@ -68,9 +79,9 @@ if __name__ == "__main__":
             'Environment :: Plugins',
             'Intended Audience :: Telecommunications Industry',
             'Intended Audience :: Science/Research',
-            'Programming Language :: Python :: 3.4',
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6',
+            'Programming Language :: Python :: 3.7',
             'Topic :: Multimedia :: Sound/Audio :: Analysis',
             'Topic :: Multimedia :: Sound/Audio :: Sound Synthesis'
         ],

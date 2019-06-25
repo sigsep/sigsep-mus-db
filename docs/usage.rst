@@ -65,11 +65,11 @@ Simply import the musdb package in your main python function:
    import musdb
 
    mus = musdb.DB(
-       root_dir='path/to/musdb/',
+       root='path/to/musdb/',
    )
 
-The ``root_dir`` is the path to the musdb dataset folder. Instead of
-``root_dir`` it can also be set system-wide. Just
+The ``root`` is the path to the musdb dataset folder. Instead of
+``root`` it can also be set system-wide. Just
 ``export MUSDB_PATH=/path/to/musdb`` inside your terminal environment.
 
 Test if your separation function generates valid output

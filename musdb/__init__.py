@@ -1,22 +1,15 @@
-from __future__ import print_function
-from .audio_classes import Track, Source, Target
+from .audio_classes import MultiTrack, Source, Target
 from os import path as op
-from six.moves import map
-import multiprocessing
 import soundfile as sf
+import urllib.request
 import collections
 import numpy as np
 import functools
-import signal
+import zipfile
 import yaml
-import tqdm
-import os
-from .img import MAG
 import musdb
 import errno
-
-
-__version__ = "0.3.0"
+import os
 
 
 class DB(object):
@@ -25,7 +18,7 @@ class DB(object):
 
     Parameters
     ----------
-    root_dir : str, optional
+    root : str, optional
         musdb Root path. If set to `None` it will be read
         from the `MUSDB_PATH` environment variable
 
@@ -40,20 +33,29 @@ class DB(object):
         download sample version of MUSDB18 which includes 7s excerpts,
         defaults to `False`
 
+    subsets : list[str], optional
+        select a _musdb_ subset `train` or `test`.
+        Default `None` loads `['train', 'test']`
+
+    split : str, optional
+        when subset `train` is loaded, split selects the train/validation split.
+        `split='train' loads the training split, `split='valid'` loads the validation
+        split. `split=None` applies no splitting.
+
     Attributes
     ----------
     setup_file : str
         path to yaml file. default: `setup.yaml`
-    root_dir : str
+    root : str
         musdb Root path. Default is `MUSDB_PATH`. In combination with
         `download`, this path will set the download destination and set to
         '~/musdb/' by default.
     sources_dir : str
         path to Sources directory
     sources_names : list[str]
-        list of names of sources
+        list of names of available sources
     targets_names : list[str]
-        list of names of targets
+        list of names of available targets
     setup : Dict
         loaded yaml configuration
 
@@ -70,54 +72,107 @@ class DB(object):
     """
     def __init__(
         self,
-        root_dir=None,
+        root=None,
         setup_file=None,
         is_wav=False,
-        download=False
+        download=False,
+        subsets=['train', 'test'],
+        split=None
     ):
-        if root_dir is None:
+        if root is None:
             if download:
-                self.root_dir = os.path.expanduser("~/MUSDB18/MUSDB18-7")
+                self.root = os.path.expanduser("~/MUSDB18/MUSDB18-7")
             else:
                 if "MUSDB_PATH" in os.environ:
-                    self.root_dir = os.environ["MUSDB_PATH"]
+                    self.root = os.environ["MUSDB_PATH"]
                 else:
                     raise RuntimeError("Variable `MUSDB_PATH` has not been set.")
         else:
-            self.root_dir = root_dir
-
-        if download:
-            self.url = "https://s3.eu-west-3.amazonaws.com/sisec18.unmix.app/dataset/MUSDB18-7-STEMS.zip"
-            self.download()
-            if not self._check_exists():
-                raise RuntimeError('Dataset not found.' +
-                                   'You can use download=True to download a sample version of the dataset')
+            self.root = os.path.expanduser(root)
 
         if setup_file is not None:
-            setup_path = op.join(self.root_dir, setup_file)
+            setup_path = op.join(self.root, setup_file)
         else:
             setup_path = os.path.join(
                 musdb.__path__[0], 'configs', 'mus.yaml'
             )
 
         with open(setup_path, 'r') as f:
-            self.setup = yaml.load(f)
+            self.setup = yaml.safe_load(f)
+
+        if download:
+            self.url = self.setup['sample-url']
+            self.download()
+            if not self._check_exists():
+                raise RuntimeError('Dataset not found.' +
+                                   'You can use download=True to download a sample version of the dataset')
+
 
         self.sources_names = list(self.setup['sources'].keys())
         self.targets_names = list(self.setup['targets'].keys())
         self.is_wav = is_wav
+        self.tracks = self.load_mus_tracks(subsets=subsets, split=split)
 
-    def load_mus_tracks(self, subsets=None, tracknames=None):
+    def __getitem__(self, index):
+        return self.tracks[index]
+
+    def __len__(self):
+        return len(self.tracks)
+
+    def get_validation_track_indices(self, validation_track_names=None):
+        """Returns validation track indices by a given list of track names
+
+        Defaults to the builtin selection 8 validation tracks, defined in
+        `mus.yaml`.
+
+        Parameters
+        == == == == ==
+        validation_track_names : list[str], optional
+            validation track names by a given `str` or list of tracknames
+
+        Returns
+        -------
+        list[int]
+            return a list of validation track indices
+        """
+        if validation_track_names is None:
+            validation_track_names = self.setup['validation_tracks']
+        
+        return self.get_track_indices_by_names(validation_track_names)
+
+    def get_track_indices_by_names(self, names):
+        """Returns musdb track indices by track name
+
+        Can be used to filter the musdb tracks for 
+        a validation subset by trackname
+
+        Parameters
+        == == == == ==
+        names : list[str], optional
+            select tracks by a given `str` or list of tracknames
+
+        Returns
+        -------
+        list[int]
+            return a list of ``Track`` Objects
+        """
+        if isinstance(names, str):
+            names = [names]
+        
+        return [[t.name for t in self.tracks].index(name) for name in names]
+
+    def load_mus_tracks(self, subsets=None, split=None):
         """Parses the musdb folder structure, returns list of `Track` objects
 
         Parameters
         ==========
         subsets : list[str], optional
             select a _musdb_ subset `train` or `test`.
-            Default `None` loads both sets.
+            Default `None` loads [`train, test`].
+        split : str
+            for subsets='train', `split='train` applies a train/validation split.
+            if `split='valid`' the validation split of the training subset will be used
 
-        tracknames : list[str], optional
-            select musdb track names, defaults to all tracks
 
         Returns
         -------
@@ -134,32 +189,30 @@ class DB(object):
             subsets = ['train', 'test']
 
         tracks = []
-        for subset in subsets:
-
-            subset_folder = op.join(self.root_dir, subset)
+        for subset in subsets:            
+            subset_folder = op.join(self.root, subset)
 
             for _, folders, files in os.walk(subset_folder):
                 if self.is_wav:
-                    # parse pcm tracks
+                    # parse pcm tracks and sort by name
                     for track_name in sorted(folders):
-                        if (
-                            tracknames is not None
-                        ) and (
-                            track_name not in tracknames
-                        ):
-                            continue
+                        if subset == 'train':
+                            if split == 'train' and track_name in self.setup['validation_tracks']:
+                                continue
+                            elif split == 'valid' and track_name not in self.setup['validation_tracks']:
+                                continue
 
                         track_folder = op.join(subset_folder, track_name)
                         # create new mus track
-                        track = Track(
+                        track = MultiTrack(
                             name=track_name,
                             path=op.join(
                                 track_folder,
                                 self.setup['mixture']
                             ),
                             subset=subset,
-                            stem_id=self.setup['stem_ids']['mixture'],
-                            is_wav=self.is_wav
+                            is_wav=self.is_wav,
+                            stem_id=self.setup['stem_ids']['mixture']
                         )
 
                         # add sources to track
@@ -174,110 +227,98 @@ class DB(object):
                             )
                             if os.path.exists(abs_path):
                                 sources[src] = Source(
+                                    track,
                                     name=src,
                                     path=abs_path,
                                     stem_id=self.setup['stem_ids'][src],
-                                    is_wav=self.is_wav
                                 )
                         track.sources = sources
-
-                        # add targets to track
-                        targets = collections.OrderedDict()
-                        for name, target_srcs in list(
-                            self.setup['targets'].items()
-                        ):
-                            # add a list of target sources
-                            target_sources = []
-                            for source, gain in list(target_srcs.items()):
-                                if source in list(track.sources.keys()):
-                                    # add gain to source tracks
-                                    track.sources[source].gain = float(gain)
-                                    # add tracks to components
-                                    target_sources.append(sources[source])
-                            # add sources to target
-                            if target_sources:
-                                targets[name] = Target(sources=target_sources)
-                        # add targets to track
-                        track.targets = targets
+                        track.targets = self.create_targets(track)
 
                         # add track to list of tracks
                         tracks.append(track)
                 else:
                     # parse stem files
                     for track_name in sorted(files):
-                        if 'stem' in track_name and track_name.endswith(
-                            '.mp4'
-                        ):
-                            if (
-                                tracknames is not None
-                            ) and (
-                                track_name.split('.stem.mp4')[0] not in
-                                tracknames
-                            ):
+                        if not track_name.endswith('.stem.mp4'):
+                            continue
+                        if subset == 'train':
+                            if split == 'train' and track_name.split('.stem.mp4')[0] in self.setup['validation_tracks']:
+                                continue
+                            elif split == 'valid' and track_name.split('.stem.mp4')[0] not in self.setup['validation_tracks']:
                                 continue
 
-                            # create new mus track
-                            track = Track(
-                                name=track_name,
-                                path=op.join(subset_folder, track_name),
-                                subset=subset,
-                                stem_id=self.setup['stem_ids']['mixture'],
-                                is_wav=self.is_wav
+                        # create new mus track
+                        track = MultiTrack(
+                            name=track_name.split('.stem.mp4')[0],
+                            path=op.join(subset_folder, track_name),
+                            subset=subset,
+                            stem_id=self.setup['stem_ids']['mixture'],
+                            is_wav=self.is_wav,
+                        )
+                        # add sources to track
+                        sources = {}
+                        for src, source_file in list(
+                            self.setup['sources'].items()
+                        ):
+                            # create source object
+                            abs_path = op.join(
+                                subset_folder,
+                                track_name
                             )
-                            # add sources to track
-                            sources = {}
-                            for src, source_file in list(
-                                self.setup['sources'].items()
-                            ):
-                                # create source object
-                                abs_path = op.join(
-                                    subset_folder,
-                                    track_name
+                            if os.path.exists(abs_path):
+                                sources[src] = Source(
+                                    track,
+                                    name=src,
+                                    path=abs_path,
+                                    stem_id=self.setup['stem_ids'][src],
                                 )
-                                if os.path.exists(abs_path):
-                                    sources[src] = Source(
-                                        name=src,
-                                        path=abs_path,
-                                        stem_id=self.setup['stem_ids'][src],
-                                        is_wav=self.is_wav
-                                    )
-                            track.sources = sources
+                        track.sources = sources
 
-                            # add targets to track
-                            targets = collections.OrderedDict()
-                            for name, target_srcs in list(
-                                self.setup['targets'].items()
-                            ):
-                                # add a list of target sources
-                                target_sources = []
-                                for source, gain in list(target_srcs.items()):
-                                    if source in list(track.sources.keys()):
-                                        # add gain to source tracks
-                                        track.sources[source].gain = float(
-                                            gain
-                                        )
-                                        # add tracks to components
-                                        target_sources.append(sources[source])
-                                # add sources to target
-                                if target_sources:
-                                    targets[name] = Target(
-                                        sources=target_sources
-                                    )
-                            # add targets to track
-                            track.targets = targets
-
-                            # add track to list of tracks
-                            tracks.append(track)
+                        # add targets to track
+                        track.targets = self.create_targets(track)
+                        tracks.append(track)
 
         return tracks
 
-    def _save_estimates(
+    def create_targets(self, track):
+        # add targets to track
+        targets=collections.OrderedDict()
+        for name, target_srcs in list(
+            self.setup['targets'].items()
+        ):
+            # add a list of target sources
+            target_sources = []
+            for source, gain in list(target_srcs.items()):
+                if source in list(track.sources.keys()):
+                    # add gain to source tracks
+                    track.sources[source].gain = float(gain)
+                    # add tracks to components
+                    target_sources.append(track.sources[source])
+                    # add sources to target
+            if target_sources:
+                targets[name] = Target(track, sources=target_sources, name=name)
+
+        return targets
+
+    def save_estimates(
         self,
         user_estimates,
         track,
         estimates_dir,
         write_stems=False
     ):
+        """Writes `user_estimates` to disk while recreating the musdb file structure in that folder.
+
+        Parameters
+        ==========
+        user_estimates : Dict[np.array]
+            the target estimates.
+        track : Track,
+            musdb track object
+        estimates_dir : str,
+            output folder name where to save the estimates.
+        """
         track_estimate_dir = op.join(
             estimates_dir, track.subset, track.name
         )
@@ -285,230 +326,40 @@ class DB(object):
             os.makedirs(track_estimate_dir)
 
         # write out tracks to disk
-        for target, estimate in list(user_estimates.items()):
-            target_path = op.join(track_estimate_dir, target + '.wav')
-            sf.write(target_path, estimate, track.rate)
-        pass
-
-    def test(self, user_function):
-        """Test the musdb user_function output
-
-        Parameters
-        ----------
-        user_function : callable, optional
-            function which separates the mixture into estimates.
-
-        Raises
-        ------
-        TypeError
-            If the provided function handle is not callable.
-
-        ValueError
-            If the output is not compliant to the bsseval methods
-
-        See Also
-        --------
-        run : Process the musdb
-        """
-        if not hasattr(user_function, '__call__'):
-            raise TypeError("Please provide a function.")
-
-        test_track = Track(name="test - test")
-        signal = np.random.random((66000, 2))
-        test_track.audio = signal
-        test_track.rate = 44100
-        test_track.subset = 'test'
-
-        sources = {}
-        for src, source_file in list(
-            self.setup['sources'].items()
-        ):
-            source = Source(name=src)
-            source.audio = signal
-            source.rate = test_track.rate
-            sources[src] = source
-        test_track.sources = sources
-
-        # add targets to track
-        targets = collections.OrderedDict()
-        for name, target_srcs in list(
-            self.setup['targets'].items()
-        ):
-            # add a list of target sources
-            target_sources = []
-            for source, gain in list(target_srcs.items()):
-                if source in list(test_track.sources.keys()):
-                    # add gain to source tracks
-                    test_track.sources[source].gain = float(gain)
-                    # add tracks to components
-                    target_sources.append(sources[source])
-            # add sources to target
-            if target_sources:
-                targets[name] = Target(sources=target_sources)
-
-        # add targets to track
-        test_track.targets = targets
-
-        user_results = user_function(test_track)
-
-        if isinstance(user_results, dict):
-            for target, audio in list(user_results.items()):
-                if target not in self.targets_names:
-                    raise ValueError("Target '%s' not supported!" % target)
-
-                d = audio.dtype
-                if not (
-                    np.issubdtype(d, np.float32) or
-                    np.issubdtype(d, np.float64)
-                ):
-                    raise ValueError(
-                        "Estimate is not of type numpy.float32 or float64"
-                    )
-
-                if audio.shape != signal.shape:
-                    raise ValueError(
-                        "Shape of estimate does not match input shape"
-                    )
-
-        else:
-            raise ValueError("output needs to be a dict")
-
-        return True
-
-    def _process_function(self, track, user_function, estimates_dir):
-        user_results = user_function(track)
-        if estimates_dir is not None:
-            if user_results is None:
-                raise ValueError("Processing did not yield any results, " +
-                                 "please set estimate_dir to None")
-            else:
-                self._save_estimates(user_results, track, estimates_dir)
-
-    def run(
-        self,
-        user_function,
-        tracks=None,
-        estimates_dir=None,
-        subsets=None,
-        parallel=False,
-        cpus=4
-    ):
-        """Run the musdb processing
-
-        Parameters
-        ----------
-        user_function : callable
-            function which separates the mixture into estimates.
-        tracks : list[Track], optional
-            select a list of tracks
-        subsets : list[str], optional
-            select a _musdb_ subset `train` or `test`. Defaults to both
-        estimates_dir : str, optional
-            path to the user provided estimates. Directory will be
-            created if it does not exist. Default is `none` which means that
-            the results are not saved.
-        parallel: bool, optional
-            activate multiprocessing
-        cpus: int, optional
-            set number of cores if `parallel` mode is active, defaults to 4
-
-        Raises
-        ------
-        RuntimeError
-            If the provided function handle is not callable.
-
-        Returns
-        -------
-        results : Dict
-            returns the return value of the user_function
-
-        See Also
-        --------
-        test : Test the user provided function
-        """
-
-        if user_function is None:
-            raise RuntimeError("Provide a function!")
-
-        # list of tracks to be processed
-        if tracks is None:
-            tracks = self.load_mus_tracks(subsets=subsets)
-
-        results = False
-        if parallel:
-            pool = multiprocessing.Pool(cpus, initializer=init_worker)
-            results = list(
-                tqdm.tqdm(
-                    pool.imap_unordered(
-                        func=functools.partial(
-                            process_function_alias,
-                            self,
-                            user_function=user_function,
-                            estimates_dir=estimates_dir
-                        ),
-                        iterable=tracks,
-                        chunksize=1
-                    ),
-                    total=len(tracks)
-                )
-            )
-
-            pool.close()
-            pool.join()
-
-        else:
-            results = list(
-                tqdm.tqdm(
-                    map(
-                        lambda x: self._process_function(
-                            x,
-                            user_function,
-                            estimates_dir
-                        ),
-                        tracks
-                    ),
-                    total=len(tracks)
-                )
-            )
-        return results
+        if write_stems:
+            pass
+            # to be implemented
+        else:            
+            for target, estimate in list(user_estimates.items()):
+                target_path = op.join(track_estimate_dir, target + '.wav')
+                sf.write(target_path, estimate, track.rate)
 
     def _check_exists(self):
-        return os.path.exists(os.path.join(self.root_dir, "train"))
+        return os.path.exists(os.path.join(self.root, "train"))
 
     def download(self):
         """Download the MUSDB Sample data"""
-        from six.moves import urllib
-        import zipfile
-
         if self._check_exists():
             return
 
         # download files
         try:
-            os.makedirs(os.path.join(self.root_dir))
+            os.makedirs(os.path.join(self.root))
         except OSError as e:
             if e.errno == errno.EEXIST:
                 pass
             else:
                 raise
 
-        print('Downloading MUSDB Sample Dataset to %s...' % self.root_dir)
+        print('Downloading MUSDB 7s Sample Dataset to %s...' % self.root)
         data = urllib.request.urlopen(self.url)
         filename = 'MUSDB18-7-STEMS.zip'
-        file_path = os.path.join(self.root_dir, filename)
+        file_path = os.path.join(self.root, filename)
         with open(file_path, 'wb') as f:
             f.write(data.read())
         zip_ref = zipfile.ZipFile(file_path, 'r')
-        zip_ref.extractall(os.path.join(self.root_dir))
+        zip_ref.extractall(os.path.join(self.root))
         zip_ref.close()
         os.unlink(file_path)
 
         print('Done!')
-
-
-def process_function_alias(obj, *args, **kwargs):
-    return obj._process_function(*args, **kwargs)
-
-
-def init_worker():
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
