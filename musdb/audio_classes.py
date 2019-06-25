@@ -18,16 +18,14 @@ class Track(object):
         stem/substream ID
     is_wav : boolean
         If stem is read from wav or mp4 stem
-    subset : {'train', 'test'}
-        belongs to subset
     targets : OrderedDict
-        OrderedDict of mixted Targets for this Track
+        OrderedDict of mixted Targets for this ``track``.
     sources : Dict
-        Dict of ``Source`` objects for this ``Track``
+        Dict of ``Source`` objects for this ``track``.
     chunk_start : float
-        chunk_start offset when loading the file, defaults to 0 (beginning)
+        sets offset when loading the audio, defaults to 0 (beginning).
     chunk_duration : float
-        set chunk_duration of audio file when loading, defaults to `None` (end)
+        sets duration for the audio, defaults to ``None`` (end).
     """
 
     def __init__(
@@ -35,12 +33,10 @@ class Track(object):
         path="None",
         is_wav=False,
         stem_id=None,
-        subset=None,
         chunk_start=0,
         chunk_duration=None
     ):
         self.path = path
-        self.subset = subset
         self.stem_id = stem_id
         self.is_wav = is_wav
 
