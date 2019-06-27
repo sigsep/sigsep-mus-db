@@ -84,5 +84,11 @@ if __name__ == "__main__":
             'Topic :: Multimedia :: Sound/Audio :: Sound Synthesis'
         ],
 
+        entry_points={
+            'console_scripts': [
+                'musdbconvert=musdb.tools:musdb_convert',
+            ],
+        },
+
         zip_safe=False,
     )
