@@ -37,15 +37,21 @@ Alternatively you can install FFMPEG manually as follows:
 * macOS, using homebrew: `brew install ffmpeg`
 * Ubuntu/Debian: `sudo apt-get install ffmpeg `
 
-#### Load Wav files (Optional)
+#### Using WAV files (Optional)
 
-If you have trouble installing _stempeg_ and its dependencies or want to use WAV files for faster data loading, `musdb` also supports parsing and processing pre-decoded PCM/wav files. `musdb.decode(mus, path='MUSDB18-WAV')` decodes the stem dataset into a another folder. We also provide [docker based scripts](https://github.com/sigsep/sigsep-mus-io) to decode the dataset to wav files for non python users.
+If you want to use WAV files (e.g. for faster audio decoding), `musdb` also supports parsing and processing pre-decoded PCM/wav files. `musdb.tools.musdb_convert(...)` decodes the stem dataset into wav into a new location. This script can be used from the command line by
 
-If you want to use the decoded musdb dataset, use the `is_wav` parameter when initializing the dataset.
+```
+musdbconvert path/to/musdb-stems-root path/to/new/musdb/root
+```
+
+If you don't want to use python, we also provide [docker based scripts](https://github.com/sigsep/sigsep-mus-io) to decode the dataset to WAV files.
+
+__When you use the decoded MUSDB, use the `is_wav` parameter when initializing the dataset.__
 
 ## Usage
 
-This package should nicely integrate with your existing python numpy, tensorflow or pytorch code.
+This package nicely integrates with your existing python numpy, tensorflow or pytorch code.
 
 ### Setting up musdb
 
@@ -70,11 +76,11 @@ The `mus` object consists of a list of musdb ```Track``` objects which makes it 
  - ```Track.sources```, a dictionary of sources used for this track.
  - ```Track.stems```, an numpy tensor of all five stereo sources of shape `(5, nb_samples, 2)`. The stems are always in the following order: `['mixture', 'drums', 'bass', 'other', 'vocals']`,
  - ```Track.targets```, a dictionary of targets used for this track.
-Note that for MUSDB, the sources and targets differ only in the existence of the `accompaniment`, which is the sum of all sources, except for the vocals. MUSDB supports the following targets: `['mixture', 'drums', 'bass', 'other', 'vocals', 'accompaniment']`.
+Note that for MUSDB, the sources and targets differ only in the existence of the `accompaniment`, which is the sum of all sources, except for the vocals. MUSDB supports the following targets: `['mixture', 'drums', 'bass', 'other', 'vocals', 'accompaniment', 'linear_mixture']`.
 
 ### Iterate over MUSDB18 tracks
 
-Thus, iterating over all musdb tracks, and accessing the audio data of the mixture and of an target sources, is as simple as...
+Thus, iterating over all tracks, and accessing the audio data of the mixture and of an target sources, is as simple as...
 
 ```python
 for track in mus:
@@ -86,22 +92,29 @@ for track in mus:
 Supervised separation methods leveraging machine learning could use the training subset and then apply the algorithm on the test data:
 
 ```python
-mus = musdb.DB(subsets="train")
-mus = musdb.DB(subsets="test")
+mus_train = musdb.DB(subsets="train")
+mus_test = musdb.DB(subsets="test")
 ```
 
 #### Use train / validation split
 
-If you want to access individual tracks, e.g. to specify a validation dataset. You can manually access and modify the track list before starting your separation method.
+If you want to access individual tracks, you can access the `mus` tracks list by its indices, e.g. `mus[2:]`. To foster reproducible research, we provide a fixed validation dataset. 
 
 ```python
-mus = musdb.DB(subsets="train")
-
-train_tracks = mus[2:]
-valid_tracks = mus[:2]
+mus_train = musdb.DB(subsets="train", split='train')
+mus_valid = musdb.DB(subsets="train", split='valid')
 ```
 
+The list of validation tracks can be edited using the [`mus.setup['validation_tracks']`](https://github.com/sigsep/sigsep-mus-tools/blob/b283da5b8f24e84172a60a06bb8f3dacd57aa6cd/musdb/configs/mus.yaml) object.
+
 ## Training Deep Neural Networks with `musdb`
+
+Writing an efficient dataset generator varies across different deep learning frameworks. A very simple näive generator that
+
+* draws random tracks with replacement
+* draws random chunks of fixed length with replacement
+
+can be easily implemented using musdbs `track.chunk_start` and `track.chunk_duration` properties which efficiently seeks to the chunk part and does not load the full audio.
 
 ```python
 while True:
@@ -131,14 +144,15 @@ print(museval.eval_mus_track(track, estimates, output_dir="./eval")
 To process all 150 MUS tracks and saves the results to the folder ```estimates_dir```:
 
 
-## Open Unmix
+## Baselines
 
-Please check out our [open unmix oracle separation methods](https://github.com/sigsep/sigsep-mus-oracle).
-This will show you how oracle performance is computed, i.e. an upper bound for the quality of the separtion.
+### Oracles
+For oracle methods, please check out our [open unmix oracle separation methods](https://github.com/sigsep/sigsep-mus-oracle).
+This will show you how oracle performance is computed and gives indications for an upper bound for the quality of the separation.
 
-## Compare your Results
+### Open-Unmix
 
-Refer to the SiSEC 2018 Challenge 
+We provide a state-of-the-art deep learning based separation method for PyTorch, Tensorflow and NNable at [open.unmix.app](https://open.unmix.app).
 
 ## Frequently Asked Questions
 
@@ -147,7 +161,7 @@ Refer to the SiSEC 2018 Challenge
 This is not a bug. Since we adopted the STEMS format, we used AAC compression. Here the residual noise of the mixture is different from the sum of the residual noises of the sources. This difference does not significantly affect separation performance.
 
 ```python
-track.targets['linear_sum'].audio
+track.targets['linear_mixture'].audio
 ```
 
 ## Citations
