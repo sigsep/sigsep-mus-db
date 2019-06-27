@@ -90,7 +90,7 @@ mus = musdb.DB(subsets="train")
 mus = musdb.DB(subsets="test")
 ```
 
-#### Processing individual tracks
+#### Use train / validation split
 
 If you want to access individual tracks, e.g. to specify a validation dataset. You can manually access and modify the track list before starting your separation method.
 
@@ -103,16 +103,15 @@ valid_tracks = mus[:2]
 
 ## Training Deep Neural Networks with `musdb`
 
-t.b.a.
-
-#### Pytorch 1.0
-
-t.b.a.
-
-#### Tensorflow
-
-t.b.a.
-
+```python
+while True:
+    track = random.choice(mus.tracks)
+    track.chunk_duration = 5.0
+    track.chunk_start = random.uniform(0, track.duration - self.seq_duration)
+    x = track.audio.T
+    y = track.targets['vocals'].audio.T
+    yield x, y
+```
 
 #### Evaluation
 
@@ -151,15 +150,13 @@ This is not a bug. Since we adopted the STEMS format, we used AAC compression. H
 track.targets['linear_sum'].audio
 ```
 
-## References
+## Citations
 
-If you use the MUSDB dataset
-
-<details><summary>Cite the MUSDB18 Dataset</summary>
+<details><summary>If you use the MUSDB dataset for your research - Cite the MUSDB18 Dataset</summary>
 <p>
 
 ```latex
-@misc{musdb18,
+@misc{MUSDB18,
   author       = {Rafii, Zafar and
                   Liutkus, Antoine and
                   Fabian-Robert St{\"o}ter and
@@ -176,3 +173,24 @@ If you use the MUSDB dataset
 </p>
 </details>
 
+
+<details><summary>If compare your results with SiSEC 2018 Participants - Cite the SiSEC 2018 LVA/ICA Paper</summary>
+<p>
+
+```latex
+@inproceedings{SiSEC18,
+  author="St{\"o}ter, Fabian-Robert and Liutkus, Antoine and Ito, Nobutaka",
+  title="The 2018 Signal Separation Evaluation Campaign",
+  booktitle="Latent Variable Analysis and Signal Separation:
+  14th International Conference, LVA/ICA 2018, Surrey, UK",
+  year="2018",
+  pages="293--305"
+}
+```
+
+</p>
+</details>
+
+## License
+
+MIT 
