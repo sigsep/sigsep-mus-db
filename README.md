@@ -141,9 +141,6 @@ estimates = {
 print(museval.eval_mus_track(track, estimates, output_dir="./eval")
 ```
 
-To process all 150 MUS tracks and saves the results to the folder ```estimates_dir```:
-
-
 ## Baselines
 
 ### Oracles
