@@ -32,7 +32,7 @@ targets:
         bass: 1
         drums: 1
         other: 1
-    linear_mix:
+    linear_mixture:
         vocals: 1
         bass: 1
         drums: 1
