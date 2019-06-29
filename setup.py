@@ -51,18 +51,14 @@ if __name__ == "__main__":
             'musdb': ['configs/mus.yaml'],
         },
 
-        extras_require={
-            'tests': [
-                'pytest',
-                'pytest-cov',
-                'pytest-pep8',
-                'coverage>=4.4'
-            ],
+        extras_require={  # Optional
+            'dev': ['check-manifest'],
+            'tests': ['pytest', 'pytest-pep8'],
             'docs': [
                 'sphinx',
                 'sphinx_rtd_theme',
-                'numpydoc',
-            ]
+                'recommonmark'
+            ],
         },
 
         tests_require=[

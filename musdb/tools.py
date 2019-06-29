@@ -4,12 +4,6 @@ import argparse
 from pathlib import Path
 from musdb import DB
 import sys
-from importlib.machinery import SourceFileLoader
-
-
-version = SourceFileLoader(
-    'musdb.version', 'musdb/version.py'
-).load_module()
 
 
 def musdb_convert(inargs=None):
@@ -41,12 +35,6 @@ def musdb_convert(inargs=None):
         '--hop',
         type=int, default=1024,
         help='hop size in samples, defaults to `1024`'
-    )
-
-    parser.add_argument(
-        '--version', '-v',
-        action='version',
-        version='%%(prog)s %s' % version.version
     )
 
     args = parser.parse_args(inargs)

@@ -1,25 +1,32 @@
-musdb
-======
+Welcome to musdb documentation!
+===================================
 
-A python package to parse and process the **sigsep musdb18** dataset as part of the `MUS
-task <https://sisec.inria.fr/home/2018-professionally-produced-music-recordings/>`__
-of the `Signal Separation Evaluation Campaign
-(SISEC) <https://sisec.inria.fr/>`__
+.. autosummary::
 
-
-Contents:
-
-.. toctree::
-   :maxdepth: 3
-
-   installation
-   usage
-   example
    musdb
+   musdb.audio_classes
+   musdb.tools
 
-References
-~~~~~~~~~~
+API documentation
+=================
 
-If you use this package, please reference the following paper
+.. automodule:: musdb
+    :members:
 
-.. code:: tex
+.. automodule:: musdb.audio_classes
+    :members:
+
+.. automodule:: musdb.tools
+    :members:
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+
+Citation
+========
+

@@ -6,7 +6,6 @@
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/musdb.svg)](https://pypi.python.org/pypi/musdb/)
 [![Docs Status](https://readthedocs.org/projects/musdb/badge/?version=latest)](https://musdb.readthedocs.org/en/latest/)
 
-
 A python package to parse and process the [MUSDB18 dataset](https://sigsep.github.io/musdb), the largest open access dataset for music source separation. The tool was originally developed for the [Music Separation task](sisec18.unmix.app) as part of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/). 
 
 ## Getting the data
@@ -84,13 +83,13 @@ for track in mus:
 
 The ```Track``` objects which makes it easy to process the audio and metadata in a pythonic way:
 
- - ```Track.name```, the track name, consisting of `Track.artist` and `Track.title`.
- - ```Track.path```, the absolute path of the mixture which might be handy to process with external applications.
- - ```Track.audio```, stereo mixture as an numpy array of shape `(nb_samples, 2)`
- - ```Track.rate```, the sample rate of the mixture.
- - ```Track.sources```, a dictionary of sources used for this track.
- - ```Track.stems```, an numpy tensor of all five stereo sources of shape `(5, nb_samples, 2)`. The stems are always in the following order: `['mixture', 'drums', 'bass', 'other', 'vocals']`,
- - ```Track.targets```, a dictionary of targets provided for this track.
+* ```Track.name```, the track name, consisting of `Track.artist` and `Track.title`.
+* ```Track.path```, the absolute path of the mixture which might be handy to process with external applications.
+* ```Track.audio```, stereo mixture as an numpy array of shape `(nb_samples, 2)`.
+* ```Track.rate```, the sample rate of the mixture.
+* ```Track.sources```, a dictionary of sources used for this track.
+* ```Track.stems```, an numpy tensor of all five stereo sources of shape `(5, nb_samples, 2)`. The stems are always in the following order: `['mixture', 'drums', 'bass', 'other', 'vocals']`,
+* ```Track.targets```, a dictionary of targets provided for this track.
 Note that for MUSDB, the sources and targets differ only in the existence of the `accompaniment`, which is the sum of all sources, except for the vocals. MUSDB supports the following targets: `['mixture', 'drums', 'bass', 'other', 'vocals', 'accompaniment', 'linear_mixture']`. Note that some of the targets (such as __accompaniment__) are dynamically mixed on the fly.
 
 
@@ -105,7 +104,7 @@ mus_test = musdb.DB(subsets="test")
 
 #### Use train / validation split
 
-If you want to access individual tracks, you can access the `mus` tracks list by its indices, e.g. `mus[2:]`. To foster reproducible research, we provide a fixed validation dataset. 
+If you want to access individual tracks, you can access the `mus` tracks list by its indices, e.g. `mus[2:]`. To foster reproducible research, we provide a fixed validation dataset.
 
 ```python
 mus_train = musdb.DB(subsets="train", split='train')
