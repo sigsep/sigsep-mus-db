@@ -29,7 +29,7 @@ script:
 
 after_success:
     - coveralls
-
+    
 deploy:
   provider: pages
   skip_cleanup: true

@@ -40,11 +40,10 @@ if __name__ == "__main__":
         # computations stack
         install_requires=[
             'numpy>=1.7',
-            'scipy',
-            'pyaml',
             'soundfile>=0.9.0',
             'stempeg>=0.1.6',
-            'sklearn',
+            'pyaml',
+            'tqdm'
         ],
 
         package_data={
