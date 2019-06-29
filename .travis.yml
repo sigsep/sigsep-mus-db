@@ -32,7 +32,7 @@ after_success:
     
 deploy:
   provider: pages
-  skip_cleanup: true
+  skip_cleanup: false
   github_token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
   keep-history: true
   on:
