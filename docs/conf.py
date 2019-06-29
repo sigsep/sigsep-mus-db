@@ -15,8 +15,8 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'musdb'
-copyright = '2019, Fabian-Robert Stöter'
-author = 'Fabian-Robert Stöter'
+copyright = '2019, Fabian-Robert Stoter'
+author = 'Fabian-Robert Stoter'
 
 # The short X.Y version
 version = '0.3.0'
