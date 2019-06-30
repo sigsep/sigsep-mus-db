@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'musdb'
+project = 'musdb api'
 copyright = '2019, Fabian-Robert Stoeter'
 author = 'Fabian-Robert Stoeter'
 
