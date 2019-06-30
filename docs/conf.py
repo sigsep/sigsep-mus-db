@@ -15,8 +15,8 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'musdb'
-copyright = '2019, Fabian-Robert Stoter'
-author = 'Fabian-Robert Stoter'
+copyright = '2019, Fabian-Robert Stoeter'
+author = 'Fabian-Robert Stoeter'
 
 # The short X.Y version
 version = '0.3.0'
@@ -137,7 +137,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'musdb.tex', 'musdb Documentation',
-     'Fabian-Robert Stöter, Antoine Liutkus', 'manual'),
+     'Fabian-Robert Stoeter, 'manual'),
 ]
 
 
