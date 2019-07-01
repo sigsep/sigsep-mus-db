@@ -9,7 +9,7 @@ A python package to parse and process the [MUSDB18 dataset](https://sigsep.githu
 
 ## Getting the data
 
-`musdb` comes with 7 seconds excerpts (automatically downloaded) of the full dataset for prototyping and quick evaluation or prototyping. The full dataset, however, needs to be downloaded [via Zenodo](https://zenodo.org/record/1117372) and stored (unzipped) separately.
+`musdb` comes with 7 seconds excerpts (automatically downloaded) of the full dataset for quick evaluation or prototyping. The full dataset, however, needs to be downloaded [via Zenodo](https://zenodo.org/record/1117372) and stored (unzipped) separately.
 
 > The dataset is hosted on Zenodo and requires that users request access, since the tracks can only be used for academic purposes. We manually check this requests. Please do not fill the form multiple times, it usually takes as less than a day to give you access.
 
