@@ -42,7 +42,7 @@ Alternatively you can install FFMPEG manually as follows:
 If you want to use WAV files (e.g. for faster audio decoding), `musdb` also supports parsing and processing pre-decoded PCM/wav files. `musdb` comes with the ability to convert a STEMS dataset into WAV version. This script can be used from the command line by
 
 ```
-musdbconvert path/to/musdb-stems-root path/to/new/musdb-wav/root
+musdbconvert path/to/musdb-stems-root path/to/new/musdb-wav-root
 ```
 
 If you don't want to use python for this, we also provide [docker based scripts](https://github.com/sigsep/sigsep-mus-io) to decode the dataset to WAV files.
