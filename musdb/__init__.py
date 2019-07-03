@@ -64,10 +64,6 @@ class DB(object):
     load_mus_tracks()
         Iterates through the musdb folder structure and
         returns ``Track`` objects
-    test(user_function)
-        Test the musdb processing
-    run(user_function=None, estimates_dir=None)
-        Run the musdb processing and saving the estimates
 
     """
     def __init__(
