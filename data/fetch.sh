@@ -1,5 +1,5 @@
 #!/bin/sh
 
-curl -O -J -L https://www.dropbox.com/s/aihhp0fkboefxy3/mus-sample.zip?dl=1
+curl -O -J -L https://github.com/sigsep/sigsep-mus-db/releases/download/v0.3.0/mus-sample.zip
 unzip mus-sample.zip
 rm mus-sample.zip
