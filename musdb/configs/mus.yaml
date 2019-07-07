@@ -1,4 +1,4 @@
-sample-url: https://open-unmix.s3.eu-west-3.amazonaws.com/data/MUSDB18-7-STEMS.zip
+sample-url: https://zenodo.org/api/files/1ff52183-071a-4a59-923f-7a31c4762d43/MUSDB18-7-STEMS.zip
 
 # Define the Input sources for each track
 sources:
