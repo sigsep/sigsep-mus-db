@@ -41,7 +41,7 @@ if __name__ == "__main__":
         install_requires=[
             'numpy>=1.7',
             'soundfile>=0.9.0',
-            'stempeg>=0.1.6',
+            'stempeg>=0.1.7',
             'pyaml',
             'tqdm'
         ],
