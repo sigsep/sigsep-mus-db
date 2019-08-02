@@ -127,7 +127,7 @@ can be easily implemented using musdb's `track.chunk_start` and `track.chunk_dur
 while True:
     track = random.choice(mus.tracks)
     track.chunk_duration = 5.0
-    track.chunk_start = random.uniform(0, track.duration - self.seq_duration)
+    track.chunk_start = random.uniform(0, track.duration - track.chunk_duration)
     x = track.audio.T
     y = track.targets['vocals'].audio.T
     yield x, y
@@ -135,7 +135,7 @@ while True:
 
 ### Evaluation
 
-To Evaluate a `musdb` track using the popular BSSEval metrics, you can use our [museval](https://github.com/sigsep/sigsep-mus-eval) package. After `pip install musdb` evaluation of a single `track`, can be done by
+To Evaluate a `musdb` track using the popular BSSEval metrics, you can use our [museval](https://github.com/sigsep/sigsep-mus-eval) package. After `pip install museval` evaluation of a single `track`, can be done by
 
 ```python
 import museval
