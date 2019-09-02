@@ -215,4 +215,4 @@ _musdb_ is a community focused project, we therefore encourage the community to 
 
 ## License
 
-MIT 
+MIT
