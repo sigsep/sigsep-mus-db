@@ -209,6 +209,10 @@ track.targets['linear_mixture'].audio
 </p>
 </details>
 
+## How to contribute
+
+_musdb_ is a community focused project, we therefore encourage the community to submit bug-fixes and requests for technical support through [github issues](https://github.com/sigsep/sigsep-mus-db/issues/new). For more details of how to contribute, please follow our [`CONTRIBUTING.md`](CONTRIBUTING.md). 
+
 ## License
 
 MIT 
