@@ -39,7 +39,6 @@ if [ ! -d "$src" ]; then
         pip install python-coveralls pytest-cov mock
         pip install coverage>=4.4
         # install stempeg beta
-        pip install git+https://github.com/faroit/stempeg.git@add_new_ffmpegprocess#egg=stempeg --upgrade
         source deactivate
     popd
 else
