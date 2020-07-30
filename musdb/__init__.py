@@ -179,8 +179,6 @@ class DB(object):
         if subsets is not None:
             if isinstance(subsets, str):
                 subsets = [subsets]
-            else:
-                subsets = subsets
         else:
             subsets = ['train', 'test']
 
