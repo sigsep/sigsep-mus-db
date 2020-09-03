@@ -31,12 +31,6 @@ def musdb_convert(inargs=None):
         '--extension', type=str, default='.wav', 
     )
 
-    parser.add_argument(
-        '--hop',
-        type=int, default=1024,
-        help='hop size in samples, defaults to `1024`'
-    )
-
     args = parser.parse_args(inargs)
 
     mus = DB(root=args.musdb_root, download=args.download)
