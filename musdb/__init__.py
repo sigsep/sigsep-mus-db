@@ -75,6 +75,18 @@ class DB(object):
         subsets=['train', 'test'],
         split=None
     ):
+        """
+        Initialize the database.
+
+        Args:
+            self: (todo): write your description
+            root: (str): write your description
+            setup_file: (str): write your description
+            is_wav: (bool): write your description
+            download: (todo): write your description
+            subsets: (array): write your description
+            split: (int): write your description
+        """
         if root is None:
             if download:
                 self.root = os.path.expanduser("~/MUSDB18/MUSDB18-7")
@@ -110,9 +122,22 @@ class DB(object):
         self.tracks = self.load_mus_tracks(subsets=subsets, split=split)
 
     def __getitem__(self, index):
+        """
+        Return the item at the given index.
+
+        Args:
+            self: (todo): write your description
+            index: (int): write your description
+        """
         return self.tracks[index]
 
     def __len__(self):
+        """
+        Returns the length of the node.
+
+        Args:
+            self: (todo): write your description
+        """
         return len(self.tracks)
 
     def get_validation_track_indices(self, validation_track_names=None):
@@ -276,6 +301,13 @@ class DB(object):
         return tracks
 
     def create_targets(self, track):
+        """
+        Creates a dictionary of target_sources.
+
+        Args:
+            self: (todo): write your description
+            track: (todo): write your description
+        """
         # add targets to track
         targets=collections.OrderedDict()
         for name, target_srcs in list(
@@ -329,6 +361,12 @@ class DB(object):
                 sf.write(target_path, estimate, track.rate)
 
     def _check_exists(self):
+        """
+        Returns true if the existence of the path exists.
+
+        Args:
+            self: (todo): write your description
+        """
         return os.path.exists(os.path.join(self.root, "train"))
 
     def download(self):

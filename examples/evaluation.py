@@ -8,6 +8,12 @@ import museval
 
 
 def mix_as_estimate(track):
+    """
+    Mix the audio as an array.
+
+    Args:
+        track: (bool): write your description
+    """
     # get the mixture path for external processing
     track.path
 

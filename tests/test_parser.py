@@ -7,17 +7,36 @@ import yaml
 
 @pytest.fixture(params=['train', 'test', ['train', 'test'], None])
 def subset(request):
+    """
+    Subset the given request.
+
+    Args:
+        request: (todo): write your description
+    """
     return request.param
 
 
 @pytest.fixture(params=[True, False])
 def mus(request, subset):
+    """
+    Musdb subset of a subset.
+
+    Args:
+        request: (todo): write your description
+        subset: (todo): write your description
+    """
     return musdb.DB(
         root='data/MUS-STEMS-SAMPLE', is_wav=request.param, subsets=subset
     )
 
 
 def test_stems(mus):
+    """
+    Test if all audio files.
+
+    Args:
+        mus: (todo): write your description
+    """
     setup_path = os.path.join(
         musdb.__path__[0], 'configs', 'mus.yaml'
     )
@@ -40,6 +59,13 @@ def test_stems(mus):
 
 
 def test_file_loading(mus, subset):
+    """
+    Test if the audio file has the same track.
+
+    Args:
+        mus: (str): write your description
+        subset: (str): write your description
+    """
     for track in mus:
         assert track.audio.shape[1] > 0
         assert track.audio.shape[-1] == 2
@@ -59,6 +85,11 @@ def test_file_loading(mus, subset):
 
 
 def test_download_and_validation():
+    """
+    Downloads and reads and validations.
+
+    Args:
+    """
     mus_all = musdb.DB(download=True)
 
     assert len(mus_all) == 144
