@@ -6,21 +6,45 @@ import numpy as np
 
 @pytest.fixture(params=[True, False])
 def mus(request):
+    """
+    Musdb database.
+
+    Args:
+        request: (todo): write your description
+    """
     return musdb.DB(root='data/MUS-STEMS-SAMPLE', is_wav=request.param)
 
 
 @pytest.fixture(params=[0, 1, 2, 11.1, None])
 def chunk_duration(request):
+    """
+    Chunk duration of the given request.
+
+    Args:
+        request: (todo): write your description
+    """
     return request.param
 
 
 def test_targets(mus):
+    """
+    Test if all the targets in a target.
+
+    Args:
+        mus: (todo): write your description
+    """
     for track in mus:
         for key, target in list(track.targets.items()):
             assert target.audio.shape
 
 
 def test_rates(mus):
+    """
+    Test if a list of the audio array.
+
+    Args:
+        mus: (todo): write your description
+    """
     for track in mus:
         assert track.rate == 44100
         assert track.audio.shape
@@ -30,6 +54,12 @@ def test_rates(mus):
 
 
 def test_durations(mus):
+    """
+    Test if the track of a track.
+
+    Args:
+        mus: (str): write your description
+    """
     for track in mus:
         assert track.duration > 0
         # check if duration is with zero pad range of mp4 files
@@ -39,6 +69,13 @@ def test_durations(mus):
 
 
 def test_chunking(mus, chunk_duration):
+    """
+    Test if the track of the given track.
+
+    Args:
+        mus: (todo): write your description
+        chunk_duration: (todo): write your description
+    """
     for track in mus:
         track.chunk_duration = chunk_duration
         if chunk_duration:
@@ -53,6 +90,12 @@ def test_chunking(mus, chunk_duration):
 
 
 def test_track_artisttitle(mus):
+    """
+    Test if a track title.
+
+    Args:
+        mus: (todo): write your description
+    """
     track = ac.MultiTrack(name="None", path="None")
 
     assert track.artist is None
@@ -60,6 +103,12 @@ def test_track_artisttitle(mus):
 
 
 def test_source(mus):
+    """
+    Convert the source isochrone.
+
+    Args:
+        mus: (todo): write your description
+    """
     mtrack = ac.MultiTrack(name="abc123", path="None")
     with pytest.raises(ValueError):
         source = ac.Source(mtrack, name="test", path="None")
@@ -70,6 +119,12 @@ def test_source(mus):
 
 
 def test_track(mus):
+    """
+    Test if a track has a track
+
+    Args:
+        mus: (array): write your description
+    """
     with pytest.raises(ValueError):
         track = ac.Track(path="None")
         track.audio

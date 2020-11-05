@@ -39,6 +39,18 @@ class Track(object):
         chunk_start=0,
         chunk_duration=None
     ):
+        """
+        Initialize audio files.
+
+        Args:
+            self: (todo): write your description
+            path: (str): write your description
+            is_wav: (bool): write your description
+            stem_id: (str): write your description
+            subset: (todo): write your description
+            chunk_start: (todo): write your description
+            chunk_duration: (todo): write your description
+        """
         self.path = path
         self.subset = subset
         self.stem_id = stem_id
@@ -69,10 +81,22 @@ class Track(object):
         self._audio = None
 
     def __len__(self):
+        """
+        Return the number of samples.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.samples
 
     @property
     def audio(self):
+        """
+        Load audio file.
+
+        Args:
+            self: (todo): write your description
+        """
         # return cached audio if explicitly set by setter
         if self._audio is not None:
             return self._audio
@@ -84,6 +108,13 @@ class Track(object):
 
     @audio.setter
     def audio(self, array):
+        """
+        Set the audio data.
+
+        Args:
+            self: (todo): write your description
+            array: (array): write your description
+        """
         self._audio = array
 
     def load_audio(self, path, stem_id, chunk_start=0, chunk_duration=None):
@@ -123,6 +154,12 @@ class Track(object):
             raise ValueError("Oops! %s cannot be loaded" % path)
 
     def __repr__(self):
+        """
+        Return a human - readable representation of this object.
+
+        Args:
+            self: (todo): write your description
+        """
         return "%s" % (self.path)
 
 
@@ -138,6 +175,18 @@ class MultiTrack(Track):
         *args,
         **kwargs
     ):
+        """
+        Initialize artist.
+
+        Args:
+            self: (todo): write your description
+            path: (str): write your description
+            name: (str): write your description
+            artist: (todo): write your description
+            title: (str): write your description
+            sources: (list): write your description
+            targets: (todo): write your description
+        """
         super(MultiTrack, self).__init__(path=path, *args, **kwargs)
 
         self.name = name
@@ -183,6 +232,12 @@ class MultiTrack(Track):
             return S
 
     def __repr__(self):
+        """
+        Return a human - friendly name.
+
+        Args:
+            self: (todo): write your description
+        """
         return "%s" % (self.name)
 
 class Source(Track):
@@ -212,6 +267,17 @@ class Source(Track):
         *args,
         **kwargs
     ):
+        """
+        Initialize audio file.
+
+        Args:
+            self: (todo): write your description
+            multitrack: (bool): write your description
+            name: (str): write your description
+            path: (str): write your description
+            stem_id: (str): write your description
+            gain: (todo): write your description
+        """
         self.multitrack = multitrack
         self.name = name
         self.path = path
@@ -220,10 +286,22 @@ class Source(Track):
         self._audio = None
 
     def __repr__(self):
+        """
+        Return the __reprpr__.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.path
 
     @property
     def audio(self):
+        """
+        Load audio file.
+
+        Args:
+            self: (todo): write your description
+        """
         # return cached audio if explicitly set by setter
         if self._audio is not None:
             return self._audio
@@ -235,10 +313,23 @@ class Source(Track):
 
     @audio.setter
     def audio(self, array):
+        """
+        Set the audio data.
+
+        Args:
+            self: (todo): write your description
+            array: (array): write your description
+        """
         self._audio = array
 
     @property
     def rate(self):
+        """
+        Rate rate.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.multitrack.rate
 
 # Target Track from musdb DB mixed from several musdb Tracks
@@ -259,6 +350,15 @@ class Target(Track):
         sources,
         name=None,  # has its own name
     ):
+        """
+        Initialize the sources.
+
+        Args:
+            self: (todo): write your description
+            multitrack: (bool): write your description
+            sources: (list): write your description
+            name: (str): write your description
+        """
         self.multitrack = multitrack
         self.sources = sources
         self.name = name
@@ -280,9 +380,21 @@ class Target(Track):
 
     @property
     def rate(self):
+        """
+        Rate rate.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.multitrack.rate
 
     def __repr__(self):
+        """
+        Return a string representation of this object.
+
+        Args:
+            self: (todo): write your description
+        """
         parts = []
         for source in self.sources:
             parts.append(source.name)
