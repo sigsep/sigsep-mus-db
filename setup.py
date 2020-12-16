@@ -43,7 +43,8 @@ if __name__ == "__main__":
             'soundfile>=0.9.0',
             'stempeg>=0.1.7',
             'pyaml',
-            'tqdm'
+            'tqdm',
+            'resampy'
         ],
 
         package_data={

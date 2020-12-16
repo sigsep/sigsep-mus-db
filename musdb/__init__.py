@@ -42,6 +42,10 @@ class DB(object):
         `split='train' loads the training split, `split='valid'` loads the validation
         split. `split=None` applies no splitting.
 
+    resample_to : int, optional
+        resamplie all tracks to specified sample rate. This will also set
+        `track.rate` to the same value.
+
     Attributes
     ----------
     setup_file : str
@@ -73,7 +77,8 @@ class DB(object):
         is_wav=False,
         download=False,
         subsets=['train', 'test'],
-        split=None
+        split=None,
+        resample_to=None
     ):
         if root is None:
             if download:
@@ -108,6 +113,7 @@ class DB(object):
         self.targets_names = list(self.setup['targets'].keys())
         self.is_wav = is_wav
         self.tracks = self.load_mus_tracks(subsets=subsets, split=split)
+        self.resample_to = resample_to
 
     def __getitem__(self, index):
         return self.tracks[index]
@@ -183,7 +189,7 @@ class DB(object):
             subsets = ['train', 'test']
 
         tracks = []
-        for subset in subsets:            
+        for subset in subsets:
             subset_folder = op.join(self.root, subset)
 
             for _, folders, files in os.walk(subset_folder):
@@ -323,7 +329,7 @@ class DB(object):
         if write_stems:
             pass
             # to be implemented
-        else:            
+        else:
             for target, estimate in list(user_estimates.items()):
                 target_path = op.join(track_estimate_dir, target + '.wav')
                 sf.write(target_path, estimate, track.rate)

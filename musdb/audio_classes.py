@@ -37,7 +37,8 @@ class Track(object):
         stem_id=None,
         subset=None,
         chunk_start=0,
-        chunk_duration=None
+        chunk_duration=None,
+        resample_to=None
     ):
         self.path = path
         self.subset = subset
@@ -66,6 +67,7 @@ class Track(object):
             self.duration = None
             self.rate = None
 
+        self.resample_to = resample_to
         self._audio = None
 
     def __len__(self):
@@ -79,14 +81,27 @@ class Track(object):
         # read from disk to save RAM otherwise
         else:
             return self.load_audio(
-                self.path, self.stem_id, self.chunk_start, self.chunk_duration
+                self.path,
+                self.stem_id,
+                self.chunk_start,
+                self.chunk_duration
             )
 
     @audio.setter
     def audio(self, array):
         self._audio = array
 
-    def load_audio(self, path, stem_id, chunk_start=0, chunk_duration=None):
+    @audio.setter
+    def rate(self, value):
+        self._rate = value
+
+    def load_audio(
+        self,
+        path,
+        stem_id,
+        chunk_start=0,
+        chunk_duration=None,
+    ):
         """array_like: [shape=(num_samples, num_channels)]
         """
         if os.path.exists(self.path):
@@ -115,6 +130,8 @@ class Track(object):
                     start=chunk_start,
                     stop=stop
                 )
+            if self._rate is not None and self._rate != rate:
+                audio = resampy.resample(audio, rate, resample_to, axis=0)
             self._rate = rate
             return audio
         else:
