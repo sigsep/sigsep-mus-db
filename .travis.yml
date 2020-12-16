@@ -25,11 +25,8 @@ install:
     - pip install git+https://github.com/faroit/stempeg.git@master#egg=stempeg --upgrade
 
 script:
-    - py.test -v --cov-report= --cov=musdb tests/
+    - py.test -v tests/
     - cd docs; make html; touch html/.nojekyll
-
-after_success:
-    - coveralls
     
 deploy:
   provider: pages
