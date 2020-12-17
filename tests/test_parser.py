@@ -58,6 +58,16 @@ def test_file_loading(mus, subset):
         assert len(mus) == 2
 
 
+def test_audio_regression():
+    """test audio loading capabilities"""
+    mus = musdb.DB(download=True)
+    s = 0
+    for track in mus:
+        s += track.audio.sum()
+
+    assert np.allclose(s, -24778.126983642578)
+
+
 def test_download_and_validation():
     mus_all = musdb.DB(download=True)
 
