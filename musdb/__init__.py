@@ -103,7 +103,6 @@ class DB(object):
                 raise RuntimeError('Dataset not found.' +
                                    'You can use download=True to download a sample version of the dataset')
 
-
         self.sources_names = list(self.setup['sources'].keys())
         self.targets_names = list(self.setup['targets'].keys())
         self.is_wav = is_wav

@@ -22,7 +22,6 @@ before_install:
 install:
     - pip install -U pip wheel
     - pip install -e .[tests,docs]
-    - pip install git+https://github.com/faroit/stempeg.git@master#egg=stempeg --upgrade
 
 script:
     - py.test -v tests/

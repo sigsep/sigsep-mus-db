@@ -1,5 +1,4 @@
 import os
-import soundfile as sf
 import numpy as np
 import stempeg
 
@@ -49,16 +48,10 @@ class Track(object):
 
         # load and store metadata
         if os.path.exists(self.path):
-            if not self.is_wav:
-                self.info = stempeg.Info(self.path)
-                self.samples = int(self.info.samples(self.stem_id))
-                self.duration = self.info.duration(self.stem_id)
-                self.rate = self.info.rate(self.stem_id)
-            else:
-                self.info = sf.info(self.path)
-                self.samples = self.info.frames
-                self.duration = self.info.duration
-                self.rate = self.info.samplerate
+            self.info = stempeg.Info(self.path)
+            self.samples = int(self.info.samples(self.stem_id))
+            self.duration = self.info.duration(self.stem_id)
+            self.rate = self.info.rate(self.stem_id)
         else:
             # set to `None` if no path was set (fake file)
             self.info = None
@@ -90,31 +83,15 @@ class Track(object):
         """array_like: [shape=(num_samples, num_channels)]
         """
         if os.path.exists(self.path):
-            if not self.is_wav:
-                # read using stempeg
-                audio, rate = stempeg.read_stems(
-                    filename=path,
-                    stem_id=stem_id,
-                    start=chunk_start,
-                    duration=chunk_duration,
-                    info=self.info
-                )
-            else:
-                chunk_start = int(chunk_start * self.rate)
-
-                # check if dur is none
-                if chunk_duration:
-                    # stop in soundfile is calc in samples, not seconds
-                    stop = chunk_start + int(chunk_duration * self.rate)
-                else:
-                    stop = chunk_duration
-
-                audio, rate = sf.read(
-                    path,
-                    always_2d=True,
-                    start=chunk_start,
-                    stop=stop
-                )
+            if self.is_wav:
+                stem_id = 0
+            audio, rate = stempeg.read_stems(
+                filename=path,
+                stem_id=stem_id,
+                start=chunk_start,
+                duration=chunk_duration,
+                info=self.info
+            )
             self._rate = rate
             return audio
         else:

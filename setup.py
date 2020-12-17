@@ -40,8 +40,7 @@ if __name__ == "__main__":
         # computations stack
         install_requires=[
             'numpy>=1.7',
-            'soundfile>=0.9.0',
-            'stempeg>=0.1.7',
+            'stempeg>=0.2.0',
             'pyaml',
             'tqdm'
         ],
