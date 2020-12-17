@@ -36,15 +36,16 @@ class Track(object):
         stem_id=None,
         subset=None,
         chunk_start=0,
-        chunk_duration=None
+        chunk_duration=None,
+        sample_rate=None
     ):
         self.path = path
         self.subset = subset
         self.stem_id = stem_id
         self.is_wav = is_wav
-
         self.chunk_start = chunk_start
         self.chunk_duration = chunk_duration
+        self.sample_rate = sample_rate
 
         # load and store metadata
         if os.path.exists(self.path):
@@ -72,14 +73,25 @@ class Track(object):
         # read from disk to save RAM otherwise
         else:
             return self.load_audio(
-                self.path, self.stem_id, self.chunk_start, self.chunk_duration
+                self.path,
+                self.stem_id,
+                self.chunk_start,
+                self.chunk_duration,
+                self.sample_rate
             )
 
     @audio.setter
     def audio(self, array):
         self._audio = array
 
-    def load_audio(self, path, stem_id, chunk_start=0, chunk_duration=None):
+    def load_audio(
+        self,
+        path,
+        stem_id,
+        chunk_start=0,
+        chunk_duration=None,
+        sample_rate=None
+    ):
         """array_like: [shape=(num_samples, num_channels)]
         """
         if os.path.exists(self.path):
@@ -90,7 +102,8 @@ class Track(object):
                 stem_id=stem_id,
                 start=chunk_start,
                 duration=chunk_duration,
-                info=self.info
+                info=self.info,
+                sample_rate=sample_rate
             )
             self._rate = rate
             return audio
@@ -112,6 +125,7 @@ class MultiTrack(Track):
         title=None,
         sources=None,
         targets=None,
+        sample_rate=None,
         *args,
         **kwargs
     ):
@@ -129,6 +143,7 @@ class MultiTrack(Track):
 
         self.sources = sources
         self.targets = targets
+        self.sample_rate = sample_rate
         self._stems = None
 
     @property
@@ -146,7 +161,8 @@ class MultiTrack(Track):
                     filename=self.path,
                     start=self.chunk_start,
                     duration=self.chunk_duration,
-                    info=self.info
+                    info=self.info,
+                    sample_rate=self.sample_rate
                 )
             else:
                 rate = self.rate
@@ -181,9 +197,9 @@ class Source(Track):
     """
     def __init__(
         self,
-        multitrack, # belongs to a multitrack
-        name=None,  # has its own name
-        path=None,  # might have its own path
+        multitrack,    # belongs to a multitrack
+        name=None,     # has its own name
+        path=None,     # might have its own path
         stem_id=None,  # might have its own stem_id
         gain=1.0,
         *args,
@@ -207,7 +223,11 @@ class Source(Track):
         # read from disk to save RAM otherwise
         else:
             return self.multitrack.load_audio(
-                self.path, self.stem_id, self.multitrack.chunk_start, self.multitrack.chunk_duration
+                self.path,
+                self.stem_id,
+                self.multitrack.chunk_start,
+                self.multitrack.chunk_duration,
+                self.multitrack.sample_rate
             )
 
     @audio.setter

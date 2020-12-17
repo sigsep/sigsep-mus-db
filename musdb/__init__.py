@@ -58,6 +58,9 @@ class DB(object):
         list of names of available targets
     setup : Dict
         loaded yaml configuration
+    sample_rate : Optional(Float)
+        sets sample rate for optional resampling. Defaults to none
+        which results in `44100.0`
 
     Methods
     -------
@@ -73,7 +76,8 @@ class DB(object):
         is_wav=False,
         download=False,
         subsets=['train', 'test'],
-        split=None
+        split=None,
+        sample_rate=None
     ):
         if root is None:
             if download:
@@ -103,6 +107,8 @@ class DB(object):
                 raise RuntimeError('Dataset not found.' +
                                    'You can use download=True to download a sample version of the dataset')
 
+        if sample_rate != self.setup['sample_rate']:
+            self.sample_rate = sample_rate
         self.sources_names = list(self.setup['sources'].keys())
         self.targets_names = list(self.setup['targets'].keys())
         self.is_wav = is_wav
@@ -207,7 +213,8 @@ class DB(object):
                             ),
                             subset=subset,
                             is_wav=self.is_wav,
-                            stem_id=self.setup['stem_ids']['mixture']
+                            stem_id=self.setup['stem_ids']['mixture'],
+                            sample_rate=self.sample_rate
                         )
 
                         # add sources to track
@@ -226,6 +233,7 @@ class DB(object):
                                     name=src,
                                     path=abs_path,
                                     stem_id=self.setup['stem_ids'][src],
+                                    sample_rate=self.sample_rate
                                 )
                         track.sources = sources
                         track.targets = self.create_targets(track)
@@ -250,6 +258,7 @@ class DB(object):
                             subset=subset,
                             stem_id=self.setup['stem_ids']['mixture'],
                             is_wav=self.is_wav,
+                            sample_rate=self.sample_rate
                         )
                         # add sources to track
                         sources = {}
@@ -267,6 +276,7 @@ class DB(object):
                                     name=src,
                                     path=abs_path,
                                     stem_id=self.setup['stem_ids'][src],
+                                    sample_rate=self.sample_rate
                                 )
                         track.sources = sources
 

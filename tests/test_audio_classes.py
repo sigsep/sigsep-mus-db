@@ -14,6 +14,11 @@ def chunk_duration(request):
     return request.param
 
 
+@pytest.fixture(params=[44100.0, 22050.0, 16000.0])
+def sample_rate(request):
+    return request.param
+
+
 def test_targets(mus):
     for track in mus:
         for key, target in list(track.targets.items()):
@@ -36,6 +41,13 @@ def test_durations(mus):
         # (one frame is typically 1024 samples)
         assert track.audio.shape[0] > (track.duration * track.rate - 1024) \
             and track.audio.shape[0] < (track.duration * track.rate + 1024)
+
+
+def test_sample_rate(mus, sample_rate):
+    track = mus[0]
+    track.sample_rate = sample_rate
+    track.chunk_duration = 1.0
+    assert track.audio.shape[0] == sample_rate
 
 
 def test_chunking(mus, chunk_duration):

@@ -1,5 +1,8 @@
 sample-url: https://zenodo.org/api/files/1ff52183-071a-4a59-923f-7a31c4762d43/MUSDB18-7-STEMS.zip
 
+# global dataset samplerate
+sample_rate: 44100.0
+
 # Define the Input sources for each track
 sources:
     vocals: vocals.wav
