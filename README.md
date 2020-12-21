@@ -4,7 +4,7 @@
 [![Latest Version](https://img.shields.io/pypi/v/musdb.svg)](https://pypi.python.org/pypi/musdb/)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/musdb.svg)](https://pypi.python.org/pypi/musdb/)
 
-A python package to parse and process the [MUSDB18 dataset](https://sigsep.github.io/musdb), the largest open access dataset for music source separation. The tool was originally developed for the [Music Separation task](sisec18.unmix.app) as part of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/). 
+A python package to parse and process the [MUSDB18 dataset](https://sigsep.github.io/musdb), the largest open access dataset for music source separation. The tool was originally developed for the [Music Separation task](https://sisec18.unmix.app) as part of the [Signal Separation Evaluation Campaign (SISEC)](https://sisec.inria.fr/). 
 
 ## Getting the data
 

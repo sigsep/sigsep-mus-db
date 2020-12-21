@@ -266,7 +266,7 @@ class Target(Track):
 
         mixes audio for targets on the fly
         """
-        mix_list = []*len(self.sources)
+        mix_list = []
         for source in self.sources:
             audio = source.audio
             if audio is not None:
