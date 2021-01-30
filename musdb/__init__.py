@@ -1,6 +1,6 @@
 from .audio_classes import MultiTrack, Source, Target
 from os import path as op
-import soundfile as sf
+import stempeg
 import urllib.request
 import collections
 import numpy as np
@@ -58,6 +58,9 @@ class DB(object):
         list of names of available targets
     setup : Dict
         loaded yaml configuration
+    sample_rate : Optional(Float)
+        sets sample rate for optional resampling. Defaults to none
+        which results in `44100.0`
 
     Methods
     -------
@@ -73,7 +76,8 @@ class DB(object):
         is_wav=False,
         download=False,
         subsets=['train', 'test'],
-        split=None
+        split=None,
+        sample_rate=None
     ):
         if root is None:
             if download:
@@ -103,7 +107,8 @@ class DB(object):
                 raise RuntimeError('Dataset not found.' +
                                    'You can use download=True to download a sample version of the dataset')
 
-
+        if sample_rate != self.setup['sample_rate']:
+            self.sample_rate = sample_rate
         self.sources_names = list(self.setup['sources'].keys())
         self.targets_names = list(self.setup['targets'].keys())
         self.is_wav = is_wav
@@ -206,7 +211,8 @@ class DB(object):
                             ),
                             subset=subset,
                             is_wav=self.is_wav,
-                            stem_id=self.setup['stem_ids']['mixture']
+                            stem_id=self.setup['stem_ids']['mixture'],
+                            sample_rate=self.sample_rate
                         )
 
                         # add sources to track
@@ -225,6 +231,7 @@ class DB(object):
                                     name=src,
                                     path=abs_path,
                                     stem_id=self.setup['stem_ids'][src],
+                                    sample_rate=self.sample_rate
                                 )
                         track.sources = sources
                         track.targets = self.create_targets(track)
@@ -249,6 +256,7 @@ class DB(object):
                             subset=subset,
                             stem_id=self.setup['stem_ids']['mixture'],
                             is_wav=self.is_wav,
+                            sample_rate=self.sample_rate
                         )
                         # add sources to track
                         sources = {}
@@ -266,6 +274,7 @@ class DB(object):
                                     name=src,
                                     path=abs_path,
                                     stem_id=self.setup['stem_ids'][src],
+                                    sample_rate=self.sample_rate
                                 )
                         track.sources = sources
 
@@ -277,7 +286,7 @@ class DB(object):
 
     def create_targets(self, track):
         # add targets to track
-        targets=collections.OrderedDict()
+        targets = collections.OrderedDict()
         for name, target_srcs in list(
             self.setup['targets'].items()
         ):
@@ -291,7 +300,11 @@ class DB(object):
                     target_sources.append(track.sources[source])
                     # add sources to target
             if target_sources:
-                targets[name] = Target(track, sources=target_sources, name=name)
+                targets[name] = Target(
+                    track,
+                    sources=target_sources,
+                    name=name
+                )
 
         return targets
 
@@ -323,10 +336,14 @@ class DB(object):
         if write_stems:
             pass
             # to be implemented
-        else:            
+        else:
             for target, estimate in list(user_estimates.items()):
                 target_path = op.join(track_estimate_dir, target + '.wav')
-                sf.write(target_path, estimate, track.rate)
+                stempeg.write_audio(
+                    path=target_path,
+                    data=estimate,
+                    sample_rate=track.rate
+                )
 
     def _check_exists(self):
         return os.path.exists(os.path.join(self.root, "train"))

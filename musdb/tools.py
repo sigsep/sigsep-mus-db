@@ -1,5 +1,5 @@
-import soundfile as sf
 import tqdm
+import stempeg
 import argparse
 from pathlib import Path
 from musdb import DB
@@ -43,16 +43,16 @@ def musdb_convert(inargs=None):
         track_estimate_dir.mkdir(exist_ok=True, parents=True)
         # write out tracks to disk
 
-        sf.write(
-            track_estimate_dir / Path('mixture').with_suffix(args.extension),
-            track.audio,
-            track.rate
+        stempeg.write_audio(
+            path=track_estimate_dir / Path('mixture').with_suffix(args.extension),
+            data=track.audio,
+            sample_rate=track.rate
         )
         for name, track in track.targets.items():
-            sf.write(
-                track_estimate_dir / Path(name).with_suffix(args.extension),
-                track.audio,
-                track.rate
+            stempeg.write_audio(
+                path=track_estimate_dir / Path(name).with_suffix(args.extension),
+                data=track.audio,
+                sample_rate=track.rate
             )
 
 

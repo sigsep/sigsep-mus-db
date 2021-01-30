@@ -1,5 +1,4 @@
 import os
-import soundfile as sf
 import numpy as np
 import stempeg
 
@@ -37,28 +36,23 @@ class Track(object):
         stem_id=None,
         subset=None,
         chunk_start=0,
-        chunk_duration=None
+        chunk_duration=None,
+        sample_rate=None
     ):
         self.path = path
         self.subset = subset
         self.stem_id = stem_id
         self.is_wav = is_wav
-
         self.chunk_start = chunk_start
         self.chunk_duration = chunk_duration
+        self.sample_rate = sample_rate
 
         # load and store metadata
         if os.path.exists(self.path):
-            if not self.is_wav:
-                self.info = stempeg.Info(self.path)
-                self.samples = int(self.info.samples(self.stem_id))
-                self.duration = self.info.duration(self.stem_id)
-                self.rate = self.info.rate(self.stem_id)
-            else:
-                self.info = sf.info(self.path)
-                self.samples = self.info.frames
-                self.duration = self.info.duration
-                self.rate = self.info.samplerate
+            self.info = stempeg.Info(self.path)
+            self.samples = int(self.info.samples(self.stem_id))
+            self.duration = self.info.duration(self.stem_id)
+            self.rate = self.info.rate(self.stem_id)
         else:
             # set to `None` if no path was set (fake file)
             self.info = None
@@ -79,42 +73,39 @@ class Track(object):
         # read from disk to save RAM otherwise
         else:
             return self.load_audio(
-                self.path, self.stem_id, self.chunk_start, self.chunk_duration
+                self.path,
+                self.stem_id,
+                self.chunk_start,
+                self.chunk_duration,
+                self.sample_rate
             )
 
     @audio.setter
     def audio(self, array):
         self._audio = array
 
-    def load_audio(self, path, stem_id, chunk_start=0, chunk_duration=None):
+    def load_audio(
+        self,
+        path,
+        stem_id,
+        chunk_start=0,
+        chunk_duration=None,
+        sample_rate=None
+    ):
         """array_like: [shape=(num_samples, num_channels)]
         """
         if os.path.exists(self.path):
-            if not self.is_wav:
-                # read using stempeg
-                audio, rate = stempeg.read_stems(
-                    filename=path,
-                    stem_id=stem_id,
-                    start=chunk_start,
-                    duration=chunk_duration,
-                    info=self.info
-                )
-            else:
-                chunk_start = int(chunk_start * self.rate)
-
-                # check if dur is none
-                if chunk_duration:
-                    # stop in soundfile is calc in samples, not seconds
-                    stop = chunk_start + int(chunk_duration * self.rate)
-                else:
-                    stop = chunk_duration
-
-                audio, rate = sf.read(
-                    path,
-                    always_2d=True,
-                    start=chunk_start,
-                    stop=stop
-                )
+            if self.is_wav:
+                stem_id = 0
+            audio, rate = stempeg.read_stems(
+                filename=path,
+                stem_id=stem_id,
+                start=chunk_start,
+                duration=chunk_duration,
+                info=self.info,
+                sample_rate=sample_rate,
+                ffmpeg_format="s16le"
+            )
             self._rate = rate
             return audio
         else:
@@ -135,6 +126,7 @@ class MultiTrack(Track):
         title=None,
         sources=None,
         targets=None,
+        sample_rate=None,
         *args,
         **kwargs
     ):
@@ -152,6 +144,7 @@ class MultiTrack(Track):
 
         self.sources = sources
         self.targets = targets
+        self.sample_rate = sample_rate
         self._stems = None
 
     @property
@@ -169,7 +162,9 @@ class MultiTrack(Track):
                     filename=self.path,
                     start=self.chunk_start,
                     duration=self.chunk_duration,
-                    info=self.info
+                    info=self.info,
+                    sample_rate=self.sample_rate,
+                    ffmpeg_format="s16le"
                 )
             else:
                 rate = self.rate
@@ -204,9 +199,9 @@ class Source(Track):
     """
     def __init__(
         self,
-        multitrack, # belongs to a multitrack
-        name=None,  # has its own name
-        path=None,  # might have its own path
+        multitrack,    # belongs to a multitrack
+        name=None,     # has its own name
+        path=None,     # might have its own path
         stem_id=None,  # might have its own stem_id
         gain=1.0,
         *args,
@@ -230,7 +225,11 @@ class Source(Track):
         # read from disk to save RAM otherwise
         else:
             return self.multitrack.load_audio(
-                self.path, self.stem_id, self.multitrack.chunk_start, self.multitrack.chunk_duration
+                self.path,
+                self.stem_id,
+                self.multitrack.chunk_start,
+                self.multitrack.chunk_duration,
+                self.multitrack.sample_rate
             )
 
     @audio.setter

@@ -40,8 +40,7 @@ if __name__ == "__main__":
         # computations stack
         install_requires=[
             'numpy>=1.7',
-            'soundfile>=0.9.0',
-            'stempeg==0.1.8',
+            'stempeg>=0.2.3',
             'pyaml',
             'tqdm'
         ],
@@ -52,7 +51,7 @@ if __name__ == "__main__":
 
         extras_require={  # Optional
             'dev': ['check-manifest'],
-            'tests': ['pytest', 'pytest-pep8'],
+            'tests': ['pytest'],
             'docs': [
                 'sphinx',
                 'sphinx_rtd_theme',
@@ -61,10 +60,7 @@ if __name__ == "__main__":
         },
 
         tests_require=[
-            'pytest',
-            'pytest-cov',
-            'pytest-pep8',
-            'coverage>=4.4'
+            'pytest'
         ],
 
         classifiers=[
