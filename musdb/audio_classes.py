@@ -103,7 +103,8 @@ class Track(object):
                 start=chunk_start,
                 duration=chunk_duration,
                 info=self.info,
-                sample_rate=sample_rate
+                sample_rate=sample_rate,
+                ffmpeg_format="s16le"
             )
             self._rate = rate
             return audio
@@ -162,7 +163,8 @@ class MultiTrack(Track):
                     start=self.chunk_start,
                     duration=self.chunk_duration,
                     info=self.info,
-                    sample_rate=self.sample_rate
+                    sample_rate=self.sample_rate,
+                    ffmpeg_format="s16le"
                 )
             else:
                 rate = self.rate
