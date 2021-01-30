@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
         extras_require={  # Optional
             'dev': ['check-manifest'],
-            'tests': ['pytest', 'pytest-pep8'],
+            'tests': ['pytest'],
             'docs': [
                 'sphinx',
                 'sphinx_rtd_theme',
