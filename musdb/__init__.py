@@ -38,7 +38,7 @@ class DB(object):
         Default `None` loads `['train', 'test']`
 
     split : str, optional
-        when subset `train` is loaded, split selects the train/validation split.
+        when `subsets=train`, `split` selects the train/validation split.
         `split='train' loads the training split, `split='valid'` loads the validation
         split. `split=None` applies no splitting.
 
@@ -186,6 +186,9 @@ class DB(object):
                 subsets = [subsets]
         else:
             subsets = ['train', 'test']
+
+        if subsets != ['train'] and split is not None:
+            raise RuntimeError("Subset has to set to `train` when split is used")
 
         tracks = []
         for subset in subsets:            

@@ -88,3 +88,6 @@ def test_download_and_validation():
     assert len(mus_valid) == 14
 
     assert len(mus_train) == len(mus_all) - len(mus_test) - len(mus_valid)
+
+    with pytest.raises(RuntimeError):
+        mus_train = musdb.DB(download=True, split='train')
