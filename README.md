@@ -1,6 +1,6 @@
 # musdb
 
-[![Build Status](https://travis-ci.org/sigsep/sigsep-mus-db.svg?branch=master)](https://travis-ci.org/sigsep/sigsep-mus-db)
+[![Build Status](https://github.com/sigsep/sigsep-mus-db/workflows/CI/badge.svg)](https://github.com/sigsep/sigsep-mus-db/actions?query=workflow%3ACI+branch%3Amaster+event%3Apush)
 [![Latest Version](https://img.shields.io/pypi/v/musdb.svg)](https://pypi.python.org/pypi/musdb/)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/musdb.svg)](https://pypi.python.org/pypi/musdb/)
 
