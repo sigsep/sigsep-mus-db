@@ -1,6 +1,6 @@
 from .audio_classes import MultiTrack, Source, Target
 from os import path as op
-import soundfile as sf
+import stempeg
 import urllib.request
 import collections
 import numpy as np
@@ -286,7 +286,7 @@ class DB(object):
 
     def create_targets(self, track):
         # add targets to track
-        targets=collections.OrderedDict()
+        targets = collections.OrderedDict()
         for name, target_srcs in list(
             self.setup['targets'].items()
         ):
@@ -300,7 +300,11 @@ class DB(object):
                     target_sources.append(track.sources[source])
                     # add sources to target
             if target_sources:
-                targets[name] = Target(track, sources=target_sources, name=name)
+                targets[name] = Target(
+                    track,
+                    sources=target_sources,
+                    name=name
+                )
 
         return targets
 
@@ -332,10 +336,14 @@ class DB(object):
         if write_stems:
             pass
             # to be implemented
-        else:            
+        else:
             for target, estimate in list(user_estimates.items()):
                 target_path = op.join(track_estimate_dir, target + '.wav')
-                sf.write(target_path, estimate, track.rate)
+                stempeg.write_audio(
+                    path=target_path,
+                    data=estimate,
+                    sample_rate=track.rate
+                )
 
     def _check_exists(self):
         return os.path.exists(os.path.join(self.root, "train"))
