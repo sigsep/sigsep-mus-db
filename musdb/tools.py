@@ -28,7 +28,7 @@ def musdb_convert(inargs=None):
     )
 
     parser.add_argument(
-        '--extension', type=str, default='.wav', 
+        '--extension', type=str, default='.wav'
     )
 
     args = parser.parse_args(inargs)
@@ -44,13 +44,13 @@ def musdb_convert(inargs=None):
         # write out tracks to disk
 
         stempeg.write_audio(
-            path=track_estimate_dir / Path('mixture').with_suffix(args.extension),
+            path=str(track_estimate_dir / Path('mixture').with_suffix(args.extension)),
             data=track.audio,
             sample_rate=track.rate
         )
         for name, track in track.targets.items():
             stempeg.write_audio(
-                path=track_estimate_dir / Path(name).with_suffix(args.extension),
+                path=str(track_estimate_dir / Path(name).with_suffix(args.extension)),
                 data=track.audio,
                 sample_rate=track.rate
             )
