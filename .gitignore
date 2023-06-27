@@ -4,6 +4,8 @@
 .LSOverride
 .mypy_cache
 
+*env*/
+
 *.wav
 # Icon must end with two \r
 Icon
