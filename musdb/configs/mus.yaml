@@ -1,58 +1,57 @@
-sample-url: https://github.com/sigsep/sigsep-mus-db/releases/download/v0.3.0/mus-sample.zip
+sample-url: https://github.com/sigsep/sigsep-mus-db/releases/download/v0.4.0/MUSDB18-7-STEMS.zip
 
 # global dataset samplerate
 sample_rate: 44100.0
 
 # Define the Input sources for each track
 sources:
-    vocals: vocals.wav
-    drums: drums.wav
-    bass: bass.wav
-    other: other.wav
+  vocals: vocals.wav
+  drums: drums.wav
+  bass: bass.wav
+  other: other.wav
 
 # Additionally provide the artistic mix
-mixture:
-    mixture.wav
+mixture: mixture.wav
 
 stem_ids:
-    mixture: 0
-    drums: 1
-    bass: 2
-    other: 3
-    vocals: 4
+  mixture: 0
+  drums: 1
+  bass: 2
+  other: 3
+  vocals: 4
 
 # Define output targets to be tested using linear mixtures
 targets:
-    vocals:
-        vocals: 1
-    drums:
-        drums: 1
-    bass:
-        bass: 1
-    other:
-        other: 1
-    accompaniment:
-        bass: 1
-        drums: 1
-        other: 1
-    linear_mixture:
-        vocals: 1
-        bass: 1
-        drums: 1
-        other: 1
+  vocals:
+    vocals: 1
+  drums:
+    drums: 1
+  bass:
+    bass: 1
+  other:
+    other: 1
+  accompaniment:
+    bass: 1
+    drums: 1
+    other: 1
+  linear_mixture:
+    vocals: 1
+    bass: 1
+    drums: 1
+    other: 1
 
 validation_tracks:
-    - 'Actions - One Minute Smile'
-    - 'Clara Berry And Wooldog - Waltz For My Victims'
-    - 'Johnny Lokke - Promises & Lies'
-    - 'Patrick Talbot - A Reason To Leave'
-    - 'Triviul - Angelsaint'
-    - 'Alexander Ross - Goodbye Bolero'
-    - 'Fergessen - Nos Palpitants'
-    - 'Leaf - Summerghost'
-    - 'Skelpolu - Human Mistakes'
-    - 'Young Griffo - Pennies'
-    - 'ANiMAL - Rockshow'
-    - 'James May - On The Line'
-    - 'Meaxic - Take A Step'
-    - 'Traffic Experiment - Sirens'
+- 'Actions - One Minute Smile'
+- 'Clara Berry And Wooldog - Waltz For My Victims'
+- 'Johnny Lokke - Promises & Lies'
+- 'Patrick Talbot - A Reason To Leave'
+- 'Triviul - Angelsaint'
+- 'Alexander Ross - Goodbye Bolero'
+- 'Fergessen - Nos Palpitants'
+- 'Leaf - Summerghost'
+- 'Skelpolu - Human Mistakes'
+- 'Young Griffo - Pennies'
+- 'ANiMAL - Rockshow'
+- 'James May - On The Line'
+- 'Meaxic - Take A Step'
+- 'Traffic Experiment - Sirens'

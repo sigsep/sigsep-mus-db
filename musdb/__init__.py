@@ -1,16 +1,18 @@
 from .audio_classes import MultiTrack, Source, Target
 from os import path as op
+from pathlib import Path
 import stempeg
-import urllib.request
+from urllib.request import urlopen, Request
 import collections
 import numpy as np
-import functools
+from tqdm import tqdm
 import zipfile
 import yaml
-import musdb
 import errno
+import musdb
+import shutil
 import os
-
+import tempfile
 
 class DB(object):
     """
@@ -351,7 +353,7 @@ class DB(object):
     def _check_exists(self):
         return os.path.exists(os.path.join(self.root, "train"))
 
-    def download(self):
+    def download(self, progress: bool = True, suffix: str = ".zip"):
         """Download the MUSDB Sample data"""
         if self._check_exists():
             return
@@ -364,16 +366,40 @@ class DB(object):
                 pass
             else:
                 raise
-
         print('Downloading MUSDB 7s Sample Dataset to %s...' % self.root)
-        data = urllib.request.urlopen(self.url)
-        filename = 'MUSDB18-7-STEMS.zip'
-        file_path = os.path.join(self.root, filename)
-        with open(file_path, 'wb') as f:
-            f.write(data.read())
-        zip_ref = zipfile.ZipFile(file_path, 'r')
-        zip_ref.extractall(os.path.join(self.root))
-        zip_ref.close()
-        os.unlink(file_path)
+
+        file_size = None
+        req = Request(self.url, headers={"User-Agent": "musdb_downloader"})
+        u = urlopen(req)
+        meta = u.info()
+        if hasattr(meta, 'getheaders'):
+            content_length = meta.getheaders("Content-Length")
+        else:
+            content_length = meta.get_all("Content-Length")
+        if content_length is not None and len(content_length) > 0:
+            file_size = int(content_length[0])
+
+        # We deliberately save it in a temp file and move it after
+        # download is complete. This prevents a local working checkpoint
+        # being overridden by a broken download.
+        f = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+
+        try:
+            with tqdm(total=file_size, disable=not progress, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
+                while True:
+                    buffer = u.read(8192)
+                    if len(buffer) == 0:
+                        break
+                    f.write(buffer)
+                    pbar.update(len(buffer))
+
+            f.close()
+            zip_ref = zipfile.ZipFile(f.name, 'r')
+            zip_ref.extractall(os.path.join(self.root))
+            zip_ref.close()
+        finally:
+            f.close()
+            if os.path.exists(f.name):
+                os.remove(f.name)
 
         print('Done!')
