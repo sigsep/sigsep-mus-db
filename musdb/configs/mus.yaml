@@ -1,4 +1,4 @@
-sample-url: https://zenodo.org/api/files/1ff52183-071a-4a59-923f-7a31c4762d43/MUSDB18-7-STEMS.zip
+sample-url: https://github.com/sigsep/sigsep-mus-db/releases/download/v0.3.0/mus-sample.zip
 
 # global dataset samplerate
 sample_rate: 44100.0
