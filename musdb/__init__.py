@@ -401,5 +401,3 @@ class DB(object):
             f.close()
             if os.path.exists(f.name):
                 os.remove(f.name)
-
-        print('Done!')
