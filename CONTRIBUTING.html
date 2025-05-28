@@ -1,0 +1,209 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; musdb api 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/documentation_options.js?v=6c02275b"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            musdb api
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul class="simple">
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">musdb api</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/CONTRIBUTING.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p># Contributing</p>
+<p><cite>musdb</cite> is designed as scientific software. Therefore, we encourage the community to submit bug-fixes and comments and improve the __computational <a href="#id1"><span class="problematic" id="id2">performance__</span></a>, __reproducibility__ and the __readability__ of the code where possible. When contributing to this repository, please first discuss the change you wish to make in the issue tracker with the owners of this repository before making a change.</p>
+<p>Please note we have a code of conduct, please follow it in all your interactions with the project.</p>
+<p>## Pull Request Process</p>
+<p>The preferred way to contribute to musdb is to fork the
+[main repository](<a class="reference external" href="http://github.com/sigsep/sigsep-mus-db/">http://github.com/sigsep/sigsep-mus-db/</a>) on
+GitHub:</p>
+<ol class="arabic simple">
+<li><p>Fork the [project repository](<a class="reference external" href="http://github.com/sigsep/sigsep-mus-db">http://github.com/sigsep/sigsep-mus-db</a>):
+click on the ‘Fork’ button near the top of the page. This creates
+a copy of the code under your account on the GitHub server.</p></li>
+<li><p>Clone this copy to your local disk:</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">$</span> <span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git&#64;github.com:YourLogin/sigsep-mus-db.git</span>
+<span class="pre">$</span> <span class="pre">cd</span> <span class="pre">musdb</span>
+<span class="pre">`</span></code></p>
+<ol class="arabic simple" start="3">
+<li><p>Create a branch to hold your changes:</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">$</span> <span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">-b</span> <span class="pre">my-feature</span>
+<span class="pre">`</span></code></p>
+<blockquote>
+<div><p>and start making changes. Never work in the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch!</p>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>Ensure any install or build artifacts are removed before making the pull request.</p></li>
+<li><p>Update the README.md and/or the appropriate document in the <cite>/docs</cite> folder with details of changes  to the interface, this includes new command line arguments, dataset description or command line examples.</p></li>
+<li><p>Work on this copy on your computer using Git to do the version
+control. When you’re done editing, do:</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">$</span> <span class="pre">git</span> <span class="pre">add</span> <span class="pre">modified_files</span>
+<span class="pre">$</span> <span class="pre">git</span> <span class="pre">commit</span>
+<span class="pre">`</span></code></p>
+<blockquote>
+<div><p>to record your changes in Git, then push them to GitHub with:</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">$</span> <span class="pre">git</span> <span class="pre">push</span> <span class="pre">-u</span> <span class="pre">origin</span> <span class="pre">my-feature</span>
+<span class="pre">`</span></code></p>
+<p>Finally, go to the web page of your fork of the musdb repo,
+and click ‘Pull request’ to send your changes to the maintainers for
+review. This will send an email to the committers.</p>
+<p>(If any of the above seems like magic to you, then look up the
+[Git documentation](<a class="reference external" href="http://git-scm.com/documentation">http://git-scm.com/documentation</a>) on the web.)</p>
+<p>## Code of Conduct</p>
+<p>### Our Pledge</p>
+<p>In the interest of fostering an open and welcoming environment, we as
+contributors and maintainers pledge to making participation in our project and
+our community a harassment-free experience for everyone, regardless of age, body
+size, disability, ethnicity, gender identity and expression, level of experience,
+nationality, personal appearance, race, religion, or sexual identity and
+orientation.</p>
+<p>### Our Standards</p>
+<p>Examples of behavior that contributes to creating a positive environment
+include:</p>
+<ul class="simple">
+<li><p>Using welcoming and inclusive language</p></li>
+<li><p>Being respectful of differing viewpoints and experiences</p></li>
+<li><p>Gracefully accepting constructive criticism</p></li>
+<li><p>Focusing on what is best for the community</p></li>
+<li><p>Showing empathy towards other community members</p></li>
+</ul>
+<p>Examples of unacceptable behavior by participants include:</p>
+<ul class="simple">
+<li><p>The use of sexualized language or imagery and unwelcome sexual attention or</p></li>
+</ul>
+<p>advances
+* Trolling, insulting/derogatory comments, and personal or political attacks
+* Public or private harassment
+* Publishing others’ private information, such as a physical or electronic</p>
+<blockquote>
+<div><p>address, without explicit permission</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Other conduct which could reasonably be considered inappropriate in a
+professional setting</p></li>
+</ul>
+<p>### Our Responsibilities</p>
+<p>Project maintainers are responsible for clarifying the standards of acceptable
+behavior and are expected to take appropriate and fair corrective action in
+response to any instances of unacceptable behavior.</p>
+<p>Project maintainers have the right and responsibility to remove, edit, or
+reject comments, commits, code, wiki edits, issues, and other contributions
+that are not aligned to this Code of Conduct, or to ban temporarily or
+permanently any contributor for other behaviors that they deem inappropriate,
+threatening, offensive, or harmful.</p>
+<p>### Scope</p>
+<p>This Code of Conduct applies both within project spaces and in public spaces
+when an individual is representing the project or its community. Examples of
+representing a project or community include using an official project e-mail
+address, posting via an official social media account, or acting as an appointed
+representative at an online or offline event. Representation of a project may be
+further defined and clarified by project maintainers.</p>
+<p>### Enforcement</p>
+<p>Instances of abusive, harassing, or otherwise unacceptable behavior may be
+reported by contacting the project team &#64;aliutkus, &#64;faroit. All
+complaints will be reviewed and investigated and will result in a response that
+is deemed necessary and appropriate to the circumstances. The project team is
+obligated to maintain confidentiality with regard to the reporter of an incident.
+Further details of specific enforcement policies may be posted separately.</p>
+<p>Project maintainers who do not follow or enforce the Code of Conduct in good
+faith may face temporary or permanent repercussions as determined by other
+members of the project’s leadership.</p>
+<p>### Attribution</p>
+<p>This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
+available at [<a class="reference external" href="http://contributor-covenant.org/version/1/4][version">http://contributor-covenant.org/version/1/4][version</a>]</p>
+<p>[homepage]: <a class="reference external" href="http://contributor-covenant.org">http://contributor-covenant.org</a>
+[version]: <a class="reference external" href="http://contributor-covenant.org/version/1/4/">http://contributor-covenant.org/version/1/4/</a></p>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Fabian-Robert Stoeter.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

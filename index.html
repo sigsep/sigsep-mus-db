@@ -1,110 +1,614 @@
 
+
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>Welcome to No Errors Test Project’s documentation! &#8212; No Errors Test Project  documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to musdb documentation! &mdash; musdb api 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/documentation_options.js?v=6c02275b"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
+          
+          <a href="#" class="icon icon-home">
+            musdb api
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Welcome to musdb documentation!</a></li>
+<li><a class="reference internal" href="#module-musdb">API documentation</a><ul>
+<li><a class="reference internal" href="#musdb.DB"><code class="docutils literal notranslate"><span class="pre">DB</span></code></a><ul>
+<li><a class="reference internal" href="#musdb.DB.setup_file"><code class="docutils literal notranslate"><span class="pre">DB.setup_file</span></code></a></li>
+<li><a class="reference internal" href="#musdb.DB.root"><code class="docutils literal notranslate"><span class="pre">DB.root</span></code></a></li>
+<li><a class="reference internal" href="#musdb.DB.sources_dir"><code class="docutils literal notranslate"><span class="pre">DB.sources_dir</span></code></a></li>
+<li><a class="reference internal" href="#musdb.DB.sources_names"><code class="docutils literal notranslate"><span class="pre">DB.sources_names</span></code></a></li>
+<li><a class="reference internal" href="#musdb.DB.targets_names"><code class="docutils literal notranslate"><span class="pre">DB.targets_names</span></code></a></li>
+<li><a class="reference internal" href="#musdb.DB.setup"><code class="docutils literal notranslate"><span class="pre">DB.setup</span></code></a></li>
+<li><a class="reference internal" href="#musdb.DB.sample_rate"><code class="docutils literal notranslate"><span class="pre">DB.sample_rate</span></code></a></li>
+<li><a class="reference internal" href="#musdb.DB.load_mus_tracks"><code class="docutils literal notranslate"><span class="pre">DB.load_mus_tracks()</span></code></a></li>
+<li><a class="reference internal" href="#musdb.DB.download"><code class="docutils literal notranslate"><span class="pre">DB.download()</span></code></a></li>
+<li><a class="reference internal" href="#musdb.DB.get_track_indices_by_names"><code class="docutils literal notranslate"><span class="pre">DB.get_track_indices_by_names()</span></code></a></li>
+<li><a class="reference internal" href="#musdb.DB.get_validation_track_indices"><code class="docutils literal notranslate"><span class="pre">DB.get_validation_track_indices()</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">DB.load_mus_tracks()</span></code></a></li>
+<li><a class="reference internal" href="#musdb.DB.save_estimates"><code class="docutils literal notranslate"><span class="pre">DB.save_estimates()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#musdb.audio_classes.MultiTrack"><code class="docutils literal notranslate"><span class="pre">MultiTrack</span></code></a><ul>
+<li><a class="reference internal" href="#musdb.audio_classes.MultiTrack.stems"><code class="docutils literal notranslate"><span class="pre">MultiTrack.stems</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#musdb.audio_classes.Source"><code class="docutils literal notranslate"><span class="pre">Source</span></code></a><ul>
+<li><a class="reference internal" href="#musdb.audio_classes.Source.name"><code class="docutils literal notranslate"><span class="pre">Source.name</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Source.stem_id"><code class="docutils literal notranslate"><span class="pre">Source.stem_id</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Source.is_wav"><code class="docutils literal notranslate"><span class="pre">Source.is_wav</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Source.path"><code class="docutils literal notranslate"><span class="pre">Source.path</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Source.gain"><code class="docutils literal notranslate"><span class="pre">Source.gain</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#musdb.audio_classes.Target"><code class="docutils literal notranslate"><span class="pre">Target</span></code></a><ul>
+<li><a class="reference internal" href="#musdb.audio_classes.Target.multitrack"><code class="docutils literal notranslate"><span class="pre">Target.multitrack</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Target.sources"><code class="docutils literal notranslate"><span class="pre">Target.sources</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Target.audio"><code class="docutils literal notranslate"><span class="pre">Target.audio</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#musdb.audio_classes.Track"><code class="docutils literal notranslate"><span class="pre">Track</span></code></a><ul>
+<li><a class="reference internal" href="#musdb.audio_classes.Track.name"><code class="docutils literal notranslate"><span class="pre">Track.name</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Track.path"><code class="docutils literal notranslate"><span class="pre">Track.path</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Track.stem_id"><code class="docutils literal notranslate"><span class="pre">Track.stem_id</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Track.is_wav"><code class="docutils literal notranslate"><span class="pre">Track.is_wav</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Track.subset"><code class="docutils literal notranslate"><span class="pre">Track.subset</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Track.targets"><code class="docutils literal notranslate"><span class="pre">Track.targets</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Track.sources"><code class="docutils literal notranslate"><span class="pre">Track.sources</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Track.chunk_start"><code class="docutils literal notranslate"><span class="pre">Track.chunk_start</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Track.chunk_duration"><code class="docutils literal notranslate"><span class="pre">Track.chunk_duration</span></code></a></li>
+<li><a class="reference internal" href="#musdb.audio_classes.Track.load_audio"><code class="docutils literal notranslate"><span class="pre">Track.load_audio()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#musdb.tools.musdb_convert"><code class="docutils literal notranslate"><span class="pre">musdb_convert()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#citation">Citation</a></li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
 
-          <div class="body" role="main">
-            
-  <div class="section" id="welcome-to-no-errors-test-project-s-documentation">
-<h1>Welcome to No Errors Test Project’s documentation!<a class="headerlink" href="#welcome-to-no-errors-test-project-s-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">musdb api</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to musdb documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
 </div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-musdb-documentation">
+<h1>Welcome to musdb documentation!<a class="headerlink" href="#welcome-to-musdb-documentation" title="Link to this heading">¶</a></h1>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#module-musdb" title="musdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">musdb</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#module-musdb.audio_classes" title="musdb.audio_classes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">musdb.audio_classes</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#module-musdb.tools" title="musdb.tools"><code class="xref py py-obj docutils literal notranslate"><span class="pre">musdb.tools</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-musdb">
+<span id="api-documentation"></span><h1>API documentation<a class="headerlink" href="#module-musdb" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="musdb.DB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">musdb.</span></span><span class="sig-name descname"><span class="pre">DB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setup_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_wav</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['train',</span> <span class="pre">'test']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb.html#DB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.DB" title="Link to this definition">¶</a></dt>
+<dd><p>The musdb DB Object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – musdb Root path. If set to <cite>None</cite> it will be read
+from the <cite>MUSDB_PATH</cite> environment variable</p></li>
+<li><p><strong>subsets</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – select a _musdb_ subset <cite>train</cite> or <cite>test</cite> (defaults to both)</p></li>
+<li><p><strong>is_wav</strong> (<em>boolean</em><em>, </em><em>optional</em>) – expect subfolder with wav files for each source instead stems,
+defaults to <cite>False</cite></p></li>
+<li><p><strong>download</strong> (<em>boolean</em><em>, </em><em>optional</em>) – download sample version of MUSDB18 which includes 7s excerpts,
+defaults to <cite>False</cite></p></li>
+<li><p><strong>subsets</strong> – select a _musdb_ subset <cite>train</cite> or <cite>test</cite>.
+Default <cite>None</cite> loads <cite>[‘train’, ‘test’]</cite></p></li>
+<li><p><strong>split</strong> (<em>str</em><em>, </em><em>optional</em>) – when <cite>subsets=train</cite>, <cite>split</cite> selects the train/validation split.
+<cite>split=’train’ loads the training split, `split=’valid’</cite> loads the validation
+split. <cite>split=None</cite> applies no splitting.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.DB.setup_file">
+<span class="sig-name descname"><span class="pre">setup_file</span></span><a class="headerlink" href="#musdb.DB.setup_file" title="Link to this definition">¶</a></dt>
+<dd><p>path to yaml file. default: <cite>setup.yaml</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.DB.root">
+<span class="sig-name descname"><span class="pre">root</span></span><a class="headerlink" href="#musdb.DB.root" title="Link to this definition">¶</a></dt>
+<dd><p>musdb Root path. Default is <cite>MUSDB_PATH</cite>. In combination with
+<cite>download</cite>, this path will set the download destination and set to
+‘~/musdb/’ by default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.DB.sources_dir">
+<span class="sig-name descname"><span class="pre">sources_dir</span></span><a class="headerlink" href="#musdb.DB.sources_dir" title="Link to this definition">¶</a></dt>
+<dd><p>path to Sources directory</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.DB.sources_names">
+<span class="sig-name descname"><span class="pre">sources_names</span></span><a class="headerlink" href="#musdb.DB.sources_names" title="Link to this definition">¶</a></dt>
+<dd><p>list of names of available sources</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.DB.targets_names">
+<span class="sig-name descname"><span class="pre">targets_names</span></span><a class="headerlink" href="#musdb.DB.targets_names" title="Link to this definition">¶</a></dt>
+<dd><p>list of names of available targets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.DB.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><a class="headerlink" href="#musdb.DB.setup" title="Link to this definition">¶</a></dt>
+<dd><p>loaded yaml configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.DB.sample_rate">
+<span class="sig-name descname"><span class="pre">sample_rate</span></span><a class="headerlink" href="#musdb.DB.sample_rate" title="Link to this definition">¶</a></dt>
+<dd><p>sets sample rate for optional resampling. Defaults to none
+which results in <cite>44100.0</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional(Float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="musdb.DB.load_mus_tracks">
+<span class="sig-name descname"><span class="pre">load_mus_tracks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb.html#DB.load_mus_tracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.DB.load_mus_tracks" title="Link to this definition">¶</a></dt>
+<dd><p>Iterates through the musdb folder structure and
+returns <code class="docutils literal notranslate"><span class="pre">Track</span></code> objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="musdb.DB.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.zip'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb.html#DB.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.DB.download" title="Link to this definition">¶</a></dt>
+<dd><p>Download the MUSDB Sample data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="musdb.DB.get_track_indices_by_names">
+<span class="sig-name descname"><span class="pre">get_track_indices_by_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb.html#DB.get_track_indices_by_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.DB.get_track_indices_by_names" title="Link to this definition">¶</a></dt>
+<dd><p>Returns musdb track indices by track name</p>
+<p>Can be used to filter the musdb tracks for
+a validation subset by trackname</p>
+<p>Parameters
+== == == == ==
+names : list[str], optional</p>
+<blockquote>
+<div><p>select tracks by a given <cite>str</cite> or list of tracknames</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>return a list of <code class="docutils literal notranslate"><span class="pre">Track</span></code> Objects</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="musdb.DB.get_validation_track_indices">
+<span class="sig-name descname"><span class="pre">get_validation_track_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">validation_track_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb.html#DB.get_validation_track_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.DB.get_validation_track_indices" title="Link to this definition">¶</a></dt>
+<dd><p>Returns validation track indices by a given list of track names</p>
+<p>Defaults to the builtin selection 8 validation tracks, defined in
+<cite>mus.yaml</cite>.</p>
+<p>Parameters
+== == == == ==
+validation_track_names : list[str], optional</p>
+<blockquote>
+<div><p>validation track names by a given <cite>str</cite> or list of tracknames</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>return a list of validation track indices</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">load_mus_tracks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subsets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb.html#DB.load_mus_tracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd><p>Parses the musdb folder structure, returns list of <cite>Track</cite> objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subsets</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – select a _musdb_ subset <cite>train</cite> or <cite>test</cite>.
+Default <cite>None</cite> loads [<cite>train, test</cite>].</p></li>
+<li><p><strong>split</strong> (<em>str</em>) – for subsets=’train’, <cite>split=’train</cite> applies a train/validation split.
+if <cite>split=’valid</cite>’ the validation split of the training subset will be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>return a list of <code class="docutils literal notranslate"><span class="pre">Track</span></code> Objects</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#musdb.audio_classes.Track" title="musdb.audio_classes.Track">Track</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="musdb.DB.save_estimates">
+<span class="sig-name descname"><span class="pre">save_estimates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_estimates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimates_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_stems</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb.html#DB.save_estimates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.DB.save_estimates" title="Link to this definition">¶</a></dt>
+<dd><p>Writes <cite>user_estimates</cite> to disk while recreating the musdb file structure in that folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_estimates</strong> (<em>Dict</em><em>[</em><em>np.array</em><em>]</em>) – the target estimates.</p></li>
+<li><p><strong>track</strong> (<a class="reference internal" href="#musdb.audio_classes.Track" title="musdb.audio_classes.Track"><em>Track</em></a><em>,</em>) – musdb track object</p></li>
+<li><p><strong>estimates_dir</strong> (<em>str</em><em>,</em>) – output folder name where to save the estimates.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class" id="module-musdb.audio_classes">
+<dt class="sig sig-object py" id="musdb.audio_classes.MultiTrack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">musdb.audio_classes.</span></span><span class="sig-name descname"><span class="pre">MultiTrack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb/audio_classes.html#MultiTrack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.audio_classes.MultiTrack" title="Link to this definition">¶</a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="musdb.audio_classes.MultiTrack.stems">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stems</span></span><a class="headerlink" href="#musdb.audio_classes.MultiTrack.stems" title="Link to this definition">¶</a></dt>
+<dd><p>[shape=(stems, num_samples, num_channels)]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="musdb.audio_classes.Source">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">musdb.audio_classes.</span></span><span class="sig-name descname"><span class="pre">Source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitrack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stem_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb/audio_classes.html#Source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.audio_classes.Source" title="Link to this definition">¶</a></dt>
+<dd><p>An audio Target which is a linear mixture of several sources</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Source.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#musdb.audio_classes.Source.name" title="Link to this definition">¶</a></dt>
+<dd><p>Name of this source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Source.stem_id">
+<span class="sig-name descname"><span class="pre">stem_id</span></span><a class="headerlink" href="#musdb.audio_classes.Source.stem_id" title="Link to this definition">¶</a></dt>
+<dd><p>stem/substream ID is set here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Source.is_wav">
+<span class="sig-name descname"><span class="pre">is_wav</span></span><a class="headerlink" href="#musdb.audio_classes.Source.is_wav" title="Link to this definition">¶</a></dt>
+<dd><p>If stem is read from wav or mp4 stem</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Source.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#musdb.audio_classes.Source.path" title="Link to this definition">¶</a></dt>
+<dd><p>Absolute path to audio file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Source.gain">
+<span class="sig-name descname"><span class="pre">gain</span></span><a class="headerlink" href="#musdb.audio_classes.Source.gain" title="Link to this definition">¶</a></dt>
+<dd><p>Mixing weight for this source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="musdb.audio_classes.Target">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">musdb.audio_classes.</span></span><span class="sig-name descname"><span class="pre">Target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitrack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb/audio_classes.html#Target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.audio_classes.Target" title="Link to this definition">¶</a></dt>
+<dd><p>An audio Target which is a linear mixture of several sources</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Target.multitrack">
+<span class="sig-name descname"><span class="pre">multitrack</span></span><a class="headerlink" href="#musdb.audio_classes.Target.multitrack" title="Link to this definition">¶</a></dt>
+<dd><p>Track object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#musdb.audio_classes.Track" title="musdb.audio_classes.Track">Track</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Target.sources">
+<span class="sig-name descname"><span class="pre">sources</span></span><a class="headerlink" href="#musdb.audio_classes.Target.sources" title="Link to this definition">¶</a></dt>
+<dd><p>list of <code class="docutils literal notranslate"><span class="pre">Source</span></code> objects for this <code class="docutils literal notranslate"><span class="pre">Target</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#musdb.audio_classes.Source" title="musdb.audio_classes.Source">Source</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="musdb.audio_classes.Target.audio">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">audio</span></span><a class="headerlink" href="#musdb.audio_classes.Target.audio" title="Link to this definition">¶</a></dt>
+<dd><p>[shape=(num_samples, num_channels)]</p>
+<p>mixes audio for targets on the fly</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="musdb.audio_classes.Track">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">musdb.audio_classes.</span></span><span class="sig-name descname"><span class="pre">Track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_wav</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stem_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb/audio_classes.html#Track"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.audio_classes.Track" title="Link to this definition">¶</a></dt>
+<dd><p>Generic audio Track that can be wav or stem file</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Track.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#musdb.audio_classes.Track.name" title="Link to this definition">¶</a></dt>
+<dd><p>Track name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Track.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#musdb.audio_classes.Track.path" title="Link to this definition">¶</a></dt>
+<dd><p>Absolute path of mixture audio file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Track.stem_id">
+<span class="sig-name descname"><span class="pre">stem_id</span></span><a class="headerlink" href="#musdb.audio_classes.Track.stem_id" title="Link to this definition">¶</a></dt>
+<dd><p>stem/substream ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Track.is_wav">
+<span class="sig-name descname"><span class="pre">is_wav</span></span><a class="headerlink" href="#musdb.audio_classes.Track.is_wav" title="Link to this definition">¶</a></dt>
+<dd><p>If stem is read from wav or mp4 stem</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Track.subset">
+<span class="sig-name descname"><span class="pre">subset</span></span><a class="headerlink" href="#musdb.audio_classes.Track.subset" title="Link to this definition">¶</a></dt>
+<dd><p>Track belongs to which subset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>{‘train’, ‘test’}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Track.targets">
+<span class="sig-name descname"><span class="pre">targets</span></span><a class="headerlink" href="#musdb.audio_classes.Track.targets" title="Link to this definition">¶</a></dt>
+<dd><p>OrderedDict of mixted Targets for this <code class="docutils literal notranslate"><span class="pre">track</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>OrderedDict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Track.sources">
+<span class="sig-name descname"><span class="pre">sources</span></span><a class="headerlink" href="#musdb.audio_classes.Track.sources" title="Link to this definition">¶</a></dt>
+<dd><p>Dict of <code class="docutils literal notranslate"><span class="pre">Source</span></code> objects for this <code class="docutils literal notranslate"><span class="pre">track</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Track.chunk_start">
+<span class="sig-name descname"><span class="pre">chunk_start</span></span><a class="headerlink" href="#musdb.audio_classes.Track.chunk_start" title="Link to this definition">¶</a></dt>
+<dd><p>sets offset when loading the audio, defaults to 0 (beginning).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="musdb.audio_classes.Track.chunk_duration">
+<span class="sig-name descname"><span class="pre">chunk_duration</span></span><a class="headerlink" href="#musdb.audio_classes.Track.chunk_duration" title="Link to this definition">¶</a></dt>
+<dd><p>sets duration for the audio, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code> (end).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="musdb.audio_classes.Track.load_audio">
+<span class="sig-name descname"><span class="pre">load_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stem_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb/audio_classes.html#Track.load_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.audio_classes.Track.load_audio" title="Link to this definition">¶</a></dt>
+<dd><p>array_like: [shape=(num_samples, num_channels)]</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function" id="module-musdb.tools">
+<dt class="sig sig-object py" id="musdb.tools.musdb_convert">
+<span class="sig-prename descclassname"><span class="pre">musdb.tools.</span></span><span class="sig-name descname"><span class="pre">musdb_convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/musdb/tools.html#musdb_convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#musdb.tools.musdb_convert" title="Link to this definition">¶</a></dt>
+<dd><p>cli application to conver audio files to spectrogram images</p>
+</dd></dl>
+
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
+</section>
+<section id="citation">
+<h1>Citation<a class="headerlink" href="#citation" title="Link to this heading">¶</a></h1>
+</section>
 
 
+           </div>
           </div>
-          
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Fabian-Robert Stoeter.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">No Errors Test Project</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2019, sphinx-action Test Suite.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/index.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

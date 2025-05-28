@@ -1,0 +1,506 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>musdb &mdash; musdb api 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            musdb api
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">musdb api</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">musdb</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for musdb</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.audio_classes</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiTrack</span><span class="p">,</span> <span class="n">Source</span><span class="p">,</span> <span class="n">Target</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">stempeg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.request</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlopen</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zipfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">errno</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">musdb</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+
+
+<div class="viewcode-block" id="DB">
+<a class="viewcode-back" href="../index.html#musdb.DB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DB</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The musdb DB Object</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : str, optional</span>
+<span class="sd">        musdb Root path. If set to `None` it will be read</span>
+<span class="sd">        from the `MUSDB_PATH` environment variable</span>
+
+<span class="sd">    subsets : str or list, optional</span>
+<span class="sd">        select a _musdb_ subset `train` or `test` (defaults to both)</span>
+
+<span class="sd">    is_wav : boolean, optional</span>
+<span class="sd">        expect subfolder with wav files for each source instead stems,</span>
+<span class="sd">        defaults to `False`</span>
+
+<span class="sd">    download : boolean, optional</span>
+<span class="sd">        download sample version of MUSDB18 which includes 7s excerpts,</span>
+<span class="sd">        defaults to `False`</span>
+
+<span class="sd">    subsets : list[str], optional</span>
+<span class="sd">        select a _musdb_ subset `train` or `test`.</span>
+<span class="sd">        Default `None` loads `[&#39;train&#39;, &#39;test&#39;]`</span>
+
+<span class="sd">    split : str, optional</span>
+<span class="sd">        when `subsets=train`, `split` selects the train/validation split.</span>
+<span class="sd">        `split=&#39;train&#39; loads the training split, `split=&#39;valid&#39;` loads the validation</span>
+<span class="sd">        split. `split=None` applies no splitting.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    setup_file : str</span>
+<span class="sd">        path to yaml file. default: `setup.yaml`</span>
+<span class="sd">    root : str</span>
+<span class="sd">        musdb Root path. Default is `MUSDB_PATH`. In combination with</span>
+<span class="sd">        `download`, this path will set the download destination and set to</span>
+<span class="sd">        &#39;~/musdb/&#39; by default.</span>
+<span class="sd">    sources_dir : str</span>
+<span class="sd">        path to Sources directory</span>
+<span class="sd">    sources_names : list[str]</span>
+<span class="sd">        list of names of available sources</span>
+<span class="sd">    targets_names : list[str]</span>
+<span class="sd">        list of names of available targets</span>
+<span class="sd">    setup : Dict</span>
+<span class="sd">        loaded yaml configuration</span>
+<span class="sd">    sample_rate : Optional(Float)</span>
+<span class="sd">        sets sample rate for optional resampling. Defaults to none</span>
+<span class="sd">        which results in `44100.0`</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    load_mus_tracks()</span>
+<span class="sd">        Iterates through the musdb folder structure and</span>
+<span class="sd">        returns ``Track`` objects</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">setup_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_wav</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">subsets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">],</span>
+        <span class="n">split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">sample_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/MUSDB18/MUSDB18-7&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;MUSDB_PATH&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;MUSDB_PATH&quot;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Variable `MUSDB_PATH` has not been set.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">setup_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">setup_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">setup_file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">setup_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">musdb</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span> <span class="s2">&quot;mus.yaml&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">setup_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;sample-url&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_exists</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Dataset not found.&quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;You can use download=True to download a sample version of the dataset&quot;</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sample_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">targets_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;targets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_wav</span> <span class="o">=</span> <span class="n">is_wav</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_mus_tracks</span><span class="p">(</span><span class="n">subsets</span><span class="o">=</span><span class="n">subsets</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DB.get_validation_track_indices">
+<a class="viewcode-back" href="../index.html#musdb.DB.get_validation_track_indices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_validation_track_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_track_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns validation track indices by a given list of track names</span>
+
+<span class="sd">        Defaults to the builtin selection 8 validation tracks, defined in</span>
+<span class="sd">        `mus.yaml`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        == == == == ==</span>
+<span class="sd">        validation_track_names : list[str], optional</span>
+<span class="sd">            validation track names by a given `str` or list of tracknames</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[int]</span>
+<span class="sd">            return a list of validation track indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">validation_track_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">validation_track_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;validation_tracks&quot;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_track_indices_by_names</span><span class="p">(</span><span class="n">validation_track_names</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DB.get_track_indices_by_names">
+<a class="viewcode-back" href="../index.html#musdb.DB.get_track_indices_by_names">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_track_indices_by_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns musdb track indices by track name</span>
+
+<span class="sd">        Can be used to filter the musdb tracks for</span>
+<span class="sd">        a validation subset by trackname</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        == == == == ==</span>
+<span class="sd">        names : list[str], optional</span>
+<span class="sd">            select tracks by a given `str` or list of tracknames</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[int]</span>
+<span class="sd">            return a list of ``Track`` Objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">names</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">[[</span><span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="DB.load_mus_tracks">
+<a class="viewcode-back" href="../index.html#musdb.DB.load_mus_tracks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_mus_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subsets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses the musdb folder structure, returns list of `Track` objects</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ==========</span>
+<span class="sd">        subsets : list[str], optional</span>
+<span class="sd">            select a _musdb_ subset `train` or `test`.</span>
+<span class="sd">            Default `None` loads [`train, test`].</span>
+<span class="sd">        split : str</span>
+<span class="sd">            for subsets=&#39;train&#39;, `split=&#39;train` applies a train/validation split.</span>
+<span class="sd">            if `split=&#39;valid`&#39; the validation split of the training subset will be used</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[Track]</span>
+<span class="sd">            return a list of ``Track`` Objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">subsets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subsets</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">subsets</span> <span class="o">=</span> <span class="p">[</span><span class="n">subsets</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subsets</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">subsets</span> <span class="o">!=</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">split</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Subset has to set to `train` when split is used&quot;</span><span class="p">)</span>
+
+        <span class="n">tracks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">subset</span> <span class="ow">in</span> <span class="n">subsets</span><span class="p">:</span>
+            <span class="n">subset_folder</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">subset</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">folders</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">subset_folder</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_wav</span><span class="p">:</span>
+                    <span class="c1"># parse pcm tracks and sort by name</span>
+                    <span class="k">for</span> <span class="n">track_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">folders</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">subset</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span>
+                                <span class="ow">and</span> <span class="n">track_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;validation_tracks&quot;</span><span class="p">]</span>
+                            <span class="p">):</span>
+                                <span class="k">continue</span>
+                            <span class="k">elif</span> <span class="p">(</span>
+                                <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;valid&quot;</span>
+                                <span class="ow">and</span> <span class="n">track_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;validation_tracks&quot;</span><span class="p">]</span>
+                            <span class="p">):</span>
+                                <span class="k">continue</span>
+
+                        <span class="n">track_folder</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subset_folder</span><span class="p">,</span> <span class="n">track_name</span><span class="p">)</span>
+                        <span class="c1"># create new mus track</span>
+                        <span class="n">track</span> <span class="o">=</span> <span class="n">MultiTrack</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="n">track_name</span><span class="p">,</span>
+                            <span class="n">path</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">track_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;mixture&quot;</span><span class="p">]),</span>
+                            <span class="n">subset</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span>
+                            <span class="n">is_wav</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_wav</span><span class="p">,</span>
+                            <span class="n">stem_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;stem_ids&quot;</span><span class="p">][</span><span class="s2">&quot;mixture&quot;</span><span class="p">],</span>
+                            <span class="n">sample_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+                        <span class="c1"># add sources to track</span>
+                        <span class="n">sources</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">source_file</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                            <span class="c1"># create source object</span>
+                            <span class="n">abs_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">track_folder</span><span class="p">,</span> <span class="n">source_file</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">abs_path</span><span class="p">):</span>
+                                <span class="n">sources</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span>
+                                    <span class="n">track</span><span class="p">,</span>
+                                    <span class="n">name</span><span class="o">=</span><span class="n">src</span><span class="p">,</span>
+                                    <span class="n">path</span><span class="o">=</span><span class="n">abs_path</span><span class="p">,</span>
+                                    <span class="n">stem_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;stem_ids&quot;</span><span class="p">][</span><span class="n">src</span><span class="p">],</span>
+                                    <span class="n">sample_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span>
+                                <span class="p">)</span>
+                        <span class="n">track</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">sources</span>
+                        <span class="n">track</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_targets</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+
+                        <span class="c1"># add track to list of tracks</span>
+                        <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># parse stem files</span>
+                    <span class="k">for</span> <span class="n">track_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">track_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.stem.mp4&quot;</span><span class="p">):</span>
+                            <span class="k">continue</span>
+                        <span class="k">if</span> <span class="n">subset</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span>
+                                <span class="ow">and</span> <span class="n">track_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.stem.mp4&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;validation_tracks&quot;</span><span class="p">]</span>
+                            <span class="p">):</span>
+                                <span class="k">continue</span>
+                            <span class="k">elif</span> <span class="p">(</span>
+                                <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;valid&quot;</span>
+                                <span class="ow">and</span> <span class="n">track_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.stem.mp4&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;validation_tracks&quot;</span><span class="p">]</span>
+                            <span class="p">):</span>
+                                <span class="k">continue</span>
+
+                        <span class="c1"># create new mus track</span>
+                        <span class="n">track</span> <span class="o">=</span> <span class="n">MultiTrack</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="n">track_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.stem.mp4&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="n">path</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subset_folder</span><span class="p">,</span> <span class="n">track_name</span><span class="p">),</span>
+                            <span class="n">subset</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span>
+                            <span class="n">stem_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;stem_ids&quot;</span><span class="p">][</span><span class="s2">&quot;mixture&quot;</span><span class="p">],</span>
+                            <span class="n">is_wav</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_wav</span><span class="p">,</span>
+                            <span class="n">sample_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="c1"># add sources to track</span>
+                        <span class="n">sources</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">source_file</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                            <span class="c1"># create source object</span>
+                            <span class="n">abs_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subset_folder</span><span class="p">,</span> <span class="n">track_name</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">abs_path</span><span class="p">):</span>
+                                <span class="n">sources</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span>
+                                    <span class="n">track</span><span class="p">,</span>
+                                    <span class="n">name</span><span class="o">=</span><span class="n">src</span><span class="p">,</span>
+                                    <span class="n">path</span><span class="o">=</span><span class="n">abs_path</span><span class="p">,</span>
+                                    <span class="n">stem_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;stem_ids&quot;</span><span class="p">][</span><span class="n">src</span><span class="p">],</span>
+                                    <span class="n">sample_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span>
+                                <span class="p">)</span>
+                        <span class="n">track</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">sources</span>
+
+                        <span class="c1"># add targets to track</span>
+                        <span class="n">track</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_targets</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+                        <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tracks</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">):</span>
+        <span class="c1"># add targets to track</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">target_srcs</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">[</span><span class="s2">&quot;targets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="c1"># add a list of target sources</span>
+            <span class="n">target_sources</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">gain</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">target_srcs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                    <span class="c1"># add gain to source tracks</span>
+                    <span class="n">track</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">gain</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">gain</span><span class="p">)</span>
+                    <span class="c1"># add tracks to components</span>
+                    <span class="n">target_sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">source</span><span class="p">])</span>
+                    <span class="c1"># add sources to target</span>
+            <span class="k">if</span> <span class="n">target_sources</span><span class="p">:</span>
+                <span class="n">targets</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="n">target_sources</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">targets</span>
+
+<div class="viewcode-block" id="DB.save_estimates">
+<a class="viewcode-back" href="../index.html#musdb.DB.save_estimates">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_estimates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_estimates</span><span class="p">,</span> <span class="n">track</span><span class="p">,</span> <span class="n">estimates_dir</span><span class="p">,</span> <span class="n">write_stems</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes `user_estimates` to disk while recreating the musdb file structure in that folder.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ==========</span>
+<span class="sd">        user_estimates : Dict[np.array]</span>
+<span class="sd">            the target estimates.</span>
+<span class="sd">        track : Track,</span>
+<span class="sd">            musdb track object</span>
+<span class="sd">        estimates_dir : str,</span>
+<span class="sd">            output folder name where to save the estimates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">track_estimate_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">estimates_dir</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">subset</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">track_estimate_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">track_estimate_dir</span><span class="p">)</span>
+
+        <span class="c1"># write out tracks to disk</span>
+        <span class="k">if</span> <span class="n">write_stems</span><span class="p">:</span>
+            <span class="k">pass</span>
+            <span class="c1"># to be implemented</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="n">estimate</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">user_estimates</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="n">target_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">track_estimate_dir</span><span class="p">,</span> <span class="n">target</span> <span class="o">+</span> <span class="s2">&quot;.wav&quot;</span><span class="p">)</span>
+                <span class="n">stempeg</span><span class="o">.</span><span class="n">write_audio</span><span class="p">(</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">target_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">estimate</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">rate</span>
+                <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;train&quot;</span><span class="p">))</span>
+
+<div class="viewcode-block" id="DB.download">
+<a class="viewcode-back" href="../index.html#musdb.DB.download">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.zip&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the MUSDB Sample data&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_exists</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="c1"># download files</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Downloading MUSDB 7s Sample Dataset to </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+
+        <span class="n">file_size</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="s2">&quot;musdb_downloader&quot;</span><span class="p">})</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="s2">&quot;getheaders&quot;</span><span class="p">):</span>
+            <span class="n">content_length</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">getheaders</span><span class="p">(</span><span class="s2">&quot;Content-Length&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">content_length</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">get_all</span><span class="p">(</span><span class="s2">&quot;Content-Length&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">content_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">content_length</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">file_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">content_length</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># We deliberately save it in a temp file and move it after</span>
+        <span class="c1"># download is complete. This prevents a local working checkpoint</span>
+        <span class="c1"># being overridden by a broken download.</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
+                <span class="n">total</span><span class="o">=</span><span class="n">file_size</span><span class="p">,</span>
+                <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span>
+                <span class="n">unit_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">unit_divisor</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">buffer</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8192</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">break</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+                    <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">))</span>
+
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">zip_ref</span> <span class="o">=</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+            <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">))</span>
+            <span class="n">zip_ref</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Fabian-Robert Stoeter.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
