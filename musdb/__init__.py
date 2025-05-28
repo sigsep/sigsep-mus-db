@@ -1,16 +1,13 @@
 from .audio_classes import MultiTrack, Source, Target
 from os import path as op
-from pathlib import Path
 import stempeg
 from urllib.request import urlopen, Request
 import collections
-import numpy as np
 from tqdm import tqdm
 import zipfile
 import yaml
 import errno
 import musdb
-import shutil
 import os
 import tempfile
 
