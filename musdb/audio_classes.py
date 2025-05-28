@@ -94,7 +94,7 @@ class Track(object):
     ):
         """array_like: [shape=(num_samples, num_channels)]
         """
-        if os.path.exists(self.path):
+        if os.path.exists(path):
             if self.is_wav:
                 stem_id = 0
             audio, rate = stempeg.read_stems(
