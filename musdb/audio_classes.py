@@ -94,7 +94,7 @@ class Track(object):
     ):
         """array_like: [shape=(num_samples, num_channels)]
         """
-        if os.path.exists(path):
+        if os.path.exists(self.path):
             if self.is_wav:
                 stem_id = 0
             audio, rate = stempeg.read_stems(
@@ -111,7 +111,7 @@ class Track(object):
         else:
             self._rate = None
             self._audio = None
-            raise ValueError("Oops! %s cannot be loaded" % path)
+            raise ValueError("Oops! File %s does not exist." % self.path)
 
     def __repr__(self):
         return "%s" % (self.path)
